@@ -42,7 +42,7 @@ class ImageCollection:
         Parameters
         ----------
         region : ee.Geometry, optional
-            The region to download the images within. If none is provided, the :code:`geometry` of the image collection 
+            The region to download the images within. If none is provided, the :code:`geometry` of the image collection
             will be used. If geometry varies between images in the collection, the region will encompass all images
             which may lead to very large arrays and download limits.
         scale : int, optional
@@ -59,7 +59,7 @@ class ImageCollection:
             used.
         progress : bool, default True
             If true, a progress bar will be displayed to track download progress.
-        
+
         Returns
         -------
         xarray.Dataset
@@ -140,7 +140,7 @@ class ImageCollection:
             used.
         progress : bool, default True
             If true, a progress bar will be displayed to track download progress.
-    
+
         Returns
         -------
         list[str]

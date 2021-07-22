@@ -17,13 +17,11 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-import eexarray
-
 project = 'eexarray'
 copyright = '2021, Aaron Zuspan'
 author = 'Aaron Zuspan'
 
-version = eexarray.__version__
+version = "0.0.1"
 
 # -- General configuration ---------------------------------------------------
 

@@ -1,0 +1,6 @@
+﻿ee.Image.eex.to_tif
+===================
+
+.. currentmodule:: ee
+
+.. autoaccessormethod:: Image.eex.to_tif

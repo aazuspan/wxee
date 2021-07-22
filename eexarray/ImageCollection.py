@@ -35,6 +35,45 @@ class ImageCollection:
         num_cores: Optional[int] = None,
         progress: bool = True,
     ) -> xr.Dataset:
+        """Convert an image collection to an xarray.Dataset. The :code:`system:time_start` property of each image in the
+        collection is used to arrange the time dimension, and each image variable is loaded as a separate array in
+        the dataset.
+
+        Parameters
+        ----------
+        region : ee.Geometry, optional
+            The region to download the images within. If none is provided, the :code:`geometry` of the image collection 
+            will be used. If geometry varies between images in the collection, the region will encompass all images
+            which may lead to very large arrays and download limits.
+        scale : int, optional
+            The scale to download the array at in the CRS units. If none is provided, the :code:`projection.nominalScale`
+            of the images will be used.
+        crs : str, default "EPSG:4326"
+            The coordinate reference system to download the array in.
+        masked : bool, default True
+            If true, nodata pixels in the array will be masked.
+        nodata : int, default -32,768
+            The value to set as nodata in the array. Any masked pixels will be filled with this value.
+        num_cores : int, optional
+            The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be
+            used.
+        progress : bool, default True
+            If true, a progress bar will be displayed to track download progress.
+        
+        Returns
+        -------
+        xarray.Dataset
+            A dataset containing all images in the collection with an assigned time dimension and variables set from
+            each image.
+
+        Examples
+        --------
+        >>> import ee, eexarray
+        >>> ee.Initialize()
+        >>> col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").filterDate("2020-09-08", "2020-09-15")
+        >>> col.eex.to_xarray(scale=40000, crs="EPSG:5070", nodata=-9999)
+        """
+
         with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
             collection = self._rename_by_date()
 
@@ -73,12 +112,46 @@ class ImageCollection:
         num_cores: Optional[int] = None,
         progress: bool = True,
     ) -> List[str]:
-        """Download an image collection to geoTIFFs.
+        """Download all images in the collection to geoTIFF. Image file names will be the :code:`system:id` of each image
+        after replacing invalid characters with underscores, with an optional user-defined prefix.
 
+        Parameters
+        ----------
+        out_dir : str, default "."
+            The directory to save the images to.
+        prefix : str, optional
+            A description to prefix to all image file names. If none is provided, no prefix will be added.
+        region : ee.Geometry, optional
+            The region to download the image within. If none is provided, the :code:`geometry` of each image will be used.
+        scale : int, optional
+            The scale to download each image at in the CRS units. If none is provided, the :code:`projection.nominalScale`
+            of each image will be used.
+        crs : str, default "EPSG:4326"
+            The coordinate reference system to download each image in.
+        file_per_band : bool, default False
+            If true, one file will be downloaded per band per image. If false, one multiband file will be downloaded per
+            image instead.
+        masked : bool, default True
+            If true, the nodata value of each image will be set in the image metadata.
+        nodata : int, default -32,768
+            The value to set as nodata in each image. Any masked pixels in the images will be filled with this value.
+        num_cores : int, optional
+            The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be
+            used.
+        progress : bool, default True
+            If true, a progress bar will be displayed to track download progress.
+    
         Returns
         -------
-        List[str]
+        list[str]
             Paths to downloaded images.
+
+        Example
+        -------
+        >>> import ee, eexarray
+        >>> ee.Initialize()
+        >>> col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").filterDate("2020-09-08", "2020-09-15")
+        >>> col.eex.to_tif(scale=40000, crs="EPSG:5070", nodata=-9999)
         """
         if prefix:
             self._obj = self._obj.map(

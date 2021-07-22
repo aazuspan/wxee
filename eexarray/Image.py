@@ -28,14 +28,36 @@ class Image:
 
         Parameters
         ----------
+        out_dir : str, default "."
+            The directory to save the image to.
         description : str, optional
-            The name to save the file to, with no file extension. If none is provided, the system:id of the image will be
-            used after replacing invalid characters with underscores.
+            The name to save the file as with no file extension. If none is provided, the :code:`system:id` of the image
+            will be used after replacing invalid characters with underscores.
+        region : ee.Geometry, optional
+            The region to download the image within. If none is provided, the :code:`geometry` of the image will be used.
+        scale : int, optional
+            The scale to download the image at in the CRS units. If none is provided, the :code:`projection.nominalScale`
+            of the image will be used.
+        crs : str, default "EPSG:4326"
+            The coordinate reference system to download the image in.
+        file_per_band : bool, default False
+            If true, one file will be downloaded per band. If false, one multiband file will be downloaded instead.
+        masked : bool, default True
+            If true, the nodata value of the image will be set in the image metadata.
+        nodata : int, default -32,768
+            The value to set as nodata in the image. Any masked pixels in the image will be filled with this value.
 
         Returns
         -------
         list[str]
             Paths to downloaded images.
+
+        Example
+        -------
+        >>> import ee, eexarray
+        >>> ee.Initialize()
+        >>> img = ee.Image("COPERNICUS/S2_SR/20200803T181931_20200803T182946_T11SPA")
+        >>> img.eex.to_tif(description="las_vegas", scale=200, crs="EPSG:5070", nodata=-9999)
         """
         img = self._obj.set("system:id", description) if description else self._obj
 

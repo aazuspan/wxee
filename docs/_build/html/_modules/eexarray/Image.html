@@ -1,0 +1,315 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>eexarray.Image &mdash; eexarray  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> eexarray
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">eexarray</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">eexarray</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>eexarray.Image</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for eexarray.Image</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
+<span class="kn">import</span> <span class="nn">rasterio</span>  <span class="c1"># type: ignore</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">eexarray.accessors</span> <span class="kn">import</span> <span class="n">eex_accessor</span>
+<span class="kn">from</span> <span class="nn">eexarray.utils</span> <span class="kn">import</span> <span class="n">_set_nodata</span><span class="p">,</span> <span class="n">_unpack_file</span><span class="p">,</span> <span class="n">_download_url</span><span class="p">,</span> <span class="n">_clean_filename</span>
+<span class="kn">from</span> <span class="nn">eexarray</span> <span class="kn">import</span> <span class="n">constants</span>
+
+
+<div class="viewcode-block" id="Image"><a class="viewcode-back" href="../../eexarray.html#eexarray.Image">[docs]</a><span class="nd">@eex_accessor</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">Image</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Image</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">Image</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">obj</span>
+
+<div class="viewcode-block" id="Image.to_tif"><a class="viewcode-back" href="../../eexarray.html#eexarray.Image.to_tif">[docs]</a>    <span class="k">def</span> <span class="nf">to_tif</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">region</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">crs</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span>
+        <span class="n">file_per_band</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">masked</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Download an image to geoTIFF.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        out_dir : str, default &quot;.&quot;</span>
+<span class="sd">            The directory to save the image to.</span>
+<span class="sd">        description : str, optional</span>
+<span class="sd">            The name to save the file as with no file extension. If none is provided, the :code:`system:id` of the image</span>
+<span class="sd">            will be used after replacing invalid characters with underscores.</span>
+<span class="sd">        region : ee.Geometry, optional</span>
+<span class="sd">            The region to download the image within. If none is provided, the :code:`geometry` of the image will be used.</span>
+<span class="sd">        scale : int, optional</span>
+<span class="sd">            The scale to download the image at in the CRS units. If none is provided, the :code:`projection.nominalScale`</span>
+<span class="sd">            of the image will be used.</span>
+<span class="sd">        crs : str, default &quot;EPSG:4326&quot;</span>
+<span class="sd">            The coordinate reference system to download the image in.</span>
+<span class="sd">        file_per_band : bool, default False</span>
+<span class="sd">            If true, one file will be downloaded per band. If false, one multiband file will be downloaded instead.</span>
+<span class="sd">        masked : bool, default True</span>
+<span class="sd">            If true, the nodata value of the image will be set in the image metadata.</span>
+<span class="sd">        nodata : int, default -32,768</span>
+<span class="sd">            The value to set as nodata in the image. Any masked pixels in the image will be filled with this value.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[str]</span>
+<span class="sd">            Paths to downloaded images.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; import ee, eexarray</span>
+<span class="sd">        &gt;&gt;&gt; ee.Initialize()</span>
+<span class="sd">        &gt;&gt;&gt; img = ee.Image(&quot;COPERNICUS/S2_SR/20200803T181931_20200803T182946_T11SPA&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; img.eex.to_tif(description=&quot;las_vegas&quot;, scale=200, crs=&quot;EPSG:5070&quot;, nodata=-9999)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">TMP_PREFIX</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+            <span class="n">zipped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">nodata</span><span class="p">)</span>
+            <span class="n">tifs</span> <span class="o">=</span> <span class="n">_unpack_file</span><span class="p">(</span><span class="n">zipped</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">masked</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tif</span> <span class="ow">in</span> <span class="n">tifs</span><span class="p">:</span>
+                <span class="n">_set_nodata</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span> <span class="n">nodata</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">file_per_band</span><span class="p">:</span>
+            <span class="n">bandnames</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">bandNames</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">tif</span> <span class="ow">in</span> <span class="n">tifs</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">img</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bandnames</span><span class="p">):</span>
+                        <span class="n">img</span><span class="o">.</span><span class="n">set_band_description</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">band</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tifs</span></div>
+
+    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+        <span class="n">region</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">crs</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span>
+        <span class="n">file_per_band</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Download an image as a ZIP&quot;&quot;&quot;</span>
+        <span class="c1"># Unmasking without sameFootprint (below) makes images unbounded, so store the bounded geometry before unmasking.</span>
+        <span class="n">region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">geometry</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">region</span> <span class="k">else</span> <span class="n">region</span>
+
+        <span class="c1"># Set nodata values. If sameFootprint is true, areas outside of the image bounds will not be set.</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">unmask</span><span class="p">(</span><span class="n">nodata</span><span class="p">,</span> <span class="n">sameFootprint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">getDownloadURL</span><span class="p">(</span>
+            <span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">_clean_filename</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()),</span>
+                <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
+                <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">,</span>
+                <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
+                <span class="n">filePerBand</span><span class="o">=</span><span class="n">file_per_band</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="nb">zip</span> <span class="o">=</span> <span class="n">_download_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">zip</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Aaron Zuspan.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

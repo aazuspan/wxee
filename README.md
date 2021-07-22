@@ -1,4 +1,6 @@
 # eexarray
+![docs](https://readthedocs.org/projects/pip/badge/?version=latest&style=plastic)
+
 A Python interface between Earth Engine and xarray
 
 ## Under Construction

@@ -7,7 +7,7 @@ Welcome to eexarray!
 ====================================
 
 | *A Python interface between Earth Engine and xarray*
-| https://gtihub.com/aazuspan/eexarray
+| https://github.com/aazuspan/eexarray
 
 .. toctree::
    :maxdepth: 3

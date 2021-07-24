@@ -161,14 +161,13 @@
 <span></span><span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
-<span class="kn">import</span> <span class="nn">rasterio</span>  <span class="c1"># type: ignore</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 
 <span class="kn">from</span> <span class="nn">eexarray.accessors</span> <span class="kn">import</span> <span class="n">eex_accessor</span>
-<span class="kn">from</span> <span class="nn">eexarray.utils</span> <span class="kn">import</span> <span class="n">_flatten_list</span><span class="p">,</span> <span class="n">_set_nodata</span><span class="p">,</span> <span class="n">_unpack_file</span><span class="p">,</span> <span class="n">_dataset_from_files</span>
+<span class="kn">from</span> <span class="nn">eexarray.utils</span> <span class="kn">import</span> <span class="n">_flatten_list</span><span class="p">,</span> <span class="n">_dataset_from_files</span>
 <span class="kn">from</span> <span class="nn">eexarray</span> <span class="kn">import</span> <span class="n">constants</span>
 
 
@@ -187,6 +186,7 @@
 
 <div class="viewcode-block" id="ImageCollection.to_xarray"><a class="viewcode-back" href="../../eexarray.html#eexarray.ImageCollection.to_xarray">[docs]</a>    <span class="k">def</span> <span class="nf">to_xarray</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">region</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">crs</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span>
@@ -201,6 +201,8 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        path : str, optional</span>
+<span class="sd">            The path to save the dataset to as a NetCDF. If none is given, the dataset will be stored in memory.</span>
 <span class="sd">        region : ee.Geometry, optional</span>
 <span class="sd">            The region to download the images within. If none is provided, the :code:`geometry` of the image collection</span>
 <span class="sd">            will be used. If geometry varies between images in the collection, the region will encompass all images</span>
@@ -211,7 +213,8 @@
 <span class="sd">        crs : str, default &quot;EPSG:4326&quot;</span>
 <span class="sd">            The coordinate reference system to download the array in.</span>
 <span class="sd">        masked : bool, default True</span>
-<span class="sd">            If true, nodata pixels in the array will be masked.</span>
+<span class="sd">            If true, nodata pixels in the array will be masked by replacing them with numpy.nan. This will silently</span>
+<span class="sd">            cast integer datatypes to float.</span>
 <span class="sd">        nodata : int, default -32,768</span>
 <span class="sd">            The value to set as nodata in the array. Any masked pixels will be filled with this value.</span>
 <span class="sd">        num_cores : int, optional</span>
@@ -233,7 +236,6 @@
 <span class="sd">        &gt;&gt;&gt; col = ee.ImageCollection(&quot;IDAHO_EPSCOR/GRIDMET&quot;).filterDate(&quot;2020-09-08&quot;, &quot;2020-09-15&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; col.eex.to_xarray(scale=40000, crs=&quot;EPSG:5070&quot;, nodata=-9999)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">TMP_PREFIX</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
             <span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rename_by_date</span><span class="p">()</span>
 
@@ -251,11 +253,12 @@
 
             <span class="n">ds</span> <span class="o">=</span> <span class="n">_dataset_from_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">nodata</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">nodata</span> <span class="o">==</span> <span class="mf">1e-8</span>
         <span class="c1"># Mask the nodata values. This will convert int datasets to float.</span>
         <span class="k">if</span> <span class="n">masked</span><span class="p">:</span>
             <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ds</span> <span class="o">!=</span> <span class="n">nodata</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">ds</span></div>
 
@@ -313,97 +316,65 @@
 <span class="sd">        &gt;&gt;&gt; col = ee.ImageCollection(&quot;IDAHO_EPSCOR/GRIDMET&quot;).filterDate(&quot;2020-09-08&quot;, &quot;2020-09-15&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; col.eex.to_tif(scale=40000, crs=&quot;EPSG:5070&quot;, nodata=-9999)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-                <span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">img</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
-                    <span class="s2">&quot;system:id&quot;</span><span class="p">,</span> <span class="n">ee</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">))</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-
-        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">TMP_PREFIX</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
-            <span class="n">zips</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download</span><span class="p">(</span>
-                <span class="n">tmp</span><span class="p">,</span>
-                <span class="n">region</span><span class="p">,</span>
-                <span class="n">scale</span><span class="p">,</span>
-                <span class="n">crs</span><span class="p">,</span>
-                <span class="n">file_per_band</span><span class="p">,</span>
-                <span class="n">nodata</span><span class="p">,</span>
-                <span class="n">num_cores</span><span class="p">,</span>
-                <span class="n">progress</span><span class="p">,</span>
-            <span class="p">)</span>
-
-            <span class="n">tifs</span> <span class="o">=</span> <span class="n">_flatten_list</span><span class="p">([</span><span class="n">_unpack_file</span><span class="p">(</span><span class="n">zipped</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">)</span> <span class="k">for</span> <span class="n">zipped</span> <span class="ow">in</span> <span class="n">zips</span><span class="p">])</span>
-
-        <span class="k">if</span> <span class="n">masked</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">tif</span> <span class="ow">in</span> <span class="n">tifs</span><span class="p">:</span>
-                <span class="n">_set_nodata</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span> <span class="n">nodata</span><span class="p">)</span>
-
-        <span class="c1"># TODO: Clean this up to avoid repition with the other to_tif method.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">file_per_band</span><span class="p">:</span>
-            <span class="n">bandnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">bandNames</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">tif</span> <span class="ow">in</span> <span class="n">tifs</span><span class="p">:</span>
-                <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">img</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bandnames</span><span class="p">):</span>
-                        <span class="n">img</span><span class="o">.</span><span class="n">set_band_description</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">band</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">tifs</span></div>
-
-    <span class="k">def</span> <span class="nf">_rename_by_date</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
-        <span class="k">def</span> <span class="nf">rename_img_by_date</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
-            <span class="n">date</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span>
-            <span class="n">date_string</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;YMMdd&#39;T&#39;hhmmss&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">img</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">,</span> <span class="n">date_string</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">rename_img_by_date</span><span class="p">(</span><span class="n">img</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
-        <span class="n">region</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">crs</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span>
-        <span class="n">file_per_band</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
-        <span class="n">num_cores</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Download all images in a collection as ZIPs&quot;&quot;&quot;</span>
         <span class="n">num_cores</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">num_cores</span> <span class="k">else</span> <span class="n">num_cores</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">img</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">_prefix_id</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+
+        <span class="n">imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_image_list</span><span class="p">()</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">num_cores</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
             <span class="n">params</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_download_image_at_index</span><span class="p">,</span>
+                <span class="n">_image_to_tif_alias</span><span class="p">,</span>
                 <span class="n">out_dir</span><span class="o">=</span><span class="n">out_dir</span><span class="p">,</span>
                 <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
                 <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
                 <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">,</span>
                 <span class="n">file_per_band</span><span class="o">=</span><span class="n">file_per_band</span><span class="p">,</span>
+                <span class="n">masked</span><span class="o">=</span><span class="n">masked</span><span class="p">,</span>
                 <span class="n">nodata</span><span class="o">=</span><span class="n">nodata</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">zips</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="n">tifs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
                 <span class="n">tqdm</span><span class="p">(</span>
-                    <span class="n">p</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">imap</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">imgs</span><span class="p">),</span>
                     <span class="n">total</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
                     <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress</span><span class="p">,</span>
                     <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Downloading collection&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="n">zips</span>
 
-    <span class="k">def</span> <span class="nf">_download_image_at_index</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
-        <span class="n">region</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">crs</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span>
-        <span class="n">file_per_band</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get an image from a collection at a specific index and download it.&quot;&quot;&quot;</span>
-        <span class="n">img</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">img</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">_download</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">nodata</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">_flatten_list</span><span class="p">(</span><span class="n">tifs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_rename_by_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set each image&#39;s :code:`system:id` to its formatted :code:`system:time_start`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">img</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">_rename_by_date</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_to_image_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Convert an image collection to a Python list of images.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">())</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">())</span>
+        <span class="p">]</span></div>
+
+
+<span class="k">def</span> <span class="nf">_image_to_tif_alias</span><span class="p">(</span>
+    <span class="n">img</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">,</span>
+    <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">region</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">crs</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span>
+    <span class="n">file_per_band</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">masked</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;A pickleable wrapper around the ee.Image.eex.to_tif instance method, allowing it to be used in multiprocessing.</span>
+<span class="sd">    See https://stackoverflow.com/questions/27318290/why-can-i-pass-an-instance-method-to-multiprocessing-process-but-not-a-multipro</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">img</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span>
+        <span class="n">out_dir</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">masked</span><span class="p">,</span> <span class="n">nodata</span>
+    <span class="p">)</span>
 </pre></div>
 
            </div>

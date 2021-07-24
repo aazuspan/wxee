@@ -162,9 +162,16 @@
 <span class="kn">import</span> <span class="nn">rasterio</span>  <span class="c1"># type: ignore</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 
 <span class="kn">from</span> <span class="nn">eexarray.accessors</span> <span class="kn">import</span> <span class="n">eex_accessor</span>
-<span class="kn">from</span> <span class="nn">eexarray.utils</span> <span class="kn">import</span> <span class="n">_set_nodata</span><span class="p">,</span> <span class="n">_unpack_file</span><span class="p">,</span> <span class="n">_download_url</span><span class="p">,</span> <span class="n">_clean_filename</span>
+<span class="kn">from</span> <span class="nn">eexarray.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_set_nodata</span><span class="p">,</span>
+    <span class="n">_unpack_file</span><span class="p">,</span>
+    <span class="n">_download_url</span><span class="p">,</span>
+    <span class="n">_clean_filename</span><span class="p">,</span>
+    <span class="n">_dataset_from_files</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">eexarray</span> <span class="kn">import</span> <span class="n">constants</span>
 
 
@@ -172,6 +179,71 @@
 <span class="k">class</span> <span class="nc">Image</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">Image</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="n">obj</span>
+
+<div class="viewcode-block" id="Image.to_xarray"><a class="viewcode-back" href="../../eexarray.html#eexarray.Image.to_xarray">[docs]</a>    <span class="k">def</span> <span class="nf">to_xarray</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">region</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">crs</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span>
+        <span class="n">masked</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Convert an image to an xarray.Dataset. The :code:`system:time_start` property of the image is used to set the</span>
+<span class="sd">        time dimension, and each image variable is loaded as a separate array in the dataset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str, optional</span>
+<span class="sd">            The path to save the dataset to as a NetCDF. If none is given, the dataset will be stored in memory.</span>
+<span class="sd">        region : ee.Geometry, optional</span>
+<span class="sd">            The region to download the image within. If none is provided, the :code:`geometry` of the image will be used.</span>
+<span class="sd">        scale : int, optional</span>
+<span class="sd">            The scale to download the array at in the CRS units. If none is provided, the :code:`projection.nominalScale`</span>
+<span class="sd">            of the image will be used.</span>
+<span class="sd">        crs : str, default &quot;EPSG:4326&quot;</span>
+<span class="sd">            The coordinate reference system to download the array in.</span>
+<span class="sd">        masked : bool, default True</span>
+<span class="sd">            If true, nodata pixels in the array will be masked by replacing them with numpy.nan. This will silently</span>
+<span class="sd">            cast integer datatypes to float.</span>
+<span class="sd">        nodata : int, default -32,768</span>
+<span class="sd">            The value to set as nodata in the array. Any masked pixels will be filled with this value.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        xarray.Dataset</span>
+<span class="sd">            A dataset containing the image with variables set.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import ee, eexarray</span>
+<span class="sd">        &gt;&gt;&gt; ee.Initialize()</span>
+<span class="sd">        &gt;&gt;&gt; col = ee.ImageCollection(&quot;IDAHO_EPSCOR/GRIDMET&quot;).filterDate(&quot;2020-09-08&quot;, &quot;2020-09-15&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; col.eex.to_xarray(scale=40000, crs=&quot;EPSG:5070&quot;, nodata=-9999)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">TMP_PREFIX</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rename_by_date</span><span class="p">()</span>
+
+            <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span>
+                <span class="n">out_dir</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
+                <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
+                <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
+                <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">,</span>
+                <span class="n">file_per_band</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">masked</span><span class="o">=</span><span class="n">masked</span><span class="p">,</span>
+                <span class="n">nodata</span><span class="o">=</span><span class="n">nodata</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">_dataset_from_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+
+        <span class="c1"># Mask the nodata values. This will convert int datasets to float.</span>
+        <span class="k">if</span> <span class="n">masked</span><span class="p">:</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ds</span> <span class="o">!=</span> <span class="n">nodata</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ds</span></div>
 
 <div class="viewcode-block" id="Image.to_tif"><a class="viewcode-back" href="../../eexarray.html#eexarray.Image.to_tif">[docs]</a>    <span class="k">def</span> <span class="nf">to_tif</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -266,7 +338,19 @@
 
         <span class="nb">zip</span> <span class="o">=</span> <span class="n">_download_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">zip</span></div>
+        <span class="k">return</span> <span class="nb">zip</span>
+
+    <span class="k">def</span> <span class="nf">_prefix_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add a prefix to the image&#39;s system:id&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+            <span class="s2">&quot;system:id&quot;</span><span class="p">,</span> <span class="n">ee</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">))</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_rename_by_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set the image&#39;s :code:`system:id` to its formatted :code:`system:time_start`.&quot;&quot;&quot;</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span>
+        <span class="n">date_string</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;YMMdd&#39;T&#39;hhmmss&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">,</span> <span class="n">date_string</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

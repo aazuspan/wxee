@@ -2,9 +2,16 @@ import ee  # type: ignore
 import rasterio  # type: ignore
 import tempfile
 from typing import Optional, List
+import xarray as xr
 
 from eexarray.accessors import eex_accessor
-from eexarray.utils import _set_nodata, _unpack_file, _download_url, _clean_filename
+from eexarray.utils import (
+    _set_nodata,
+    _unpack_file,
+    _download_url,
+    _clean_filename,
+    _dataset_from_files,
+)
 from eexarray import constants
 
 
@@ -12,6 +19,71 @@ from eexarray import constants
 class Image:
     def __init__(self, obj: ee.image.Image):
         self._obj = obj
+
+    def to_xarray(
+        self,
+        path: Optional[str] = None,
+        region: Optional[ee.Geometry] = None,
+        scale: Optional[int] = None,
+        crs: str = "EPSG:4326",
+        masked: bool = True,
+        nodata: int = -32_768,
+    ) -> xr.Dataset:
+        """Convert an image to an xarray.Dataset. The :code:`system:time_start` property of the image is used to set the
+        time dimension, and each image variable is loaded as a separate array in the dataset.
+
+        Parameters
+        ----------
+        path : str, optional
+            The path to save the dataset to as a NetCDF. If none is given, the dataset will be stored in memory.
+        region : ee.Geometry, optional
+            The region to download the image within. If none is provided, the :code:`geometry` of the image will be used.
+        scale : int, optional
+            The scale to download the array at in the CRS units. If none is provided, the :code:`projection.nominalScale`
+            of the image will be used.
+        crs : str, default "EPSG:4326"
+            The coordinate reference system to download the array in.
+        masked : bool, default True
+            If true, nodata pixels in the array will be masked by replacing them with numpy.nan. This will silently
+            cast integer datatypes to float.
+        nodata : int, default -32,768
+            The value to set as nodata in the array. Any masked pixels will be filled with this value.
+
+        Returns
+        -------
+        xarray.Dataset
+            A dataset containing the image with variables set.
+
+        Examples
+        --------
+        >>> import ee, eexarray
+        >>> ee.Initialize()
+        >>> col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").filterDate("2020-09-08", "2020-09-15")
+        >>> col.eex.to_xarray(scale=40000, crs="EPSG:5070", nodata=-9999)
+        """
+        with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
+            self._obj = self._rename_by_date()
+
+            files = self.to_tif(
+                out_dir=tmp,
+                region=region,
+                scale=scale,
+                crs=crs,
+                file_per_band=True,
+                masked=masked,
+                nodata=nodata,
+            )
+
+            ds = _dataset_from_files(files)
+
+        # Mask the nodata values. This will convert int datasets to float.
+        if masked:
+            ds = ds.where(ds != nodata)
+
+        if path:
+            ds.to_netcdf(path, mode="w")
+
+        return ds
 
     def to_tif(
         self,
@@ -107,3 +179,15 @@ class Image:
         zip = _download_url(url, out_dir)
 
         return zip
+
+    def _prefix_id(self, prefix: str) -> ee.Image:
+        """Add a prefix to the image's system:id"""
+        return self._obj.set(
+            "system:id", ee.String(prefix).cat(self._obj.get("system:id"))
+        )
+
+    def _rename_by_date(self) -> ee.Image:
+        """Set the image's :code:`system:id` to its formatted :code:`system:time_start`."""
+        date = ee.Date(ee.Image(self._obj).get("system:time_start"))
+        date_string = date.format("YMMdd'T'hhmmss")
+        return self._obj.set("system:id", date_string)

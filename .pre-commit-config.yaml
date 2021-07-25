@@ -10,3 +10,9 @@ repos:
     -   id: mypy
         args: [--disallow-untyped-defs, --no-implicit-optional, --warn-unused-ignores, --warn-redundant-casts, --warn-unreachable]
         additional_dependencies: [types-requests, xarray]
+
+-   repo: https://github.com/pycqa/isort
+    rev: 5.8.0
+    hooks:
+      - id: isort
+        args: [--profile, black]

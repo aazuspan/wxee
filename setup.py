@@ -14,6 +14,7 @@ dev_requirements = [
     "black",
     "isort",
     "bumpversion",
+    "twine",
 ] + doc_requirements
 
 extras_require = {

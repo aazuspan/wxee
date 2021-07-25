@@ -39,3 +39,7 @@ install: ## Install the package
 
 install-dev: ## Install development version
 	pip install -e .[dev]
+
+release: ## Package and upload
+	python setup.py sdist
+	twine upload dist/*

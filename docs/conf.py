@@ -13,8 +13,6 @@
 import os
 import sys
 
-from eexarray import __version__
-
 sys.path.insert(0, os.path.abspath(".."))
 
 
@@ -23,7 +21,7 @@ sys.path.insert(0, os.path.abspath(".."))
 project = "eexarray"
 copyright = "2021, Aaron Zuspan"
 author = "Aaron Zuspan"
-version = __version__
+version = "0.0.1"
 
 # -- General configuration ---------------------------------------------------
 

@@ -1,18 +1,19 @@
+import tempfile
+from typing import List, Optional
+
 import ee  # type: ignore
 import rasterio  # type: ignore
-import tempfile
-from typing import Optional, List
 import xarray as xr
 
+from eexarray import constants
 from eexarray.accessors import eex_accessor
 from eexarray.utils import (
-    _set_nodata,
-    _unpack_file,
-    _download_url,
     _clean_filename,
     _dataset_from_files,
+    _download_url,
+    _set_nodata,
+    _unpack_file,
 )
-from eexarray import constants
 
 
 @eex_accessor(ee.image.Image)

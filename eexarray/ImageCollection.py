@@ -1,14 +1,15 @@
-import ee  # type: ignore
 import functools
 import multiprocessing as mp
 import tempfile
-from tqdm import tqdm  # type: ignore
-from typing import Optional, List
-import xarray as xr
+from typing import List, Optional
 
-from eexarray.accessors import eex_accessor
-from eexarray.utils import _flatten_list, _dataset_from_files
+import ee  # type: ignore
+import xarray as xr
+from tqdm import tqdm  # type: ignore
+
 from eexarray import constants
+from eexarray.accessors import eex_accessor
+from eexarray.utils import _dataset_from_files, _flatten_list
 
 
 @eex_accessor(ee.imagecollection.ImageCollection)

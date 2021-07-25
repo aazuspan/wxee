@@ -1,13 +1,14 @@
 import datetime
 import itertools
 import os
-import rasterio  # type: ignore
 import re
-import requests
 import tempfile
-from typing import List, Union, Any
-import xarray as xr
+from typing import Any, List, Union
 from zipfile import ZipFile
+
+import rasterio  # type: ignore
+import requests
+import xarray as xr
 
 
 def _set_nodata(file: str, nodata: Union[float, int]) -> None:

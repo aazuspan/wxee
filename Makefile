@@ -35,7 +35,7 @@ view-docs: ## Open Sphinx HTML documentation in a browser
 	python -m webbrowser -t docs/_build/html/index.html
 
 install: ## Install the package
-	python setup.py install
+	pip install .
 
 install-dev: ## Install development version
 	pip install -e .[dev]

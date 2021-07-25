@@ -6,7 +6,7 @@ with open("README.md") as readme_file:
     readme = readme_file.read()
 
 requirements = ["rasterio", "xarray", "earthengine-api", "tqdm", "requests", "netcdf4"]
-doc_requirements = ["sphinx", "sphinx_rtd_theme"]
+doc_requirements = ["nbsphinx", "sphinx", "sphinx_rtd_theme"]
 test_requirements = ["pytest"]
 dev_requirements = [
     "pre-commit",

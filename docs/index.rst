@@ -10,14 +10,10 @@ Welcome to eexarray!
 | https://github.com/aazuspan/eexarray
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :caption: Contents:
 
-   modules
+   eexarray
+   examples
 
-
-Indices and tables
-==================
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

@@ -1,4 +1,4 @@
-eexarray package
+API
 ================
 
 eex accessors

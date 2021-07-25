@@ -43,7 +43,7 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Typing :: Typed",
     ],
-    license_files=("LICENSE"),
+    license_files=("LICENSE",),
     license="GPLv3+",
     packages=["eexarray"],
     test_suite="test",

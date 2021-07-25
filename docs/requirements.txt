@@ -1,2 +1,3 @@
+sphinx==4.0.2
 nbsphinx
 ipython

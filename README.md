@@ -1,5 +1,6 @@
 # eexarray
-[![docs](https://readthedocs.org/projects/pip/badge/?version=latest&style=flat)](https://eexarray.readthedocs.io/en/latest/)
+[![Documentation Status](https://readthedocs.org/projects/eexarray/badge/?version=latest&style=flat)](https://eexarray.readthedocs.io/en/latest/?badge=latest)
+
 
 A Python interface between Earth Engine and xarray
 

@@ -35,6 +35,7 @@ class ImageCollection:
         nodata: int = -32_768,
         num_cores: Optional[int] = None,
         progress: bool = True,
+        max_attempts: int = 10,
     ) -> xr.Dataset:
         """Convert an image collection to an xarray.Dataset. The :code:`system:time_start` property of each image in the
         collection is used to arrange the time dimension, and each image variable is loaded as a separate array in
@@ -63,12 +64,20 @@ class ImageCollection:
             used.
         progress : bool, default True
             If true, a progress bar will be displayed to track download progress.
+        max_attempts: int, default 5
+            Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
+            max_attempts. Must be between 1 and 99.
 
         Returns
         -------
         xarray.Dataset
             A dataset containing all images in the collection with an assigned time dimension and variables set from
             each image.
+
+        Raises
+        ------
+        DownloadError
+            Raised if the image cannot be successfully downloaded after the maximum number of attempts.
 
         Examples
         --------
@@ -90,6 +99,7 @@ class ImageCollection:
                 nodata=nodata,
                 num_cores=num_cores,
                 progress=progress,
+                max_attempts=max_attempts,
             )
 
             ds = _dataset_from_files(files)
@@ -115,6 +125,7 @@ class ImageCollection:
         nodata: int = -32_768,
         num_cores: Optional[int] = None,
         progress: bool = True,
+        max_attempts: int = 10,
     ) -> List[str]:
         """Download all images in the collection to geoTIFF. Image file names will be the :code:`system:id` of each image
         after replacing invalid characters with underscores, with an optional user-defined prefix.
@@ -144,11 +155,19 @@ class ImageCollection:
             used.
         progress : bool, default True
             If true, a progress bar will be displayed to track download progress.
+        max_attempts: int, default 5
+            Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
+            max_attempts. Must be between 1 and 99.
 
         Returns
         -------
         list[str]
             Paths to downloaded images.
+
+        Raises
+        ------
+        DownloadError
+            Raised if the image cannot be successfully downloaded after the maximum number of attempts.
 
         Example
         -------
@@ -175,6 +194,7 @@ class ImageCollection:
                 file_per_band=file_per_band,
                 masked=masked,
                 nodata=nodata,
+                max_attempts=max_attempts,
             )
             tifs = list(
                 tqdm(
@@ -209,10 +229,19 @@ def _image_to_tif_alias(
     file_per_band: bool = False,
     masked: bool = True,
     nodata: int = -32_768,
+    max_attempts: int = 10,
 ) -> List[str]:
     """A pickleable wrapper around the ee.Image.eex.to_tif instance method, allowing it to be used in multiprocessing.
     See https://stackoverflow.com/questions/27318290/why-can-i-pass-an-instance-method-to-multiprocessing-process-but-not-a-multipro
     """
     return img.eex.to_tif(
-        out_dir, description, region, scale, crs, file_per_band, masked, nodata
+        out_dir,
+        description,
+        region,
+        scale,
+        crs,
+        file_per_band,
+        masked,
+        nodata,
+        max_attempts,
     )

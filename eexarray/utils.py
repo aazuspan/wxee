@@ -9,6 +9,8 @@ from zipfile import ZipFile
 import rasterio  # type: ignore
 import requests
 import xarray as xr
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry  # type: ignore
 
 
 def _set_nodata(file: str, nodata: Union[float, int]) -> None:
@@ -60,7 +62,7 @@ def _unpack_file(file: str, out_dir: str) -> List[str]:
     return [os.path.join(out_dir, file) for file in unzipped]
 
 
-def _download_url(url: str, out_dir: str) -> str:
+def _download_url(url: str, out_dir: str, max_attempts: int) -> str:
     """Download a file from a URL to a specified directory.
 
     Parameters
@@ -69,19 +71,38 @@ def _download_url(url: str, out_dir: str) -> str:
         The URL address of the element to download.
     out_dir : str
         The directory path to save the temporary file to.
+    max_attempts : int
+        The maximum number of times to retry a connection.
 
     Returns
     -------
     str
         The path to the downloaded file.
     """
-    r = requests.get(url, stream=True)
-
     filename = tempfile.NamedTemporaryFile(mode="w+b", dir=out_dir, delete=False).name
 
     with open(filename, "w+b") as dst:
+        r = _create_retry_session(max_attempts).get(url)
         dst.write(r.content)
     return filename
+
+
+def _create_retry_session(max_attempts: int) -> requests.Session:
+    """Create a session with automatic retries.
+
+    https://www.peterbe.com/plog/best-practice-with-retries-with-requests
+    """
+    session = requests.Session()
+    retry = Retry(
+        total=max_attempts, read=max_attempts, connect=max_attempts, backoff_factor=0.1
+    )
+
+    adapter = HTTPAdapter(max_retries=retry)
+
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+
+    return session
 
 
 def _dataset_from_files(files: List[str]) -> xr.Dataset:

@@ -1,12 +1,15 @@
 import tempfile
+import warnings
 from typing import List, Optional
 
 import ee  # type: ignore
 import rasterio  # type: ignore
 import xarray as xr
+from urllib3.exceptions import ProtocolError  # type: ignore
 
 from eexarray import constants
 from eexarray.accessors import eex_accessor
+from eexarray.exceptions import DownloadError
 from eexarray.utils import (
     _clean_filename,
     _dataset_from_files,
@@ -29,6 +32,7 @@ class Image:
         crs: str = "EPSG:4326",
         masked: bool = True,
         nodata: int = -32_768,
+        max_attempts: int = 10,
     ) -> xr.Dataset:
         """Convert an image to an xarray.Dataset. The :code:`system:time_start` property of the image is used to set the
         time dimension, and each image variable is loaded as a separate array in the dataset.
@@ -49,11 +53,19 @@ class Image:
             cast integer datatypes to float.
         nodata : int, default -32,768
             The value to set as nodata in the array. Any masked pixels will be filled with this value.
+        max_attempts: int, default 5
+            Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
+            max_attempts. Must be between 1 and 99.
 
         Returns
         -------
         xarray.Dataset
             A dataset containing the image with variables set.
+
+        Raises
+        ------
+        DownloadError
+            Raised if the image cannot be successfully downloaded after the maximum number of attempts.
 
         Examples
         --------
@@ -73,6 +85,7 @@ class Image:
                 file_per_band=True,
                 masked=masked,
                 nodata=nodata,
+                max_attempts=max_attempts,
             )
 
             ds = _dataset_from_files(files)
@@ -96,6 +109,7 @@ class Image:
         file_per_band: bool = False,
         masked: bool = True,
         nodata: int = -32_768,
+        max_attempts: int = 10,
     ) -> List[str]:
         """Download an image to geoTIFF.
 
@@ -119,11 +133,19 @@ class Image:
             If true, the nodata value of the image will be set in the image metadata.
         nodata : int, default -32,768
             The value to set as nodata in the image. Any masked pixels in the image will be filled with this value.
+        max_attempts: int, default 5
+            Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
+            max_attempts. Must be between 1 and 99.
 
         Returns
         -------
         list[str]
             Paths to downloaded images.
+
+        Raises
+        ------
+        DownloadError
+            Raised if the image cannot be successfully downloaded after the maximum number of attempts.
 
         Example
         -------
@@ -135,7 +157,9 @@ class Image:
         img = self._obj.set("system:id", description) if description else self._obj
 
         with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
-            zipped = self._download(tmp, region, scale, crs, file_per_band, nodata)
+            zipped = self._download(
+                tmp, region, scale, crs, file_per_band, nodata, max_attempts
+            )
             tifs = _unpack_file(zipped, out_dir)
 
         if masked:
@@ -159,25 +183,45 @@ class Image:
         crs: str = "EPSG:4326",
         file_per_band: bool = False,
         nodata: int = -32_768,
+        max_attempts: int = 10,
     ) -> str:
         """Download an image as a ZIP"""
+        if max_attempts < 1:
+            warnings.warn("Max attempts must be at least 1. Setting to 1.")
+            max_attempts = 1
+        elif max_attempts > 99:
+            warnings.warn("Max attempts must be less than 100. Setting to 99.")
+            max_attempts = 99
+
         # Unmasking without sameFootprint (below) makes images unbounded, so store the bounded geometry before unmasking.
         region = self._obj.geometry() if not region else region
 
         # Set nodata values. If sameFootprint is true, areas outside of the image bounds will not be set.
         img = self._obj.unmask(nodata, sameFootprint=False)
 
-        url = img.getDownloadURL(
-            params=dict(
-                name=_clean_filename(img.get("system:id").getInfo()),
-                scale=scale,
-                crs=crs,
-                region=region,
-                filePerBand=file_per_band,
-            )
-        )
+        url = None
+        attempts = 0
+        while attempts < max_attempts and not url:
+            try:
+                url = img.getDownloadURL(
+                    params=dict(
+                        name=_clean_filename(img.get("system:id").getInfo()),
+                        scale=scale,
+                        crs=crs,
+                        region=region,
+                        filePerBand=file_per_band,
+                    )
+                )
+            # GEE has a habit of closing connections unexpectedly.
+            except ProtocolError:
+                attempts += 1
 
-        zip = _download_url(url, out_dir)
+        if not url:
+            raise DownloadError(
+                "Requested elements could not be downloaded from Earth Engine. Retrying may solve the issue."
+            )
+
+        zip = _download_url(url, out_dir, max_attempts)
 
         return zip
 

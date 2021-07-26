@@ -154,7 +154,9 @@ class Image:
         >>> img = ee.Image("COPERNICUS/S2_SR/20200803T181931_20200803T182946_T11SPA")
         >>> img.eex.to_tif(description="las_vegas", scale=200, crs="EPSG:5070", nodata=-9999)
         """
-        img = self._obj.set("system:id", description) if description else self._obj
+        self._obj = (
+            self._obj.set("system:id", description) if description else self._obj
+        )
 
         with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
             zipped = self._download(
@@ -167,7 +169,7 @@ class Image:
                 _set_nodata(tif, nodata)
 
         if not file_per_band:
-            bandnames = img.bandNames().getInfo()
+            bandnames = self._obj.bandNames().getInfo()
             for tif in tifs:
                 with rasterio.open(tif, mode="r+") as img:
                     for i, band in enumerate(bandnames):

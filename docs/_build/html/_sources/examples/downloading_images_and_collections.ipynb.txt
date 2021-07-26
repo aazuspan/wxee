@@ -1,0 +1,307 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "6b55717a",
+   "metadata": {},
+   "source": [
+    "# Downloading Images and Collections\n",
+    "In this tutorial, we'll look at how we can use eexarray to quickly and easily download images and image collections from Earth Engine to a local drive. \n",
+    "\n",
+    "eexarray isn't designed to replace Earth Engine's native downloading functionality--if you need high resolution images or large areas, downloading to a Drive using ee is probably the best option. What eexarray's downloading system is great for is quickly pulling small regions or mesoscale images for further processing in Python without the hassle of intermediate steps."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3081bca9",
+   "metadata": {},
+   "source": [
+    "## Setup"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "739f74b7",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-07-26T06:10:31.130957Z",
+     "start_time": "2021-07-26T06:10:28.664693Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import ee\n",
+    "import eexarray\n",
+    "\n",
+    "ee.Initialize()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f1d076fd",
+   "metadata": {},
+   "source": [
+    "## Downloading an Image"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1ff1a78d",
+   "metadata": {},
+   "source": [
+    "Load an image from MODIS. For convenience, we'll select just the red, green, and blue bands."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "a2491f50",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-07-26T06:10:31.136811Z",
+     "start_time": "2021-07-26T06:10:31.133426Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "img = ee.Image(\"MODIS/006/MOD09GA/2021_06_01\").select([\"sur_refl_b01\", \"sur_refl_b04\" ,\"sur_refl_b03\"])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fde849d1",
+   "metadata": {},
+   "source": [
+    "Set the download parameters."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "9a4ef628",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-07-26T06:10:31.144575Z",
+     "start_time": "2021-07-26T06:10:31.139208Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "# The file name to save\n",
+    "description = \"modis_img\"\n",
+    "# The coordinate reference system to use (NAD83 Albers CONUS)\n",
+    "crs = \"EPSG:5070\"\n",
+    "# Spatial resolution in CRS units (meters)\n",
+    "scale = 500\n",
+    "# The region to download the image within.\n",
+    "region = ee.Geometry.Polygon(\n",
+    "    [[[-120.0576549852371, 46.185091976777684],\n",
+    "      [-120.0576549852371, 45.577074504710005],\n",
+    "      [-118.91782344226834, 45.577074504710005],\n",
+    "      [-118.91782344226834, 46.185091976777684]]]\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "09a996a2",
+   "metadata": {},
+   "source": [
+    "<div class=\"alert alert-block alert-warning\">\n",
+    "<b>Warning:</b> If an image download fails due to size limits, try using a smaller region or a coarser scale.\n",
+    "</div>"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "39659dfa",
+   "metadata": {},
+   "source": [
+    "Download the image to GeoTIFF. The `ee.Image.eex.to_tif` method returns a path to the downloaded image(s)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "e65b0d91",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-07-26T06:10:33.049452Z",
+     "start_time": "2021-07-26T06:10:31.148671Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['./modis_img.tif']"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "file = img.eex.to_tif(description=description, region=region, scale=scale, crs=crs)\n",
+    "file"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "72dc019d",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-07-26T05:46:50.204388Z",
+     "start_time": "2021-07-26T05:46:50.192595Z"
+    }
+   },
+   "source": [
+    "Above, we downloaded 1 three-band image, but we could also download it as 3 one-band images by setting `file_per_band` to True."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "3da21b76",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-07-26T06:10:34.746979Z",
+     "start_time": "2021-07-26T06:10:33.052064Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['./modis_img.sur_refl_b01.tif',\n",
+       " './modis_img.sur_refl_b04.tif',\n",
+       " './modis_img.sur_refl_b03.tif']"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "file = img.eex.to_tif(description=description, region=region, scale=scale, crs=crs, file_per_band=True)\n",
+    "file"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2e104110",
+   "metadata": {},
+   "source": [
+    "## Downloading an Image Collection"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dbb4b2a2",
+   "metadata": {},
+   "source": [
+    "Load the MODIS collection, choose a date range with 4 images, and select the red, green, and blue bands."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "8da1370b",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-07-26T06:10:34.751191Z",
+     "start_time": "2021-07-26T06:10:34.748296Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "collection = (ee.ImageCollection(\"MODIS/006/MOD09GA\")\n",
+    "    .filterDate(\"2021-06-01\", \"2021-06-05\")\n",
+    "    .select([\"sur_refl_b01\", \"sur_refl_b04\" ,\"sur_refl_b03\"])\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "66b5b5d6",
+   "metadata": {},
+   "source": [
+    "Download each image in the collection to GeoTIFF. We'll use the same parameters as above except for `description`. `ee.ImageCollection.eex.to_tif` doesn't take a `description` parameter, but it does take a `prefix` that can be added to the beginning of each file name."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "03bd3c81",
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-07-26T06:10:39.307634Z",
+     "start_time": "2021-07-26T06:10:34.752489Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Downloading collection: 100%|███████████████████████████████████| 4/4 [00:04<00:00,  1.02s/it]\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "['./eex_MODIS_006_MOD09GA_2021_06_01.tif',\n",
+       " './eex_MODIS_006_MOD09GA_2021_06_02.tif',\n",
+       " './eex_MODIS_006_MOD09GA_2021_06_03.tif',\n",
+       " './eex_MODIS_006_MOD09GA_2021_06_04.tif']"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "files = collection.eex.to_tif(prefix=\"eex_\", region=region, scale=scale, crs=crs)\n",
+    "files"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "eexarray",
+   "language": "python",
+   "name": "eexarray"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.6"
+  },
+  "toc": {
+   "base_numbering": 1,
+   "nav_menu": {},
+   "number_sections": true,
+   "sideBar": true,
+   "skip_h1_title": true,
+   "title_cell": "Table of Contents",
+   "title_sidebar": "Contents",
+   "toc_cell": false,
+   "toc_position": {},
+   "toc_section_display": true,
+   "toc_window_display": false
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

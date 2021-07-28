@@ -75,7 +75,7 @@ class Image:
         >>> col.eex.to_xarray(scale=40000, crs="EPSG:5070", nodata=-9999)
         """
         with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
-            self._obj = self._rename_by_date()
+            self._obj = self._rename_by_time()
 
             files = self.to_tif(
                 out_dir=tmp,
@@ -233,7 +233,7 @@ class Image:
             "system:id", ee.String(prefix).cat(self._obj.get("system:id"))
         )
 
-    def _rename_by_date(self) -> ee.Image:
+    def _rename_by_time(self) -> ee.Image:
         """Set the image's :code:`system:id` to its formatted :code:`system:time_start`."""
         date = ee.Date(ee.Image(self._obj).get("system:time_start"))
         date_string = date.format("YMMdd'T'hhmmss")

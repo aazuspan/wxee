@@ -87,7 +87,7 @@ class ImageCollection:
         >>> col.eex.to_xarray(scale=40000, crs="EPSG:5070", nodata=-9999)
         """
         with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
-            collection = self._rename_by_date()
+            collection = self._rename_by_time()
 
             files = collection.eex.to_tif(
                 out_dir=tmp,
@@ -207,9 +207,9 @@ class ImageCollection:
 
         return _flatten_list(tifs)
 
-    def _rename_by_date(self) -> ee.ImageCollection:
+    def _rename_by_time(self) -> ee.ImageCollection:
         """Set each image's :code:`system:id` to its formatted :code:`system:time_start`."""
-        return self._obj.map(lambda img: img.eex._rename_by_date())
+        return self._obj.map(lambda img: img.eex._rename_by_time())
 
     def _to_image_list(self) -> List[ee.Image]:
         """Convert an image collection to a Python list of images."""
@@ -217,6 +217,133 @@ class ImageCollection:
             ee.Image(self._obj.toList(self._obj.size()).get(i))
             for i in range(self._obj.size().getInfo())
         ]
+
+    def _get_times(self) -> ee.List:
+        """Return the the :code:`system:time_start` of each image in the collection"""
+        imgs = self._obj.toList(self._obj.size())
+        return imgs.map(lambda img: ee.Image(img).get("system:time_start"))
+
+    @property
+    def start_time(self) -> ee.Date:
+        """The :code:`system:time_start` of first chronological image in the collection.
+
+        Returns
+        -------
+        ee.Date
+            The start time of the collection.
+        """
+        times = self._get_times()
+        return ee.Date(times.reduce(ee.Reducer.min()))
+
+    @property
+    def end_time(self) -> ee.Date:
+        """The :code:`system:time_start` of last chronological image in the collection.
+
+        Returns
+        -------
+        ee.Date
+            The end time of the collection.
+        """
+        times = self._get_times()
+        return ee.Date(times.reduce(ee.Reducer.max()))
+
+    def get_image(self, index: int) -> ee.Image:
+        """Return the image at the specified index in the collection. A negative index counts backwards from the end of
+        the collection.
+
+        Parameters
+        ----------
+        index : int
+            The index of the image in the collection.
+
+        Returns
+        -------
+        ee.Image
+            The image at the given index.
+        """
+        return ee.Image(self._obj.toList(self._obj.size()).get(index))
+
+    def last(self) -> ee.Image:
+        """Return the last image in the collection.
+
+        Returns
+        -------
+        ee.Image
+            The last image in the collection.
+        """
+        return self.get_image(self._obj.size().subtract(1))
+
+    def resample_time(
+        self,
+        unit: str,
+        reducer: ee.Reducer = ee.Reducer.mean(),
+        keep_bandnames: bool = True,
+    ) -> ee.ImageCollection:
+        """Aggregate the collection over the time dimension to a specified unit. This method can only be used to go from
+        small time units to larger time units, such as hours to days, not vice-versa.
+
+        Parameters
+        ----------
+        unit : str
+            The unit of time to resample to. One of 'year', 'month' 'week', 'day', 'hour', 'minute', or 'second'.
+        reducer : ee.Reducer, default ee.Reducer.mean
+            The reducer to apply when aggregating over time.
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
+
+        Returns
+        -------
+        ee.ImageCollection
+            The input image collection aggregated to the specified time unit.
+
+        Raises
+        ------
+        ValueError
+            If an invalid unit is passed.
+
+        Example
+        -------
+        >>> collection_hourly = ee.ImageCollection("NOAA/NWS/RTMA")
+        >>> daily_max = collection_hourly.resample_time(unit="day", reducer=ee.Reducer.max())
+        """
+        units = ["year", "month", "week", "day", "hour", "minute", "second"]
+        if unit.lower() not in units:
+            raise ValueError(f"Unit must be one of {units}, not '{unit.lower()}''.")
+
+        def resample_step(start: ee.Date) -> ee.Image:
+            """Resample one time step in the given unit from a specified start time."""
+            start = ee.Date(start)
+            end = start.advance(1, unit)
+            imgs = self._obj.filterDate(start, end)
+            resampled = imgs.reduce(reducer)
+            resampled = resampled.copyProperties(
+                imgs.first(), imgs.first().propertyNames()
+            )
+            resampled = resampled.set(
+                {
+                    "system:time_start": imgs.first().get("system:time_start"),
+                    "system:time_end": imgs.eex.last().get("system:time_end"),
+                }
+            )
+
+            if keep_bandnames:
+                resampled = ee.Image(resampled).rename(imgs.first().bandNames())
+            return resampled
+
+        delta_millis = (
+            self.start_time.advance(1, unit)
+            .difference(self.start_time, "second")
+            .multiply(1000)
+        )
+
+        start_times = ee.List.sequence(
+            self.start_time.millis(), self.end_time.millis(), step=delta_millis
+        )
+
+        resampled = ee.ImageCollection(start_times.map(resample_step))
+
+        return resampled
 
 
 def _image_to_tif_alias(

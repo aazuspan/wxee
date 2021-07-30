@@ -1,7 +1,7 @@
 import functools
 import multiprocessing as mp
 import tempfile
-from typing import List, Optional
+from typing import Any, List, Optional
 
 import ee  # type: ignore
 import xarray as xr
@@ -276,7 +276,7 @@ class ImageCollection:
     def resample_time(
         self,
         unit: str,
-        reducer: ee.Reducer = ee.Reducer.mean(),
+        reducer: Optional[Any] = None,
         keep_bandnames: bool = True,
     ) -> ee.ImageCollection:
         """Aggregate the collection over the time dimension to a specified unit. This method can only be used to go from
@@ -286,8 +286,8 @@ class ImageCollection:
         ----------
         unit : str
             The unit of time to resample to. One of 'year', 'month' 'week', 'day', 'hour', 'minute', or 'second'.
-        reducer : ee.Reducer, default ee.Reducer.mean
-            The reducer to apply when aggregating over time.
+        reducer : ee.Reducer, optional
+            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.
         keep_bandnames : bool, default True
             If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
             reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
@@ -307,6 +307,10 @@ class ImageCollection:
         >>> collection_hourly = ee.ImageCollection("NOAA/NWS/RTMA")
         >>> daily_max = collection_hourly.resample_time(unit="day", reducer=ee.Reducer.max())
         """
+        # ee.Reducer can't be used without initializing ee (see https://github.com/google/earthengine-api/issues/164),
+        # so set the default reducer explicitly. This is also why the type hint above is set to Any.
+        reducer = ee.Reducer.mean() if not reducer else reducer
+
         units = ["year", "month", "week", "day", "hour", "minute", "second"]
         if unit.lower() not in units:
             raise ValueError(f"Unit must be one of {units}, not '{unit.lower()}''.")

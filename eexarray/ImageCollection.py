@@ -303,6 +303,14 @@ class ImageCollection:
         ValueError
             If an invalid unit is passed.
 
+        See Also
+        --------
+        ImageCollection.resample_hourly
+        ImageCollection.resample_daily
+        ImageCollection.resample_weekly
+        ImageCollection.resample_monthly
+        ImageCollection.resample_annually
+
         Example
         -------
         >>> collection_hourly = ee.ImageCollection("NOAA/NWS/RTMA")
@@ -351,6 +359,191 @@ class ImageCollection:
         resampled = ee.ImageCollection(start_times.map(resample_step, dropNulls=True))
 
         return resampled
+
+    def resample_hourly(
+        self,
+        reducer: Optional[Any] = None,
+        keep_bandnames: bool = True,
+    ) -> ee.ImageCollection:
+        """Aggregate the collection over the time dimension hourly. This method can only be used with collections that
+        are sub-hourly. If the time between images is greater than one hour, un-aggregated images will be returned. This
+        is a shortcut to ImageCollection.resample_time(unit="hour").
+
+        Parameters
+        ----------
+        reducer : ee.Reducer, optional
+            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
+
+        Returns
+        -------
+        ee.ImageCollection
+            The input image collection aggregated hourly.
+
+        See Also
+        --------
+        ImageCollection.resample_time
+        ImageCollection.resample_daily
+        ImageCollection.resample_weekly
+        ImageCollection.resample_monthly
+        ImageCollection.resample_annually
+
+        Example
+        -------
+        >>> collection_sub_hourly = ee.ImageCollection("NOAA/GOES/16/FDCC")
+        >>> hourly_max = collection_sub_hourly.resample_hourly(reducer=ee.Reducer.max())
+        """
+        return self.resample_time("hour", reducer, keep_bandnames)
+
+    def resample_daily(
+        self,
+        reducer: Optional[Any] = None,
+        keep_bandnames: bool = True,
+    ) -> ee.ImageCollection:
+        """Aggregate the collection over the time dimension daily. This method can only be used with collections that
+        are sub-daily. If the time between images is greater than one day, un-aggregated images will be returned. This
+        is a shortcut to ImageCollection.resample_time(unit="day").
+
+        Parameters
+        ----------
+        reducer : ee.Reducer, optional
+            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
+
+        Returns
+        -------
+        ee.ImageCollection
+            The input image collection aggregated daily.
+
+        See Also
+        --------
+        ImageCollection.resample_time
+        ImageCollection.resample_hourly
+        ImageCollection.resample_weekly
+        ImageCollection.resample_monthly
+        ImageCollection.resample_annually
+
+        Example
+        -------
+        >>> collection_hourly = ee.ImageCollection("NOAA/NWS/RTMA")
+        >>> daily_max = collection_hourly.resample_daily(reducer=ee.Reducer.max())
+        """
+        return self.resample_time("day", reducer, keep_bandnames)
+
+    def resample_weekly(
+        self,
+        reducer: Optional[Any] = None,
+        keep_bandnames: bool = True,
+    ) -> ee.ImageCollection:
+        """Aggregate the collection over the time dimension weekly. This method can only be used with collections that
+        are sub-weekly. If the time between images is greater than one week, un-aggregated images will be returned. This
+        is a shortcut to ImageCollection.resample_time(unit="week").
+
+        Parameters
+        ----------
+        reducer : ee.Reducer, optional
+            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
+
+        Returns
+        -------
+        ee.ImageCollection
+            The input image collection aggregated weekly.
+
+        See Also
+        --------
+        ImageCollection.resample_time
+        ImageCollection.resample_hourly
+        ImageCollection.resample_daily
+        ImageCollection.resample_monthly
+        ImageCollection.resample_annually
+
+        Example
+        -------
+        >>> collection_hourly = ee.ImageCollection("NOAA/NWS/RTMA")
+        >>> weekly_max = collection_hourly.resample_weekly(reducer=ee.Reducer.max())
+        """
+        return self.resample_time("week", reducer, keep_bandnames)
+
+    def resample_monthly(
+        self,
+        reducer: Optional[Any] = None,
+        keep_bandnames: bool = True,
+    ) -> ee.ImageCollection:
+        """Aggregate the collection over the time dimension monthly. This method can only be used with collections that
+        are sub-monthly. If the time between images is greater than one month, un-aggregated images will be returned.
+        This is a shortcut to ImageCollection.resample_time(unit="month").
+
+        Parameters
+        ----------
+        reducer : ee.Reducer, optional
+            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
+
+        Returns
+        -------
+        ee.ImageCollection
+            The input image collection aggregated monthly.
+
+        See Also
+        --------
+        ImageCollection.resample_time
+        ImageCollection.resample_hourly
+        ImageCollection.resample_daily
+        ImageCollection.resample_weekly
+        ImageCollection.resample_annually
+
+        Example
+        -------
+        >>> collection_hourly = ee.ImageCollection("NOAA/NWS/RTMA")
+        >>> monthly_max = collection_hourly.resample_monthly(unit="month", reducer=ee.Reducer.max())
+        """
+        return self.resample_time("month", reducer, keep_bandnames)
+
+    def resample_annually(
+        self,
+        reducer: Optional[Any] = None,
+        keep_bandnames: bool = True,
+    ) -> ee.ImageCollection:
+        """Aggregate the collection over the time dimension annually. This method can only be used with collections that
+        are sub-annual. If the time between images is greater than one year, un-aggregated images will be returned. This
+        is a shortcut to ImageCollection.resample_time(unit="year").
+
+        Parameters
+        ----------
+        reducer : ee.Reducer, optional
+            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
+
+        Returns
+        -------
+        ee.ImageCollection
+            The input image collection aggregated annually.
+
+        See Also
+        --------
+        ImageCollection.resample_time
+        ImageCollection.resample_hourly
+        ImageCollection.resample_daily
+        ImageCollection.resample_weekly
+        ImageCollection.resample_monthly
+
+        Example
+        -------
+        >>> collection_hourly = ee.ImageCollection("NOAA/NWS/RTMA")
+        >>> annual_max = collection_hourly.resample_annually(reducer=ee.Reducer.max())
+        """
+        return self.resample_time("year", reducer, keep_bandnames)
 
 
 def _image_to_tif_alias(

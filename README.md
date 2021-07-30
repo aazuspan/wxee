@@ -57,7 +57,7 @@ ee.Initialize()
 # Load hourly wind data from RTMA
 hourly = ee.ImageCollection("NOAA/NWS/RTMA").filterDate("2020-09-08", "2020-09-15").select("WIND")
 # Aggregate hourly winds to daily max winds
-daily_max = hourly.resample_time(unit="day", reducer=ee.Reducer.max())
+daily_max = hourly.eex.resample_daily(reducer=ee.Reducer.max())
 # Download the daily winds to an xarray dataset
 arr = daily_max.eex.to_xarray(scale=40_000, crs="EPSG:5070")
 ```

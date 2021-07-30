@@ -473,9 +473,173 @@ reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</
 <dd class="field-even"><p><strong>ValueError</strong> – If an invalid unit is passed.</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#eexarray.ImageCollection.resample_hourly" title="eexarray.ImageCollection.resample_hourly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_hourly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_daily" title="eexarray.ImageCollection.resample_daily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_daily</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_weekly" title="eexarray.ImageCollection.resample_weekly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_weekly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_monthly" title="eexarray.ImageCollection.resample_monthly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_monthly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_annually" title="eexarray.ImageCollection.resample_annually"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_annually</span></code></a></p>
+</div>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection_hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">daily_max</span> <span class="o">=</span> <span class="n">collection_hourly</span><span class="o">.</span><span class="n">resample_time</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eexarray.ImageCollection.resample_hourly">
+<span class="sig-name descname"><span class="pre">resample_hourly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.ImageCollection</span></span></span><a class="reference internal" href="_modules/eexarray/ImageCollection.html#ImageCollection.resample_hourly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.ImageCollection.resample_hourly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aggregate the collection over the time dimension hourly. This method can only be used with collections that
+are sub-hourly. If the time between images is greater than one hour, un-aggregated images will be returned. This
+is a shortcut to ImageCollection.resample_time(unit=”hour”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</p></li>
+<li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The input image collection aggregated hourly.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ee.ImageCollection</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#eexarray.ImageCollection.resample_time" title="eexarray.ImageCollection.resample_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_time</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_daily" title="eexarray.ImageCollection.resample_daily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_daily</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_weekly" title="eexarray.ImageCollection.resample_weekly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_weekly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_monthly" title="eexarray.ImageCollection.resample_monthly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_monthly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_annually" title="eexarray.ImageCollection.resample_annually"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_annually</span></code></a></p>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection_sub_hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/GOES/16/FDCC&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hourly_max</span> <span class="o">=</span> <span class="n">collection_sub_hourly</span><span class="o">.</span><span class="n">resample_hourly</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eexarray.ImageCollection.resample_daily">
+<span class="sig-name descname"><span class="pre">resample_daily</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.ImageCollection</span></span></span><a class="reference internal" href="_modules/eexarray/ImageCollection.html#ImageCollection.resample_daily"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.ImageCollection.resample_daily" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aggregate the collection over the time dimension daily. This method can only be used with collections that
+are sub-daily. If the time between images is greater than one day, un-aggregated images will be returned. This
+is a shortcut to ImageCollection.resample_time(unit=”day”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</p></li>
+<li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The input image collection aggregated daily.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ee.ImageCollection</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#eexarray.ImageCollection.resample_time" title="eexarray.ImageCollection.resample_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_time</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_hourly" title="eexarray.ImageCollection.resample_hourly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_hourly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_weekly" title="eexarray.ImageCollection.resample_weekly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_weekly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_monthly" title="eexarray.ImageCollection.resample_monthly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_monthly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_annually" title="eexarray.ImageCollection.resample_annually"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_annually</span></code></a></p>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection_hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">daily_max</span> <span class="o">=</span> <span class="n">collection_hourly</span><span class="o">.</span><span class="n">resample_daily</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eexarray.ImageCollection.resample_weekly">
+<span class="sig-name descname"><span class="pre">resample_weekly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.ImageCollection</span></span></span><a class="reference internal" href="_modules/eexarray/ImageCollection.html#ImageCollection.resample_weekly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.ImageCollection.resample_weekly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aggregate the collection over the time dimension weekly. This method can only be used with collections that
+are sub-weekly. If the time between images is greater than one week, un-aggregated images will be returned. This
+is a shortcut to ImageCollection.resample_time(unit=”week”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</p></li>
+<li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The input image collection aggregated weekly.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ee.ImageCollection</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#eexarray.ImageCollection.resample_time" title="eexarray.ImageCollection.resample_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_time</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_hourly" title="eexarray.ImageCollection.resample_hourly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_hourly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_daily" title="eexarray.ImageCollection.resample_daily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_daily</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_monthly" title="eexarray.ImageCollection.resample_monthly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_monthly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_annually" title="eexarray.ImageCollection.resample_annually"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_annually</span></code></a></p>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection_hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">weekly_max</span> <span class="o">=</span> <span class="n">collection_hourly</span><span class="o">.</span><span class="n">resample_weekly</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eexarray.ImageCollection.resample_monthly">
+<span class="sig-name descname"><span class="pre">resample_monthly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.ImageCollection</span></span></span><a class="reference internal" href="_modules/eexarray/ImageCollection.html#ImageCollection.resample_monthly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.ImageCollection.resample_monthly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aggregate the collection over the time dimension monthly. This method can only be used with collections that
+are sub-monthly. If the time between images is greater than one month, un-aggregated images will be returned.
+This is a shortcut to ImageCollection.resample_time(unit=”month”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</p></li>
+<li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The input image collection aggregated monthly.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ee.ImageCollection</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#eexarray.ImageCollection.resample_time" title="eexarray.ImageCollection.resample_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_time</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_hourly" title="eexarray.ImageCollection.resample_hourly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_hourly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_daily" title="eexarray.ImageCollection.resample_daily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_daily</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_weekly" title="eexarray.ImageCollection.resample_weekly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_weekly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_annually" title="eexarray.ImageCollection.resample_annually"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_annually</span></code></a></p>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection_hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monthly_max</span> <span class="o">=</span> <span class="n">collection_hourly</span><span class="o">.</span><span class="n">resample_monthly</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eexarray.ImageCollection.resample_annually">
+<span class="sig-name descname"><span class="pre">resample_annually</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.ImageCollection</span></span></span><a class="reference internal" href="_modules/eexarray/ImageCollection.html#ImageCollection.resample_annually"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.ImageCollection.resample_annually" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aggregate the collection over the time dimension annually. This method can only be used with collections that
+are sub-annual. If the time between images is greater than one year, un-aggregated images will be returned. This
+is a shortcut to ImageCollection.resample_time(unit=”year”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</p></li>
+<li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The input image collection aggregated annually.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ee.ImageCollection</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#eexarray.ImageCollection.resample_time" title="eexarray.ImageCollection.resample_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_time</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_hourly" title="eexarray.ImageCollection.resample_hourly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_hourly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_daily" title="eexarray.ImageCollection.resample_daily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_daily</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_weekly" title="eexarray.ImageCollection.resample_weekly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_weekly</span></code></a>, <a class="reference internal" href="#eexarray.ImageCollection.resample_monthly" title="eexarray.ImageCollection.resample_monthly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImageCollection.resample_monthly</span></code></a></p>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection_hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">annual_max</span> <span class="o">=</span> <span class="n">collection_hourly</span><span class="o">.</span><span class="n">resample_annually</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
 </pre></div>
 </div>
 </dd></dl>

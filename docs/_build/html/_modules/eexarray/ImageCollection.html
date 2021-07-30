@@ -465,6 +465,14 @@
 <span class="sd">        ValueError</span>
 <span class="sd">            If an invalid unit is passed.</span>
 
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        ImageCollection.resample_hourly</span>
+<span class="sd">        ImageCollection.resample_daily</span>
+<span class="sd">        ImageCollection.resample_weekly</span>
+<span class="sd">        ImageCollection.resample_monthly</span>
+<span class="sd">        ImageCollection.resample_annually</span>
+
 <span class="sd">        Example</span>
 <span class="sd">        -------</span>
 <span class="sd">        &gt;&gt;&gt; collection_hourly = ee.ImageCollection(&quot;NOAA/NWS/RTMA&quot;)</span>
@@ -496,7 +504,7 @@
 
             <span class="k">if</span> <span class="n">keep_bandnames</span><span class="p">:</span>
                 <span class="n">resampled</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">resampled</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">bandNames</span><span class="p">())</span>
-            
+
             <span class="c1"># If the resampling step falls between images, just return null</span>
             <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Algorithms</span><span class="o">.</span><span class="n">If</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">resampled</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
@@ -512,7 +520,192 @@
 
         <span class="n">resampled</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="n">start_times</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">resample_step</span><span class="p">,</span> <span class="n">dropNulls</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">resampled</span></div></div>
+        <span class="k">return</span> <span class="n">resampled</span></div>
+
+<div class="viewcode-block" id="ImageCollection.resample_hourly"><a class="viewcode-back" href="../../eexarray.html#eexarray.ImageCollection.resample_hourly">[docs]</a>    <span class="k">def</span> <span class="nf">resample_hourly</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension hourly. This method can only be used with collections that </span>
+<span class="sd">        are sub-hourly. If the time between images is greater than one hour, un-aggregated images will be returned. This</span>
+<span class="sd">        is a shortcut to ImageCollection.resample_time(unit=&quot;hour&quot;).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        reducer : ee.Reducer, optional</span>
+<span class="sd">            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</span>
+<span class="sd">        keep_bandnames : bool, default True</span>
+<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
+<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ee.ImageCollection</span>
+<span class="sd">            The input image collection aggregated hourly.</span>
+<span class="sd">        </span>
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        ImageCollection.resample_time</span>
+<span class="sd">        ImageCollection.resample_daily</span>
+<span class="sd">        ImageCollection.resample_weekly</span>
+<span class="sd">        ImageCollection.resample_monthly</span>
+<span class="sd">        ImageCollection.resample_annually</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; collection_sub_hourly = ee.ImageCollection(&quot;NOAA/GOES/16/FDCC&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; hourly_max = collection_sub_hourly.resample_hourly(reducer=ee.Reducer.max())</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample_time</span><span class="p">(</span><span class="s2">&quot;hour&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImageCollection.resample_daily"><a class="viewcode-back" href="../../eexarray.html#eexarray.ImageCollection.resample_daily">[docs]</a>    <span class="k">def</span> <span class="nf">resample_daily</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension daily. This method can only be used with collections that </span>
+<span class="sd">        are sub-daily. If the time between images is greater than one day, un-aggregated images will be returned. This </span>
+<span class="sd">        is a shortcut to ImageCollection.resample_time(unit=&quot;day&quot;).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        reducer : ee.Reducer, optional</span>
+<span class="sd">            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</span>
+<span class="sd">        keep_bandnames : bool, default True</span>
+<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
+<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ee.ImageCollection</span>
+<span class="sd">            The input image collection aggregated daily.</span>
+<span class="sd">        </span>
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        ImageCollection.resample_time</span>
+<span class="sd">        ImageCollection.resample_hourly</span>
+<span class="sd">        ImageCollection.resample_weekly</span>
+<span class="sd">        ImageCollection.resample_monthly</span>
+<span class="sd">        ImageCollection.resample_annually</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; collection_hourly = ee.ImageCollection(&quot;NOAA/NWS/RTMA&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; daily_max = collection_hourly.resample_daily(reducer=ee.Reducer.max())</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample_time</span><span class="p">(</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImageCollection.resample_weekly"><a class="viewcode-back" href="../../eexarray.html#eexarray.ImageCollection.resample_weekly">[docs]</a>    <span class="k">def</span> <span class="nf">resample_weekly</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension weekly. This method can only be used with collections that</span>
+<span class="sd">        are sub-weekly. If the time between images is greater than one week, un-aggregated images will be returned. This</span>
+<span class="sd">        is a shortcut to ImageCollection.resample_time(unit=&quot;week&quot;).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        reducer : ee.Reducer, optional</span>
+<span class="sd">            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</span>
+<span class="sd">        keep_bandnames : bool, default True</span>
+<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
+<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ee.ImageCollection</span>
+<span class="sd">            The input image collection aggregated weekly.</span>
+<span class="sd">        </span>
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        ImageCollection.resample_time</span>
+<span class="sd">        ImageCollection.resample_hourly</span>
+<span class="sd">        ImageCollection.resample_daily</span>
+<span class="sd">        ImageCollection.resample_monthly</span>
+<span class="sd">        ImageCollection.resample_annually</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; collection_hourly = ee.ImageCollection(&quot;NOAA/NWS/RTMA&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; weekly_max = collection_hourly.resample_weekly(reducer=ee.Reducer.max())</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample_time</span><span class="p">(</span><span class="s2">&quot;week&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImageCollection.resample_monthly"><a class="viewcode-back" href="../../eexarray.html#eexarray.ImageCollection.resample_monthly">[docs]</a>    <span class="k">def</span> <span class="nf">resample_monthly</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension monthly. This method can only be used with collections that </span>
+<span class="sd">        are sub-monthly. If the time between images is greater than one month, un-aggregated images will be returned.</span>
+<span class="sd">        This is a shortcut to ImageCollection.resample_time(unit=&quot;month&quot;).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        reducer : ee.Reducer, optional</span>
+<span class="sd">            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</span>
+<span class="sd">        keep_bandnames : bool, default True</span>
+<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
+<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ee.ImageCollection</span>
+<span class="sd">            The input image collection aggregated monthly.</span>
+<span class="sd">        </span>
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        ImageCollection.resample_time</span>
+<span class="sd">        ImageCollection.resample_hourly</span>
+<span class="sd">        ImageCollection.resample_daily</span>
+<span class="sd">        ImageCollection.resample_weekly</span>
+<span class="sd">        ImageCollection.resample_annually</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; collection_hourly = ee.ImageCollection(&quot;NOAA/NWS/RTMA&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; monthly_max = collection_hourly.resample_monthly(unit=&quot;month&quot;, reducer=ee.Reducer.max())</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample_time</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImageCollection.resample_annually"><a class="viewcode-back" href="../../eexarray.html#eexarray.ImageCollection.resample_annually">[docs]</a>    <span class="k">def</span> <span class="nf">resample_annually</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension annually. This method can only be used with collections that</span>
+<span class="sd">        are sub-annual. If the time between images is greater than one year, un-aggregated images will be returned. This</span>
+<span class="sd">        is a shortcut to ImageCollection.resample_time(unit=&quot;year&quot;).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        reducer : ee.Reducer, optional</span>
+<span class="sd">            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</span>
+<span class="sd">        keep_bandnames : bool, default True</span>
+<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
+<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ee.ImageCollection</span>
+<span class="sd">            The input image collection aggregated annually.</span>
+<span class="sd">        </span>
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        ImageCollection.resample_time</span>
+<span class="sd">        ImageCollection.resample_hourly</span>
+<span class="sd">        ImageCollection.resample_daily</span>
+<span class="sd">        ImageCollection.resample_weekly</span>
+<span class="sd">        ImageCollection.resample_monthly</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; collection_hourly = ee.ImageCollection(&quot;NOAA/NWS/RTMA&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; annual_max = collection_hourly.resample_annually(reducer=ee.Reducer.max())</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample_time</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">_image_to_tif_alias</span><span class="p">(</span>

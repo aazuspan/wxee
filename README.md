@@ -15,9 +15,9 @@ eexarray was built to make processing gridded, mesoscale time series data quick 
 - Images and image collections to GeoTIFF
 - Support for masked nodata values
 - Parallel processing for fast downloads
+- Temporal resampling in EE (hourly to daily, daily to monthly, etc.)
 
 ### Features Coming Soon
-- Temporal resampling in EE (hourly to daily, daily to monthly, etc.)
 - Basic weather and climate processing implemented in EE
 - Automated splitting of download requests that exceed size limits (no promises here...)
 
@@ -54,8 +54,12 @@ ee.ImageCollection( ... ).eex
 import ee, eexarray
 ee.Initialize()
 
-col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").filterDate("2020-09-08", "2020-09-15")
-arr = col.eex.to_xarray(scale=40_000, crs="EPSG:5070")
+# Load hourly wind data from RTMA
+hourly = ee.ImageCollection("NOAA/NWS/RTMA").filterDate("2020-09-08", "2020-09-15").select("WIND")
+# Aggregate hourly winds to daily max winds
+daily_max = hourly.resample_time(unit="day", reducer=ee.Reducer.max())
+# Download the daily winds to an xarray dataset
+arr = daily_max.eex.to_xarray(scale=40_000, crs="EPSG:5070")
 ```
 
 ### Downloading Images to GeoTIFF

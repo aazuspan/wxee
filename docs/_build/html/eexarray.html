@@ -210,7 +210,45 @@ custom methods.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="eexarray.Image">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">eexarray.</span></span><span class="sig-name descname"><span class="pre">Image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">ee.image.Image</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eexarray/Image.html#Image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.Image" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="eexarray.Image.to_xarray">
+<span class="sig-name descname"><span class="pre">to_xarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.Dataset</span></span></span><a class="reference internal" href="_modules/eexarray/Image.html#Image.to_xarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.Image.to_xarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an image to an xarray.Dataset. The <code class="code docutils literal notranslate"><span class="pre">system:time_start</span></code> property of the image is used to set the
+time dimension, and each image variable is loaded as a separate array in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to save the dataset to as a NetCDF. If none is given, the dataset will be stored in memory.</p></li>
+<li><p><strong>region</strong> (<em>ee.Geometry</em><em>, </em><em>optional</em>) – The region to download the image within. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">geometry</span></code> of the image will be used.</p></li>
+<li><p><strong>scale</strong> (<em>int</em><em>, </em><em>optional</em>) – The scale to download the array at in the CRS units. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">projection.nominalScale</span></code>
+of the image will be used.</p></li>
+<li><p><strong>crs</strong> (<em>str</em><em>, </em><em>default &quot;EPSG:4326&quot;</em>) – The coordinate reference system to download the array in.</p></li>
+<li><p><strong>masked</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, nodata pixels in the array will be masked by replacing them with numpy.nan. This will silently
+cast integer datatypes to float.</p></li>
+<li><p><strong>nodata</strong> (<em>int</em><em>, </em><em>default -32</em><em>,</em><em>768</em>) – The value to set as nodata in the array. Any masked pixels will be filled with this value.</p></li>
+<li><p><strong>max_attempts</strong> (<em>int</em><em>, </em><em>default 5</em>) – Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
+max_attempts. Must be between 1 and 99.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dataset containing the image with variables set.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xarray.Dataset</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>DownloadError</strong> – Raised if the image cannot be successfully downloaded after the maximum number of attempts.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">eexarray</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-15&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">40000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">,</span> <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="eexarray.Image.to_tif">
 <span class="sig-name descname"><span class="pre">to_tif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_per_band</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/eexarray/Image.html#Image.to_tif"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.Image.to_tif" title="Permalink to this definition">¶</a></dt>
@@ -251,28 +289,44 @@ max_attempts. Must be between 1 and 99.</p></li>
 </div>
 </dd></dl>
 
+</dd></dl>
+
+</div>
+<div class="section" id="ee-imagecollection-eex">
+<h2>ee.ImageCollection.eex<a class="headerlink" href="#ee-imagecollection-eex" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="eexarray.ImageCollection">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">eexarray.</span></span><span class="sig-name descname"><span class="pre">ImageCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">ee.imagecollection.ImageCollection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eexarray/ImageCollection.html#ImageCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.ImageCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extends the ee.imagecollection.ImageCollection class indirectly through an accessor.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="eexarray.Image.to_xarray">
-<span class="sig-name descname"><span class="pre">to_xarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.Dataset</span></span></span><a class="reference internal" href="_modules/eexarray/Image.html#Image.to_xarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.Image.to_xarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert an image to an xarray.Dataset. The <code class="code docutils literal notranslate"><span class="pre">system:time_start</span></code> property of the image is used to set the
-time dimension, and each image variable is loaded as a separate array in the dataset.</p>
+<dt class="sig sig-object py" id="eexarray.ImageCollection.to_xarray">
+<span class="sig-name descname"><span class="pre">to_xarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.Dataset</span></span></span><a class="reference internal" href="_modules/eexarray/ImageCollection.html#ImageCollection.to_xarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.ImageCollection.to_xarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an image collection to an xarray.Dataset. The <code class="code docutils literal notranslate"><span class="pre">system:time_start</span></code> property of each image in the
+collection is used to arrange the time dimension, and each image variable is loaded as a separate array in
+the dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to save the dataset to as a NetCDF. If none is given, the dataset will be stored in memory.</p></li>
-<li><p><strong>region</strong> (<em>ee.Geometry</em><em>, </em><em>optional</em>) – The region to download the image within. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">geometry</span></code> of the image will be used.</p></li>
+<li><p><strong>region</strong> (<em>ee.Geometry</em><em>, </em><em>optional</em>) – The region to download the images within. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">geometry</span></code> of the image collection
+will be used. If geometry varies between images in the collection, the region will encompass all images
+which may lead to very large arrays and download limits.</p></li>
 <li><p><strong>scale</strong> (<em>int</em><em>, </em><em>optional</em>) – The scale to download the array at in the CRS units. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">projection.nominalScale</span></code>
-of the image will be used.</p></li>
+of the images will be used.</p></li>
 <li><p><strong>crs</strong> (<em>str</em><em>, </em><em>default &quot;EPSG:4326&quot;</em>) – The coordinate reference system to download the array in.</p></li>
 <li><p><strong>masked</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, nodata pixels in the array will be masked by replacing them with numpy.nan. This will silently
 cast integer datatypes to float.</p></li>
 <li><p><strong>nodata</strong> (<em>int</em><em>, </em><em>default -32</em><em>,</em><em>768</em>) – The value to set as nodata in the array. Any masked pixels will be filled with this value.</p></li>
+<li><p><strong>num_cores</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be
+used.</p></li>
+<li><p><strong>progress</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, a progress bar will be displayed to track download progress.</p></li>
 <li><p><strong>max_attempts</strong> (<em>int</em><em>, </em><em>default 5</em>) – Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
 max_attempts. Must be between 1 and 99.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A dataset containing the image with variables set.</p>
+<dd class="field-even"><p>A dataset containing all images in the collection with an assigned time dimension and variables set from
+each image.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>xarray.Dataset</p>
@@ -290,16 +344,6 @@ max_attempts. Must be between 1 and 99.</p></li>
 </div>
 </dd></dl>
 
-</dd></dl>
-
-</div>
-<div class="section" id="ee-imagecollection-eex">
-<h2>ee.ImageCollection.eex<a class="headerlink" href="#ee-imagecollection-eex" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="eexarray.ImageCollection">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">eexarray.</span></span><span class="sig-name descname"><span class="pre">ImageCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">ee.imagecollection.ImageCollection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/eexarray/ImageCollection.html#ImageCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.ImageCollection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Extends the ee.imagecollection.ImageCollection class indirectly through an accessor.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eexarray.ImageCollection.to_tif">
 <span class="sig-name descname"><span class="pre">to_tif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_per_band</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/eexarray/ImageCollection.html#ImageCollection.to_tif"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.ImageCollection.to_tif" title="Permalink to this definition">¶</a></dt>
@@ -344,48 +388,94 @@ max_attempts. Must be between 1 and 99.</p></li>
 </div>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="eexarray.ImageCollection.start_time">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">start_time</span></span><em class="property"><span class="pre">:</span> <span class="pre">ee.Date</span></em><a class="headerlink" href="#eexarray.ImageCollection.start_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="code docutils literal notranslate"><span class="pre">system:time_start</span></code> of first chronological image in the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The start time of the collection.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>ee.Date</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="eexarray.ImageCollection.end_time">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">end_time</span></span><em class="property"><span class="pre">:</span> <span class="pre">ee.Date</span></em><a class="headerlink" href="#eexarray.ImageCollection.end_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="code docutils literal notranslate"><span class="pre">system:time_start</span></code> of last chronological image in the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The end time of the collection.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>ee.Date</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py" id="eexarray.ImageCollection.to_xarray">
-<span class="sig-name descname"><span class="pre">to_xarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.Dataset</span></span></span><a class="reference internal" href="_modules/eexarray/ImageCollection.html#ImageCollection.to_xarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.ImageCollection.to_xarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert an image collection to an xarray.Dataset. The <code class="code docutils literal notranslate"><span class="pre">system:time_start</span></code> property of each image in the
-collection is used to arrange the time dimension, and each image variable is loaded as a separate array in
-the dataset.</p>
+<dt class="sig sig-object py" id="eexarray.ImageCollection.get_image">
+<span class="sig-name descname"><span class="pre">get_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.Image</span></span></span><a class="reference internal" href="_modules/eexarray/ImageCollection.html#ImageCollection.get_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.ImageCollection.get_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the image at the specified index in the collection. A negative index counts backwards from the end of
+the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index of the image in the collection.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The image at the given index.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ee.Image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eexarray.ImageCollection.last">
+<span class="sig-name descname"><span class="pre">last</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.Image</span></span></span><a class="reference internal" href="_modules/eexarray/ImageCollection.html#ImageCollection.last"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.ImageCollection.last" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the last image in the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The last image in the collection.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>ee.Image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eexarray.ImageCollection.resample_time">
+<span class="sig-name descname"><span class="pre">resample_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.ImageCollection</span></span></span><a class="reference internal" href="_modules/eexarray/ImageCollection.html#ImageCollection.resample_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eexarray.ImageCollection.resample_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aggregate the collection over the time dimension to a specified unit. This method can only be used to go from
+small time units to larger time units, such as hours to days, not vice-versa. If the resampling unit is smaller
+than the time between images, un-aggregated images will be returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to save the dataset to as a NetCDF. If none is given, the dataset will be stored in memory.</p></li>
-<li><p><strong>region</strong> (<em>ee.Geometry</em><em>, </em><em>optional</em>) – The region to download the images within. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">geometry</span></code> of the image collection
-will be used. If geometry varies between images in the collection, the region will encompass all images
-which may lead to very large arrays and download limits.</p></li>
-<li><p><strong>scale</strong> (<em>int</em><em>, </em><em>optional</em>) – The scale to download the array at in the CRS units. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">projection.nominalScale</span></code>
-of the images will be used.</p></li>
-<li><p><strong>crs</strong> (<em>str</em><em>, </em><em>default &quot;EPSG:4326&quot;</em>) – The coordinate reference system to download the array in.</p></li>
-<li><p><strong>masked</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, nodata pixels in the array will be masked by replacing them with numpy.nan. This will silently
-cast integer datatypes to float.</p></li>
-<li><p><strong>nodata</strong> (<em>int</em><em>, </em><em>default -32</em><em>,</em><em>768</em>) – The value to set as nodata in the array. Any masked pixels will be filled with this value.</p></li>
-<li><p><strong>num_cores</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be
-used.</p></li>
-<li><p><strong>progress</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, a progress bar will be displayed to track download progress.</p></li>
-<li><p><strong>max_attempts</strong> (<em>int</em><em>, </em><em>default 5</em>) – Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
-max_attempts. Must be between 1 and 99.</p></li>
+<li><p><strong>unit</strong> (<em>str</em>) – The unit of time to resample to. One of ‘year’, ‘month’ ‘week’, ‘day’, ‘hour’.</p></li>
+<li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</p></li>
+<li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A dataset containing all images in the collection with an assigned time dimension and variables set from
-each image.</p>
+<dd class="field-even"><p>The input image collection aggregated to the specified time unit.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xarray.Dataset</p>
+<dd class="field-odd"><p>ee.ImageCollection</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>DownloadError</strong> – Raised if the image cannot be successfully downloaded after the maximum number of attempts.</p>
+<dd class="field-even"><p><strong>ValueError</strong> – If an invalid unit is passed.</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">eexarray</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-15&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">40000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">,</span> <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">)</span>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection_hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">daily_max</span> <span class="o">=</span> <span class="n">collection_hourly</span><span class="o">.</span><span class="n">resample_time</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
 </pre></div>
 </div>
 </dd></dl>

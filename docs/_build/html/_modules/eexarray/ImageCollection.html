@@ -163,7 +163,7 @@
 <span></span><span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 <span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
@@ -249,7 +249,7 @@
 <span class="sd">        &gt;&gt;&gt; col.eex.to_xarray(scale=40000, crs=&quot;EPSG:5070&quot;, nodata=-9999)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">TMP_PREFIX</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
-            <span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rename_by_date</span><span class="p">()</span>
+            <span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rename_by_time</span><span class="p">()</span>
 
             <span class="n">files</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span>
                 <span class="n">out_dir</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
@@ -369,16 +369,150 @@
 
         <span class="k">return</span> <span class="n">_flatten_list</span><span class="p">(</span><span class="n">tifs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_rename_by_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_rename_by_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Set each image&#39;s :code:`system:id` to its formatted :code:`system:time_start`.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">img</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">_rename_by_date</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">img</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">_rename_by_time</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="nf">_to_image_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Convert an image collection to a Python list of images.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">())</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">())</span>
-        <span class="p">]</span></div>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_times</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the the :code:`system:time_start` of each image in the collection&quot;&quot;&quot;</span>
+        <span class="n">imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">imgs</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The :code:`system:time_start` of first chronological image in the collection.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ee.Date</span>
+<span class="sd">            The start time of the collection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_times</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">min</span><span class="p">()))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;The :code:`system:time_start` of last chronological image in the collection.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ee.Date</span>
+<span class="sd">            The end time of the collection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_times</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+
+<div class="viewcode-block" id="ImageCollection.get_image"><a class="viewcode-back" href="../../eexarray.html#eexarray.ImageCollection.get_image">[docs]</a>    <span class="k">def</span> <span class="nf">get_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the image at the specified index in the collection. A negative index counts backwards from the end of</span>
+<span class="sd">        the collection.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the image in the collection.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ee.Image</span>
+<span class="sd">            The image at the given index.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">())</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">index</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ImageCollection.last"><a class="viewcode-back" href="../../eexarray.html#eexarray.ImageCollection.last">[docs]</a>    <span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the last image in the collection.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ee.Image</span>
+<span class="sd">            The last image in the collection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ImageCollection.resample_time"><a class="viewcode-back" href="../../eexarray.html#eexarray.ImageCollection.resample_time">[docs]</a>    <span class="k">def</span> <span class="nf">resample_time</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension to a specified unit. This method can only be used to go from</span>
+<span class="sd">        small time units to larger time units, such as hours to days, not vice-versa. If the resampling unit is smaller</span>
+<span class="sd">        than the time between images, un-aggregated images will be returned.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        unit : str</span>
+<span class="sd">            The unit of time to resample to. One of &#39;year&#39;, &#39;month&#39; &#39;week&#39;, &#39;day&#39;, &#39;hour&#39;.</span>
+<span class="sd">        reducer : ee.Reducer, optional</span>
+<span class="sd">            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</span>
+<span class="sd">        keep_bandnames : bool, default True</span>
+<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
+<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ee.ImageCollection</span>
+<span class="sd">            The input image collection aggregated to the specified time unit.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If an invalid unit is passed.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; collection_hourly = ee.ImageCollection(&quot;NOAA/NWS/RTMA&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; daily_max = collection_hourly.resample_time(unit=&quot;day&quot;, reducer=ee.Reducer.max())</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ee.Reducer can&#39;t be used without initializing ee (see https://github.com/google/earthengine-api/issues/164),</span>
+        <span class="c1"># so set the default reducer explicitly. This is also why the type hint above is set to Any.</span>
+        <span class="n">reducer</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">reducer</span> <span class="k">else</span> <span class="n">reducer</span>
+
+        <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="s2">&quot;week&quot;</span><span class="p">,</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="s2">&quot;hour&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">units</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unit must be one of </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">, not &#39;</span><span class="si">{</span><span class="n">unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">resample_step</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;Resample one time step in the given unit from a specified start time.&quot;&quot;&quot;</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+            <span class="n">imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+            <span class="n">resampled</span> <span class="o">=</span> <span class="n">imgs</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">reducer</span><span class="p">)</span>
+            <span class="n">resampled</span> <span class="o">=</span> <span class="n">resampled</span><span class="o">.</span><span class="n">copyProperties</span><span class="p">(</span>
+                <span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">(),</span> <span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">propertyNames</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">resampled</span> <span class="o">=</span> <span class="n">resampled</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;system:time_start&quot;</span><span class="p">:</span> <span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;system:time_end&quot;</span><span class="p">:</span> <span class="n">imgs</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_end&quot;</span><span class="p">),</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">keep_bandnames</span><span class="p">:</span>
+                <span class="n">resampled</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">resampled</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">bandNames</span><span class="p">())</span>
+            
+            <span class="c1"># If the resampling step falls between images, just return null</span>
+            <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Algorithms</span><span class="o">.</span><span class="n">If</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">resampled</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">delta_millis</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">start_times</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="o">.</span><span class="n">sequence</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">millis</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">millis</span><span class="p">(),</span> <span class="n">step</span><span class="o">=</span><span class="n">delta_millis</span>
+        <span class="p">)</span>
+
+        <span class="n">resampled</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="n">start_times</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">resample_step</span><span class="p">,</span> <span class="n">dropNulls</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">resampled</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">_image_to_tif_alias</span><span class="p">(</span>

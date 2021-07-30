@@ -19,13 +19,9 @@ ee.Image.eex
 
 .. autoclass:: eexarray.Image
    :members:
-   :undoc-members:
-   :show-inheritance:
 
 ee.ImageCollection.eex
 ------------------------
 
 .. autoclass:: eexarray.ImageCollection
    :members:
-   :undoc-members:
-   :show-inheritance:

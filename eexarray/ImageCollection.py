@@ -367,7 +367,7 @@ class ImageCollection:
     ) -> ee.ImageCollection:
         """Aggregate the collection over the time dimension hourly. This method can only be used with collections that
         are sub-hourly. If the time between images is greater than one hour, un-aggregated images will be returned. This
-        is a shortcut to ImageCollection.resample_time(unit="hour").
+        is a shortcut to :code:`ImageCollection.resample_time(unit="hour")`.
 
         Parameters
         ----------
@@ -404,7 +404,7 @@ class ImageCollection:
     ) -> ee.ImageCollection:
         """Aggregate the collection over the time dimension daily. This method can only be used with collections that
         are sub-daily. If the time between images is greater than one day, un-aggregated images will be returned. This
-        is a shortcut to ImageCollection.resample_time(unit="day").
+        is a shortcut to :code:`ImageCollection.resample_time(unit="day")`.
 
         Parameters
         ----------
@@ -441,7 +441,7 @@ class ImageCollection:
     ) -> ee.ImageCollection:
         """Aggregate the collection over the time dimension weekly. This method can only be used with collections that
         are sub-weekly. If the time between images is greater than one week, un-aggregated images will be returned. This
-        is a shortcut to ImageCollection.resample_time(unit="week").
+        is a shortcut to :code:`ImageCollection.resample_time(unit="week")`.
 
         Parameters
         ----------
@@ -478,7 +478,7 @@ class ImageCollection:
     ) -> ee.ImageCollection:
         """Aggregate the collection over the time dimension monthly. This method can only be used with collections that
         are sub-monthly. If the time between images is greater than one month, un-aggregated images will be returned.
-        This is a shortcut to ImageCollection.resample_time(unit="month").
+        This is a shortcut to :code:`ImageCollection.resample_time(unit="month")`.
 
         Parameters
         ----------
@@ -515,7 +515,7 @@ class ImageCollection:
     ) -> ee.ImageCollection:
         """Aggregate the collection over the time dimension annually. This method can only be used with collections that
         are sub-annual. If the time between images is greater than one year, un-aggregated images will be returned. This
-        is a shortcut to ImageCollection.resample_time(unit="year").
+        is a shortcut to :code:`ImageCollection.resample_time(unit="year")`.
 
         Parameters
         ----------

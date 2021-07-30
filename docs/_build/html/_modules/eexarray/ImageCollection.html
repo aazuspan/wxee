@@ -527,7 +527,7 @@
         <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension hourly. This method can only be used with collections that </span>
+        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension hourly. This method can only be used with collections that</span>
 <span class="sd">        are sub-hourly. If the time between images is greater than one hour, un-aggregated images will be returned. This</span>
 <span class="sd">        is a shortcut to ImageCollection.resample_time(unit=&quot;hour&quot;).</span>
 
@@ -543,7 +543,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        ee.ImageCollection</span>
 <span class="sd">            The input image collection aggregated hourly.</span>
-<span class="sd">        </span>
+
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        ImageCollection.resample_time</span>
@@ -564,8 +564,8 @@
         <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension daily. This method can only be used with collections that </span>
-<span class="sd">        are sub-daily. If the time between images is greater than one day, un-aggregated images will be returned. This </span>
+        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension daily. This method can only be used with collections that</span>
+<span class="sd">        are sub-daily. If the time between images is greater than one day, un-aggregated images will be returned. This</span>
 <span class="sd">        is a shortcut to ImageCollection.resample_time(unit=&quot;day&quot;).</span>
 
 <span class="sd">        Parameters</span>
@@ -580,7 +580,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        ee.ImageCollection</span>
 <span class="sd">            The input image collection aggregated daily.</span>
-<span class="sd">        </span>
+
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        ImageCollection.resample_time</span>
@@ -617,7 +617,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        ee.ImageCollection</span>
 <span class="sd">            The input image collection aggregated weekly.</span>
-<span class="sd">        </span>
+
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        ImageCollection.resample_time</span>
@@ -638,7 +638,7 @@
         <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension monthly. This method can only be used with collections that </span>
+        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension monthly. This method can only be used with collections that</span>
 <span class="sd">        are sub-monthly. If the time between images is greater than one month, un-aggregated images will be returned.</span>
 <span class="sd">        This is a shortcut to ImageCollection.resample_time(unit=&quot;month&quot;).</span>
 
@@ -654,7 +654,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        ee.ImageCollection</span>
 <span class="sd">            The input image collection aggregated monthly.</span>
-<span class="sd">        </span>
+
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        ImageCollection.resample_time</span>
@@ -691,7 +691,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        ee.ImageCollection</span>
 <span class="sd">            The input image collection aggregated annually.</span>
-<span class="sd">        </span>
+
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        ImageCollection.resample_time</span>

@@ -280,12 +280,13 @@ class ImageCollection:
         keep_bandnames: bool = True,
     ) -> ee.ImageCollection:
         """Aggregate the collection over the time dimension to a specified unit. This method can only be used to go from
-        small time units to larger time units, such as hours to days, not vice-versa.
+        small time units to larger time units, such as hours to days, not vice-versa. If the resampling unit is smaller
+        than the time between images, un-aggregated images will be returned.
 
         Parameters
         ----------
         unit : str
-            The unit of time to resample to. One of 'year', 'month' 'week', 'day', 'hour', 'minute', or 'second'.
+            The unit of time to resample to. One of 'year', 'month' 'week', 'day', 'hour'.
         reducer : ee.Reducer, optional
             The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.
         keep_bandnames : bool, default True
@@ -311,7 +312,7 @@ class ImageCollection:
         # so set the default reducer explicitly. This is also why the type hint above is set to Any.
         reducer = ee.Reducer.mean() if not reducer else reducer
 
-        units = ["year", "month", "week", "day", "hour", "minute", "second"]
+        units = ["year", "month", "week", "day", "hour"]
         if unit.lower() not in units:
             raise ValueError(f"Unit must be one of {units}, not '{unit.lower()}''.")
 
@@ -333,7 +334,9 @@ class ImageCollection:
 
             if keep_bandnames:
                 resampled = ee.Image(resampled).rename(imgs.first().bandNames())
-            return resampled
+
+            # If the resampling step falls between images, just return null
+            return ee.Algorithms.If(imgs.size().gt(0), resampled, None)
 
         delta_millis = (
             self.start_time.advance(1, unit)
@@ -345,7 +348,7 @@ class ImageCollection:
             self.start_time.millis(), self.end_time.millis(), step=delta_millis
         )
 
-        resampled = ee.ImageCollection(start_times.map(resample_step))
+        resampled = ee.ImageCollection(start_times.map(resample_step, dropNulls=True))
 
         return resampled
 

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Welcome to eexarray! &mdash; eexarray  documentation</title>
+  <title>eexarray &mdash; eexarray  documentation</title>
   
 
   
@@ -91,8 +91,7 @@
               
             
             
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="eexarray.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
@@ -143,7 +142,7 @@
     
       <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Welcome to eexarray!</li>
+      <li>eexarray</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -186,14 +185,45 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="welcome-to-eexarray">
-<h1>Welcome to eexarray!<a class="headerlink" href="#welcome-to-eexarray" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="eexarray">
+<h1>eexarray<a class="headerlink" href="#eexarray" title="Permalink to this headline">¶</a></h1>
+<a class="reference external image-reference" href="https://eexarray.readthedocs.io/en/latest/?badge=latest"><img alt="https://readthedocs.org/projects/eexarray/badge/?version=latest&amp;style=flat" src="https://readthedocs.org/projects/eexarray/badge/?version=latest&amp;style=flat" /></a>
+<a class="reference external image-reference" href="https://github.com/psf/black"><img alt="https://img.shields.io/badge/code%20style-black-000000.svg" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a>
+<a class="reference external image-reference" href="https://www.gnu.org/licenses/gpl-3.0"><img alt="https://img.shields.io/badge/License-GPLv3-blue.svg" src="https://img.shields.io/badge/License-GPLv3-blue.svg" /></a>
 <div class="line-block">
 <div class="line"><em>A Python interface between Earth Engine and xarray</em></div>
 <div class="line"><a class="reference external" href="https://github.com/aazuspan/eexarray">https://github.com/aazuspan/eexarray</a></div>
 </div>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>eexarray was built to make processing gridded, mesoscale time series data quick and easy by integrating the data catalog
+and processing power of Google Earth Engine with the n-dimensional array functionality of xarray, with no complicated setup required.</p>
+</div>
+<div class="section" id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<p>eexarray uses the <code class="code docutils literal notranslate"><span class="pre">eex</span></code> accessor to extend Earth Engine classes. Just import eexarray and use <code class="code docutils literal notranslate"><span class="pre">.eex</span></code> to access
+eexarray methods.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">eexarray</span>
+<span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+
+<span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span> <span class="o">...</span> <span class="p">)</span><span class="o">.</span><span class="n">eex</span>
+<span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span> <span class="o">...</span> <span class="p">)</span><span class="o">.</span><span class="n">eex</span>
+</pre></div>
+</div>
+<p>eexarray can quickly resample hourly data from Earth Engine to daily averages and download to an xarray Dataset for further
+processing in Python.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">eexarray</span>
+<span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+
+<span class="n">hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-15&quot;</span><span class="p">)</span>
+<span class="n">daily_max</span> <span class="o">=</span> <span class="n">hourly</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">resample_daily</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="n">daily_max</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">40_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="eexarray.html">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="eexarray.html#eex-accessors">eex accessors</a></li>
@@ -212,6 +242,7 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 </ul>
+</div>
 </div>
 
 

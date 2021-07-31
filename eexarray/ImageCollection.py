@@ -346,15 +346,9 @@ class ImageCollection:
             # If the resampling step falls between images, just return null
             return ee.Algorithms.If(imgs.size().gt(0), resampled, None)
 
-        delta_millis = (
-            self.start_time.advance(1, unit)
-            .difference(self.start_time, "second")
-            .multiply(1000)
-        )
-
-        start_times = ee.List.sequence(
-            self.start_time.millis(), self.end_time.millis(), step=delta_millis
-        )
+        n_steps = self.end_time.difference(self.start_time, unit).ceil()
+        steps = ee.List.sequence(0, n_steps.subtract(1))
+        start_times = steps.map(lambda x: self.start_time.advance(x, unit))
 
         resampled = ee.ImageCollection(start_times.map(resample_step, dropNulls=True))
 

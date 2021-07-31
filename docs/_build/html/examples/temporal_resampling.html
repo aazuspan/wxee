@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Downloading Images and Collections &mdash; eexarray  documentation</title>
+  <title>Temporal Resampling &mdash; eexarray  documentation</title>
   
 
   
@@ -44,8 +44,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Temporal Resampling" href="temporal_resampling.html" />
-    <link rel="prev" title="Image Collection to xarray" href="image_collection_to_xarray.html" /> 
+    <link rel="prev" title="Downloading Images and Collections" href="downloading_images_and_collections.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -99,13 +98,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../eexarray.html">API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="image_collection_to_xarray.html">Image Collection to xarray</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Downloading Images and Collections</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="downloading_images_and_collections.html">Downloading Images and Collections</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Temporal Resampling</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Setup">Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Downloading-an-Image">Downloading an Image</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Downloading-an-Image-Collection">Downloading an Image Collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Hourly-to-Daily">Hourly to Daily</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Daily-to-Monthly">Daily to Monthly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Warning">Warning</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="temporal_resampling.html">Temporal Resampling</a></li>
 </ul>
 </li>
 </ul>
@@ -158,13 +158,13 @@
         
           <li><a href="../examples.html">Examples</a> &raquo;</li>
         
-      <li>Downloading Images and Collections</li>
+      <li>Temporal Resampling</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/examples/downloading_images_and_collections.ipynb.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/examples/temporal_resampling.ipynb.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -447,10 +447,10 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="Downloading-Images-and-Collections">
-<h1>Downloading Images and Collections<a class="headerlink" href="#Downloading-Images-and-Collections" title="Permalink to this headline">¶</a></h1>
-<p>In this tutorial, we’ll look at how we can use eexarray to quickly and easily download images and image collections from Earth Engine to a local drive.</p>
-<p>eexarray isn’t designed to replace Earth Engine’s native downloading functionality–if you need high resolution images or large areas, downloading to a Drive using ee is probably the best option. What eexarray’s downloading system is great for is quickly pulling small regions or mesoscale images for further processing in Python without the hassle of intermediate steps.</p>
+<div class="section" id="Temporal-Resampling">
+<h1>Temporal Resampling<a class="headerlink" href="#Temporal-Resampling" title="Permalink to this headline">¶</a></h1>
+<p>In this tutorial, we’ll use eexarray to aggregate image collections over time. eexarray supports the following resampling methods which can be applied to an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> using the <code class="docutils literal notranslate"><span class="pre">eex</span></code> accessor: - <code class="docutils literal notranslate"><span class="pre">resample_hourly</span></code> - <code class="docutils literal notranslate"><span class="pre">resample_daily</span></code> - <code class="docutils literal notranslate"><span class="pre">resample_weekly</span></code> - <code class="docutils literal notranslate"><span class="pre">resample_monthly</span></code> - <code class="docutils literal notranslate"><span class="pre">resample_annually</span></code></p>
+<p>Note that eexarray’s resampling methods are one-directional: for example, they can be used to aggregate daily data into weekly or weekly data into annual, but not vice versa.</p>
 <div class="section" id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -466,107 +466,58 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 </div>
-<div class="section" id="Downloading-an-Image">
-<h2>Downloading an Image<a class="headerlink" href="#Downloading-an-Image" title="Permalink to this headline">¶</a></h2>
-<p>Load an image from MODIS. For convenience, we’ll select just the red, green, and blue bands.</p>
-<div class="nbinput nblast docutils container">
+<div class="section" id="Hourly-to-Daily">
+<h2>Hourly to Daily<a class="headerlink" href="#Hourly-to-Daily" title="Permalink to this headline">¶</a></h2>
+<p>Load two days worth of RTMA data that contains hourly wind velocity grids. The collection should contain 48 images–one per hour.</p>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">img</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s2">&quot;MODIS/006/MOD09GA/2021_06_01&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="s2">&quot;sur_refl_b01&quot;</span><span class="p">,</span> <span class="s2">&quot;sur_refl_b04&quot;</span> <span class="p">,</span><span class="s2">&quot;sur_refl_b03&quot;</span><span class="p">])</span>
+<span></span><span class="n">rtma</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-10&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;WIND&quot;</span><span class="p">)</span>
+
+<span class="n">rtma</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<p>Set the download parameters.</p>
-<div class="nbinput nblast docutils container">
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+48
+</pre></div></div>
+</div>
+<p>Use eexarray to resample hourly data to daily. By default, <code class="docutils literal notranslate"><span class="pre">resample_daily</span></code> uses <code class="docutils literal notranslate"><span class="pre">ee.Reducer.mean()</span></code> to aggregate data, so the output will represent average daily wind speeds. The 48 hourly input images have been aggregated into 2 daily images.</p>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># The file name to save</span>
-<span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;modis_img&quot;</span>
-<span class="c1"># The coordinate reference system to use (NAD83 Albers CONUS)</span>
-<span class="n">crs</span> <span class="o">=</span> <span class="s2">&quot;EPSG:5070&quot;</span>
-<span class="c1"># Spatial resolution in CRS units (meters)</span>
-<span class="n">scale</span> <span class="o">=</span> <span class="mi">500</span>
-<span class="c1"># The region to download the image within.</span>
-<span class="n">region</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="o">.</span><span class="n">Polygon</span><span class="p">(</span>
-    <span class="p">[[[</span><span class="o">-</span><span class="mf">120.0576549852371</span><span class="p">,</span> <span class="mf">46.185091976777684</span><span class="p">],</span>
-      <span class="p">[</span><span class="o">-</span><span class="mf">120.0576549852371</span><span class="p">,</span> <span class="mf">45.577074504710005</span><span class="p">],</span>
-      <span class="p">[</span><span class="o">-</span><span class="mf">118.91782344226834</span><span class="p">,</span> <span class="mf">45.577074504710005</span><span class="p">],</span>
-      <span class="p">[</span><span class="o">-</span><span class="mf">118.91782344226834</span><span class="p">,</span> <span class="mf">46.185091976777684</span><span class="p">]]]</span>
-<span class="p">)</span>
+<span></span><span class="n">daily</span> <span class="o">=</span> <span class="n">rtma</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">resample_daily</span><span class="p">()</span>
+
+<span class="n">daily</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<div class="alert alert-block alert-warning"><p>Warning: If an image download fails due to size limits, try using a smaller region or a coarser scale.</p>
-</div><p>Download the image to GeoTIFF. The <code class="docutils literal notranslate"><span class="pre">ee.Image.eex.to_tif</span></code> method returns a path to the downloaded image(s).</p>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2
+</pre></div></div>
+</div>
+<p>Now we can download and visualize the daily data.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">file</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
-<span class="n">file</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[&#39;./modis_img.tif&#39;]
-</pre></div></div>
-</div>
-<p>Above, we downloaded 1 three-band image, but we could also download it as 3 one-band images by setting <code class="docutils literal notranslate"><span class="pre">file_per_band</span></code> to True.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">file</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">file</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[&#39;./modis_img.sur_refl_b01.tif&#39;,
- &#39;./modis_img.sur_refl_b04.tif&#39;,
- &#39;./modis_img.sur_refl_b03.tif&#39;]
-</pre></div></div>
-</div>
-</div>
-<div class="section" id="Downloading-an-Image-Collection">
-<h2>Downloading an Image Collection<a class="headerlink" href="#Downloading-an-Image-Collection" title="Permalink to this headline">¶</a></h2>
-<p>Load the MODIS collection, choose a date range with 4 images, and select the red, green, and blue bands.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">collection</span> <span class="o">=</span> <span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;MODIS/006/MOD09GA&quot;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2021-06-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2021-06-05&quot;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="s2">&quot;sur_refl_b01&quot;</span><span class="p">,</span> <span class="s2">&quot;sur_refl_b04&quot;</span> <span class="p">,</span><span class="s2">&quot;sur_refl_b03&quot;</span><span class="p">])</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>Download each image in the collection to GeoTIFF. We’ll use the same parameters as above except for <code class="docutils literal notranslate"><span class="pre">description</span></code>. <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection.eex.to_tif</span></code> doesn’t take a <code class="docutils literal notranslate"><span class="pre">description</span></code> parameter, but it does take a <code class="docutils literal notranslate"><span class="pre">prefix</span></code> that can be added to the beginning of each file name.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">files</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;eex_&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
-<span class="n">files</span>
+<span></span><span class="n">x</span> <span class="o">=</span> <span class="n">daily</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
+<span class="n">x</span><span class="o">.</span><span class="n">WIND</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -575,8 +526,102 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-Downloading collection: 100%|███████████████████████████████████| 4/4 [00:04&lt;00:00,  1.02s/it]
+Downloading collection: 100%|███████████████████████████████████| 2/2 [00:03&lt;00:00,  1.70s/it]
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7f04557a7880&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_temporal_resampling_9_2.png" src="../_images/examples_temporal_resampling_9_2.png" />
+</div>
+</div>
+</div>
+<div class="section" id="Daily-to-Monthly">
+<h2>Daily to Monthly<a class="headerlink" href="#Daily-to-Monthly" title="Permalink to this headline">¶</a></h2>
+<p>gridMET contains daily temperature data. We’ll load one year of data from 2020, giving us 366 images (2020 was a leap year).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;tmmx&quot;</span><span class="p">)</span>
+<span class="n">gridmet</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2021-01&quot;</span><span class="p">)</span>
+
+<span class="n">gridmet</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+366
+</pre></div></div>
+</div>
+<p>Now, we’ll calculate the monthly maximum temperatures, download them an xarray dataset, and plot them by month.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">monthly</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">resample_monthly</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">monthly</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
+<span class="n">x</span><span class="o">.</span><span class="n">tmmx</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Downloading collection: 100%|█████████████████████████████████| 12/12 [00:04&lt;00:00,  2.56it/s]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7f04b54637f0&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_temporal_resampling_14_2.png" src="../_images/examples_temporal_resampling_14_2.png" />
+</div>
+</div>
+</div>
+<div class="section" id="Warning">
+<h2>Warning<a class="headerlink" href="#Warning" title="Permalink to this headline">¶</a></h2>
+<p>eexarray’s temporal resampling methods can only be used to aggregate fine time steps into coarse time steps (e.g. hours to days, days to months). Resampling a temporally coarse dataset into a finer time unit may lead to invalid results. Below, you can see that attempting to resample daily data into hourly caused one of the images to be lost.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;tmmx&quot;</span><span class="p">)</span>
+<span class="n">gridmet</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-02&quot;</span><span class="p">)</span>
+
+<span class="n">gridmet</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+</pre></div>
+</div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
@@ -584,10 +629,25 @@ Downloading collection: 100%|█████████████████
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[&#39;./eex_MODIS_006_MOD09GA_2021_06_01.tif&#39;,
- &#39;./eex_MODIS_006_MOD09GA_2021_06_02.tif&#39;,
- &#39;./eex_MODIS_006_MOD09GA_2021_06_03.tif&#39;,
- &#39;./eex_MODIS_006_MOD09GA_2021_06_04.tif&#39;]
+31
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">gridmet</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">resample_hourly</span><span class="p">()</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+30
 </pre></div></div>
 </div>
 </div>
@@ -599,8 +659,7 @@ Downloading collection: 100%|█████████████████
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="temporal_resampling.html" class="btn btn-neutral float-right" title="Temporal Resampling" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="image_collection_to_xarray.html" class="btn btn-neutral float-left" title="Image Collection to xarray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="downloading_images_and_collections.html" class="btn btn-neutral float-left" title="Downloading Images and Collections" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

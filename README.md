@@ -8,7 +8,7 @@ A Python interface between Earth Engine and xarray
 ![demo](docs/_static/demo_001.gif)
 
 ## What is eexarray?
-eexarray was designed make processing gridded, mesoscale time series data quick and easy by providing a bridge between the data catalog and processing power of Google Earth Engine and the flexibility of xarray and numpy, with no complicated setup required. To accomplish this, eexarray implements convenient methods for data processing and conversion.
+eexarray was designed to make processing gridded, mesoscale time series data quick and easy by providing a bridge between the data catalog and processing power of Google Earth Engine and the flexibility of xarray and numpy, with no complicated setup required. To accomplish this, eexarray implements convenient methods for data processing and conversion.
 
 ### Features
 - Time series image collections to xarray and NetCDF in one line of code

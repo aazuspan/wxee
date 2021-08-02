@@ -16,8 +16,13 @@ export PRINT_HELP_PYSCRIPT
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-install-hooks: ## Install and run pre-commit hooks
+install-hooks: ## Install pre-commit hooks
 	pre-commit install
+
+run-hooks: ## Run pre-commit hooks on staged files
+	pre-commit run
+
+run-hooks-all: ## Run pre-commit hooks on all files
 	pre-commit run --all-files
 
 clean-build: ## Remove build artifacts
@@ -37,8 +42,9 @@ view-docs: ## Open Sphinx HTML documentation in a browser
 install: ## Install the package
 	pip install .
 
-install-dev: ## Install development version
+install-dev: ## Install development version and pre-commit hooks
 	pip install -e .[dev]
+	$(MAKE) install-hooks
 
 release: ## Package and upload
 	python setup.py sdist

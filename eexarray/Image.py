@@ -32,6 +32,7 @@ class Image:
         crs: str = "EPSG:4326",
         masked: bool = True,
         nodata: int = -32_768,
+        progress: bool = True,
         max_attempts: int = 10,
     ) -> xr.Dataset:
         """Convert an image to an xarray.Dataset. The :code:`system:time_start` property of the image is used to set the
@@ -53,7 +54,9 @@ class Image:
             cast integer datatypes to float.
         nodata : int, default -32,768
             The value to set as nodata in the array. Any masked pixels will be filled with this value.
-        max_attempts: int, default 5
+        progress : bool, default True
+            If true, a progress bar will be displayed to track download progress.
+        max_attempts: int, default 10
             Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
             max_attempts. Must be between 1 and 99.
 
@@ -86,6 +89,7 @@ class Image:
                 masked=masked,
                 nodata=nodata,
                 max_attempts=max_attempts,
+                progress=progress,
             )
 
             ds = _dataset_from_files(files)
@@ -109,6 +113,7 @@ class Image:
         file_per_band: bool = False,
         masked: bool = True,
         nodata: int = -32_768,
+        progress: bool = True,
         max_attempts: int = 10,
     ) -> List[str]:
         """Download an image to geoTIFF.
@@ -133,7 +138,9 @@ class Image:
             If true, the nodata value of the image will be set in the image metadata.
         nodata : int, default -32,768
             The value to set as nodata in the image. Any masked pixels in the image will be filled with this value.
-        max_attempts: int, default 5
+        progress : bool, default True
+            If true, a progress bar will be displayed to track download progress.
+        max_attempts: int, default 10
             Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
             max_attempts. Must be between 1 and 99.
 
@@ -160,7 +167,7 @@ class Image:
 
         with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
             zipped = self._download(
-                tmp, region, scale, crs, file_per_band, nodata, max_attempts
+                tmp, region, scale, crs, file_per_band, nodata, progress, max_attempts
             )
             tifs = _unpack_file(zipped, out_dir)
 
@@ -185,6 +192,7 @@ class Image:
         crs: str = "EPSG:4326",
         file_per_band: bool = False,
         nodata: int = -32_768,
+        progress: bool = True,
         max_attempts: int = 10,
     ) -> str:
         """Download an image as a ZIP"""
@@ -223,7 +231,7 @@ class Image:
                 "Requested elements could not be downloaded from Earth Engine. Retrying may solve the issue."
             )
 
-        zip = _download_url(url, out_dir, max_attempts)
+        zip = _download_url(url, out_dir, progress, max_attempts)
 
         return zip
 

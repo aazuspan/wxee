@@ -5,7 +5,7 @@ from typing import Any, List, Optional
 
 import ee  # type: ignore
 import xarray as xr
-from tqdm import tqdm  # type: ignore
+from tqdm.auto import tqdm  # type: ignore
 
 from eexarray import constants
 from eexarray.accessors import eex_accessor
@@ -64,7 +64,7 @@ class ImageCollection:
             used.
         progress : bool, default True
             If true, a progress bar will be displayed to track download progress.
-        max_attempts: int, default 5
+        max_attempts: int, default 10
             Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
             max_attempts. Must be between 1 and 99.
 
@@ -155,7 +155,7 @@ class ImageCollection:
             used.
         progress : bool, default True
             If true, a progress bar will be displayed to track download progress.
-        max_attempts: int, default 5
+        max_attempts: int, default 10
             Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
             max_attempts. Must be between 1 and 99.
 
@@ -194,6 +194,7 @@ class ImageCollection:
                 file_per_band=file_per_band,
                 masked=masked,
                 nodata=nodata,
+                progress=progress,
                 max_attempts=max_attempts,
             )
             tifs = list(
@@ -550,6 +551,7 @@ def _image_to_tif_alias(
     file_per_band: bool = False,
     masked: bool = True,
     nodata: int = -32_768,
+    progress: bool = True,
     max_attempts: int = 10,
 ) -> List[str]:
     """A pickleable wrapper around the ee.Image.eex.to_tif instance method, allowing it to be used in multiprocessing.
@@ -564,5 +566,6 @@ def _image_to_tif_alias(
         file_per_band,
         masked,
         nodata,
+        progress,
         max_attempts,
     )

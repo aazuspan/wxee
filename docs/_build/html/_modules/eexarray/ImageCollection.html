@@ -166,7 +166,7 @@
 
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 <span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">eexarray</span> <span class="kn">import</span> <span class="n">constants</span>
 <span class="kn">from</span> <span class="nn">eexarray.accessors</span> <span class="kn">import</span> <span class="n">eex_accessor</span>
@@ -225,7 +225,7 @@
 <span class="sd">            used.</span>
 <span class="sd">        progress : bool, default True</span>
 <span class="sd">            If true, a progress bar will be displayed to track download progress.</span>
-<span class="sd">        max_attempts: int, default 5</span>
+<span class="sd">        max_attempts: int, default 10</span>
 <span class="sd">            Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to</span>
 <span class="sd">            max_attempts. Must be between 1 and 99.</span>
 
@@ -316,7 +316,7 @@
 <span class="sd">            used.</span>
 <span class="sd">        progress : bool, default True</span>
 <span class="sd">            If true, a progress bar will be displayed to track download progress.</span>
-<span class="sd">        max_attempts: int, default 5</span>
+<span class="sd">        max_attempts: int, default 10</span>
 <span class="sd">            Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to</span>
 <span class="sd">            max_attempts. Must be between 1 and 99.</span>
 
@@ -355,6 +355,7 @@
                 <span class="n">file_per_band</span><span class="o">=</span><span class="n">file_per_band</span><span class="p">,</span>
                 <span class="n">masked</span><span class="o">=</span><span class="n">masked</span><span class="p">,</span>
                 <span class="n">nodata</span><span class="o">=</span><span class="n">nodata</span><span class="p">,</span>
+                <span class="n">progress</span><span class="o">=</span><span class="n">progress</span><span class="p">,</span>
                 <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">tifs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
@@ -711,6 +712,7 @@
     <span class="n">file_per_band</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">masked</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
+    <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;A pickleable wrapper around the ee.Image.eex.to_tif instance method, allowing it to be used in multiprocessing.</span>
@@ -725,6 +727,7 @@
         <span class="n">file_per_band</span><span class="p">,</span>
         <span class="n">masked</span><span class="p">,</span>
         <span class="n">nodata</span><span class="p">,</span>
+        <span class="n">progress</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">,</span>
     <span class="p">)</span>
 </pre></div>

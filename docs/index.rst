@@ -14,7 +14,7 @@ eexarray
 Description
 -----------
 eexarray was built to make processing gridded, mesoscale time series data quick and easy by integrating the data catalog 
-and processing power of Google Earth Engine with the n-dimensional array functionality of xarray, with no complicated setup required.
+and processing power of Google Earth Engine with the flexibility of xarray and numpy, with no complicated setup required.
 
 Quickstart
 ----------

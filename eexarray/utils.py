@@ -10,6 +10,7 @@ import rasterio  # type: ignore
 import requests
 import xarray as xr
 from requests.adapters import HTTPAdapter
+from tqdm.auto import tqdm  # type: ignore
 from urllib3.util.retry import Retry  # type: ignore
 
 
@@ -62,7 +63,7 @@ def _unpack_file(file: str, out_dir: str) -> List[str]:
     return [os.path.join(out_dir, file) for file in unzipped]
 
 
-def _download_url(url: str, out_dir: str, max_attempts: int) -> str:
+def _download_url(url: str, out_dir: str, progress: bool, max_attempts: int) -> str:
     """Download a file from a URL to a specified directory.
 
     Parameters
@@ -71,6 +72,8 @@ def _download_url(url: str, out_dir: str, max_attempts: int) -> str:
         The URL address of the element to download.
     out_dir : str
         The directory path to save the temporary file to.
+    progress : bool
+        If true, a progress bar will be displayed to track download progress.
     max_attempts : int
         The maximum number of times to retry a connection.
 
@@ -80,10 +83,21 @@ def _download_url(url: str, out_dir: str, max_attempts: int) -> str:
         The path to the downloaded file.
     """
     filename = tempfile.NamedTemporaryFile(mode="w+b", dir=out_dir, delete=False).name
+    r = _create_retry_session(max_attempts).get(url, stream=True)
+    file_size = int(r.headers.get("content-length", 0))
 
-    with open(filename, "w+b") as dst:
-        r = _create_retry_session(max_attempts).get(url)
-        dst.write(r.content)
+    with open(filename, "w+b") as dst, tqdm(
+        total=file_size,
+        unit="iB",
+        unit_scale=True,
+        unit_divisor=1024,
+        desc="Downloading image",
+        disable=not progress,
+    ) as bar:
+        for data in r.iter_content(chunk_size=1024):
+            size = dst.write(data)
+            bar.update(size)
+
     return filename
 
 

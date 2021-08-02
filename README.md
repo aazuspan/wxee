@@ -7,19 +7,20 @@ A Python interface between Earth Engine and xarray
 
 ![demo](docs/_static/demo_001.gif)
 
-## Description
-eexarray was built to make processing gridded, mesoscale time series data quick and easy by integrating the data catalog and processing power of Google Earth Engine with the n-dimensional array functionality of xarray, with no complicated setup required.
+## What is eexarray?
+eexarray was designed make processing gridded, mesoscale time series data quick and easy by providing a bridge between the data catalog and processing power of Google Earth Engine and the flexibility of xarray and numpy, with no complicated setup required. To accomplish this, eexarray implements convenient methods for data processing and conversion.
 
-## Features
-- Time series image collections to xarray in one line of code
-- Images and image collections to GeoTIFF
-- Support for masked nodata values
-- Parallel processing for fast downloads
+### Features
+- Time series image collections to xarray and NetCDF in one line of code
 - Temporal resampling in EE (hourly to daily, daily to monthly, etc.)
+- Images and image collections to GeoTIFF
+- Parallel processing for fast downloads
+- Support for masked nodata values
 
-### Features Coming Soon
-- Basic weather and climate processing implemented in EE
-- Automated splitting of download requests that exceed size limits (no promises here...)
+## What *isn't* eexarray?
+eexarray isn't built to export huge amounts of data. The "no setup required" approach means it has strict download size limits imposed by Earth Engine's URL downloading system. If you run into download issues, try using a larger scale or splitting images into smaller regions. If you are regularly downloading large amounts of high resolution data, consider using Earth Engine's built-in Drive exporting or a tool like [restee](https://github.com/KMarkert/restee).
+
+eexarray also isn't a weather/climate processing toolkit. There are great Python packages out there already like [MetPy](https://github.com/Unidata/MetPy) and [ACT](https://github.com/ARM-DOE/ACT), so why reinvent the wheel? eexarray focuses on taking care of the heavy lifting so you can work with your data in domain-specific tools. 
 
 ## Installation
 
@@ -36,6 +37,7 @@ make install
 
 Check out the [full documentation](https://eexarray.readthedocs.io/en/latest/) here.
 
+
 ### Using the eex Accessor
 
 eexarray uses the `eex` accessor to extend Earth Engine classes. Just import eexarray and use `.eex` to access eexarray methods.
@@ -48,18 +50,23 @@ ee.Image( ... ).eex
 ee.ImageCollection( ... ).eex
 ```
 
-### Converting an Image Collection xarray
+### Converting an Image Collection to xarray
 
 ```python
 import ee, eexarray
 ee.Initialize()
 
-# Load hourly wind data from RTMA
-hourly = ee.ImageCollection("NOAA/NWS/RTMA").filterDate("2020-09-08", "2020-09-15").select("WIND")
-# Aggregate hourly winds to daily max winds
+imgs = ee.ImageCollection("NOAA/NWS/RTMA").filterDate("2020-09-08", "2020-09-15")
+arr = imgs.eex.to_xarray(scale=40_000, crs="EPSG:5070")
+```
+
+### Temporal Resampling
+```python
+import ee, eexarray
+ee.Initialize()
+
+hourly = ee.ImageCollection("NOAA/NWS/RTMA").filterDate("2020-09-08", "2020-09-15")
 daily_max = hourly.eex.resample_daily(reducer=ee.Reducer.max())
-# Download the daily winds to an xarray dataset
-arr = daily_max.eex.to_xarray(scale=40_000, crs="EPSG:5070")
 ```
 
 ### Downloading Images to GeoTIFF
@@ -70,13 +77,6 @@ ee.Initialize()
 img = ee.Image("COPERNICUS/S2_SR/20200803T181931_20200803T182946_T11SPA")
 img.eex.to_tif(out_dir="data", scale=200, crs="EPSG:5070")
 ```
-
-## Limitations
-eexarray avoids the hassle of Google Drive, Google Cloud, and service accounts by using Earth Engine's URL download system. The upside is one-liner downloads with no setup required. The downside is strict size limits for image requests. If you run into download issues, try using a larger scale or splitting images into smaller regions.
-
-If eexarray is too limiting (i.e. high-volume users or embedded web apps), check out [restee](https://github.com/KMarkert/restee).
-
-Aside from download limits, eexarray is in early, active development. There may be bugs or code-breaking changes (but I'll try to keep them to a minimum).
 
 ### Known Bugs
 Downloading imagery from Earth Engine can fail due to communication issues with Google's servers. eexarray will automatically retry failed downloads, but if downloads continue to fail you can try 1) setting the `max_attempts` argument to a higher value or 2) waiting a few minutes and re-running your download.
@@ -96,24 +96,19 @@ cd eexarray
 make install-dev
 ```
 
-3. Install pre-commit hooks to automate formatting and type-checking.
-```bash
-make install-hooks
-```
-
-4. Create a new feature branch.
+3. Create a new feature branch.
 ```bash
 git checkout -b {feature-name}
 ```
 
-5. Write features and tests and commit them (all pre-commit checks must pass). Add NumPy-style docstrings and type hints for any new functions, methods, or classes.
+4. Write features and tests and commit them (all pre-commit checks must pass). Add NumPy-style docstrings and type hints for any new functions, methods, or classes.
 
 ```bash
 git add {modified file(s)}
 git commit -m "{commit message}"
 ```
 
-6. Rebuild documentation when docstrings are added or changed.
+5. Rebuild documentation when docstrings are added or changed.
 ```bash
 make docs
 make view-docs

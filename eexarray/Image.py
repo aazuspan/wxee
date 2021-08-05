@@ -244,5 +244,5 @@ class Image:
     def _rename_by_time(self) -> ee.Image:
         """Set the image's :code:`system:id` to its formatted :code:`system:time_start`."""
         date = ee.Date(ee.Image(self._obj).get("system:time_start"))
-        date_string = date.format("YMMdd'T'hhmmss")
+        date_string = date.format("yyyyMMdd'T'HHmmss")
         return self._obj.set("system:id", date_string)

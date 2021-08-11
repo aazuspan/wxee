@@ -79,7 +79,18 @@ img.eex.to_tif(out_dir="data", scale=200, crs="EPSG:5070")
 ```
 
 ### Known Bugs
+#### Download Failures
 Downloading imagery from Earth Engine can fail due to communication issues with Google's servers. eexarray will automatically retry failed downloads, but if downloads continue to fail you can try 1) setting the `max_attempts` argument to a higher value or 2) waiting a few minutes and re-running your download.
+
+#### Parallel Processing
+There is a [bug](https://github.com/aazuspan/eexarray/issues/3) that may cause issues with parallel processing. A fix is in progress, but if you run into an error like below, a quick workaround is to set `num_cores=1` to disable parallel processing.
+
+```python
+>>> img.eex.to_xarray()
+AttributeError: Can't pickle local object 'Image.expression.<locals>.ReinterpretedFunction'
+
+>>> img.eex.to_xarray(num_cores=1)
+```
 
 ## Contributing
 Bugs or feature requests are always appreciated! They can be submitted [here](https://github.com/aazuspan/eexarray/issues). 

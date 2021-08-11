@@ -184,23 +184,27 @@ class ImageCollection:
         imgs = self._to_image_list()
         n = len(imgs)
 
+        kwargs = dict(
+            out_dir=out_dir,
+            region=region,
+            scale=scale,
+            crs=crs,
+            file_per_band=file_per_band,
+            masked=masked,
+            nodata=nodata,
+            progress=False,
+            max_attempts=max_attempts,
+        )
+
         if num_cores > 1:
-            with mp.Pool(num_cores) as p:
-                params = functools.partial(
-                    _image_to_tif_alias,
-                    out_dir=out_dir,
-                    region=region,
-                    scale=scale,
-                    crs=crs,
-                    file_per_band=file_per_band,
-                    masked=masked,
-                    nodata=nodata,
-                    progress=False,
-                    max_attempts=max_attempts,
-                )
+            # Use ThreadPool instead of Pool to avoid issues with pickling local functions
+            # https://stackoverflow.com/questions/8804830/python-multiprocessing-picklingerror-cant-pickle-type-function
+            with mp.pool.ThreadPool(num_cores) as p:
+                # TODO: Make this work directly with Image.to_tif instead of the alias
+                params = functools.partial(_image_to_tif_alias, **kwargs)
                 tifs = list(
                     tqdm(
-                        p.imap(params, imgs),
+                        p.imap_unordered(params, imgs),
                         total=n,
                         disable=not progress,
                         desc="Downloading collection",
@@ -208,17 +212,7 @@ class ImageCollection:
                 )
         else:
             tifs = [
-                img.eex.to_tif(
-                    out_dir=out_dir,
-                    region=region,
-                    scale=scale,
-                    crs=crs,
-                    file_per_band=file_per_band,
-                    masked=masked,
-                    nodata=nodata,
-                    progress=False,
-                    max_attempts=max_attempts,
-                )
+                img.eex.to_tif(**kwargs)
                 for img in tqdm(
                     imgs, disable=not progress, desc="Downloading collection"
                 )

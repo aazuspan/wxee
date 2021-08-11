@@ -1,6 +1,7 @@
 import functools
 import multiprocessing as mp
 import tempfile
+from multiprocessing.pool import ThreadPool
 from typing import Any, List, Optional
 
 import ee  # type: ignore
@@ -199,7 +200,7 @@ class ImageCollection:
         if num_cores > 1:
             # Use ThreadPool instead of Pool to avoid issues with pickling local functions
             # https://stackoverflow.com/questions/8804830/python-multiprocessing-picklingerror-cant-pickle-type-function
-            with mp.pool.ThreadPool(num_cores) as p:
+            with ThreadPool(num_cores) as p:
                 # TODO: Make this work directly with Image.to_tif instead of the alias
                 params = functools.partial(_image_to_tif_alias, **kwargs)
                 tifs = list(

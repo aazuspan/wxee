@@ -184,27 +184,45 @@ class ImageCollection:
         imgs = self._to_image_list()
         n = len(imgs)
 
-        with mp.Pool(num_cores) as p:
-            params = functools.partial(
-                _image_to_tif_alias,
-                out_dir=out_dir,
-                region=region,
-                scale=scale,
-                crs=crs,
-                file_per_band=file_per_band,
-                masked=masked,
-                nodata=nodata,
-                progress=progress,
-                max_attempts=max_attempts,
-            )
-            tifs = list(
-                tqdm(
-                    p.imap(params, imgs),
-                    total=n,
-                    disable=not progress,
-                    desc="Downloading collection",
+        if num_cores > 1:
+            with mp.Pool(num_cores) as p:
+                params = functools.partial(
+                    _image_to_tif_alias,
+                    out_dir=out_dir,
+                    region=region,
+                    scale=scale,
+                    crs=crs,
+                    file_per_band=file_per_band,
+                    masked=masked,
+                    nodata=nodata,
+                    progress=False,
+                    max_attempts=max_attempts,
                 )
-            )
+                tifs = list(
+                    tqdm(
+                        p.imap(params, imgs),
+                        total=n,
+                        disable=not progress,
+                        desc="Downloading collection",
+                    )
+                )
+        else:
+            tifs = [
+                img.eex.to_tif(
+                    out_dir=out_dir,
+                    region=region,
+                    scale=scale,
+                    crs=crs,
+                    file_per_band=file_per_band,
+                    masked=masked,
+                    nodata=nodata,
+                    progress=False,
+                    max_attempts=max_attempts,
+                )
+                for img in tqdm(
+                    imgs, disable=not progress, desc="Downloading collection"
+                )
+            ]
 
         return _flatten_list(tifs)
 

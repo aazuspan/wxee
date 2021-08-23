@@ -8,11 +8,12 @@ A Python interface between Earth Engine and xarray
 ![demo](docs/_static/demo_001.gif)
 
 ## What is eexarray?
-eexarray was designed to make processing gridded, mesoscale time series data quick and easy by providing a bridge between the data catalog and processing power of Google Earth Engine and the flexibility of xarray and numpy, with no complicated setup required. To accomplish this, eexarray implements convenient methods for data processing and conversion.
+eexarray was designed to make processing gridded, mesoscale time series data quick and easy by providing a bridge between the data catalog and processing power of [Google Earth Engine](https://earthengine.google.com/) and the flexibility of [xarray](https://github.com/pydata/xarray), with no complicated setup required. To accomplish this, eexarray implements convenient methods for data processing, aggregation, downloading, and ingestion.
 
 ### Features
 - Time series image collections to xarray and NetCDF in one line of code
 - Temporal resampling in EE (hourly to daily, daily to monthly, etc.)
+- Climatological normals in EE (day-of-year, monthly)
 - Images and image collections to GeoTIFF
 - Parallel processing for fast downloads
 - Support for masked nodata values
@@ -53,27 +54,24 @@ ee.ImageCollection( ... ).eex
 ### Converting an Image Collection to xarray
 
 ```python
-import ee, eexarray
-ee.Initialize()
-
-imgs = ee.ImageCollection("NOAA/NWS/RTMA").filterDate("2020-09-08", "2020-09-15")
-arr = imgs.eex.to_xarray(scale=40_000, crs="EPSG:5070")
+hourly = ee.ImageCollection("NOAA/NWS/RTMA").filterDate("2020-09-08", "2020-09-15")
+da = hourly.eex.to_xarray(scale=40_000, crs="EPSG:5070")
 ```
 
 ### Temporal Resampling
 ```python
-import ee, eexarray
-ee.Initialize()
-
 hourly = ee.ImageCollection("NOAA/NWS/RTMA").filterDate("2020-09-08", "2020-09-15")
 daily_max = hourly.eex.resample_daily(reducer=ee.Reducer.max())
 ```
 
+### Climatology
+```python
+daily = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").select("vpd").filterDate("2000", "2010")
+monthly_max_climatology = daily.climatology_month(ee.Reducer.max())
+```
+
 ### Downloading Images to GeoTIFF
 ```python
-import ee, eexarray
-ee.Initialize()
-
 img = ee.Image("COPERNICUS/S2_SR/20200803T181931_20200803T182946_T11SPA")
 img.eex.to_tif(out_dir="data", scale=200, crs="EPSG:5070")
 ```

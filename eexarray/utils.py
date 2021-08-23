@@ -145,7 +145,7 @@ def _parse_filename(file: str) -> Tuple[str, Union[str, datetime.datetime], str]
     dim, coord, variable = basename.split(".")[1:4]
     if dim == "time":
         try:
-            coord = datetime.datetime.strptime("coord", "%Y%m%dT%H%M%S")
+            coord = datetime.datetime.strptime(coord, "%Y%m%dT%H%M%S")
         except ValueError:
             coord = coord
             warnings.warn(

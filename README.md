@@ -67,7 +67,7 @@ daily_max = hourly.eex.resample_daily(reducer=ee.Reducer.max())
 ### Climatology
 ```python
 daily = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").select("vpd").filterDate("2000", "2010")
-monthly_max_climatology = daily.climatology_month(ee.Reducer.max())
+monthly_max_climatology = daily.eex.climatology_month(ee.Reducer.max())
 ```
 
 ### Downloading Images to GeoTIFF

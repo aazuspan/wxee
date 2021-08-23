@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Temporal Resampling &mdash; eexarray  documentation</title>
+  <title>Climatology &mdash; eexarray  documentation</title>
   
 
   
@@ -44,8 +44,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Climatology" href="climatology.html" />
-    <link rel="prev" title="Downloading Images and Collections" href="downloading_images_and_collections.html" /> 
+    <link rel="prev" title="Temporal Resampling" href="temporal_resampling.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -99,14 +98,14 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="image_collection_to_xarray.html">Image Collection to xarray</a></li>
 <li class="toctree-l2"><a class="reference internal" href="downloading_images_and_collections.html">Downloading Images and Collections</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Temporal Resampling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="temporal_resampling.html">Temporal Resampling</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Climatology</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Setup">Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Hourly-to-Daily">Hourly to Daily</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Daily-to-Monthly">Daily to Monthly</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Warning">Warning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Monthly-Median-VPD">Monthly Median VPD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Climatology-vs. Temporal-Resampling">Climatology vs. Temporal Resampling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Daily-Max-Precipitation">Daily Max Precipitation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="climatology.html">Climatology</a></li>
 </ul>
 </li>
 </ul>
@@ -159,13 +158,13 @@
         
           <li><a href="../examples.html">Examples</a> &raquo;</li>
         
-      <li>Temporal Resampling</li>
+      <li>Climatology</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/examples/temporal_resampling.ipynb.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/examples/climatology.ipynb.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -448,10 +447,9 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="Temporal-Resampling">
-<h1>Temporal Resampling<a class="headerlink" href="#Temporal-Resampling" title="Permalink to this headline">¶</a></h1>
-<p>In this tutorial, we’ll use eexarray to aggregate image collections over time. eexarray supports the following resampling methods which can be applied to an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> using the <code class="docutils literal notranslate"><span class="pre">eex</span></code> accessor: <code class="docutils literal notranslate"><span class="pre">resample_hourly</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_daily</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_weekly</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_monthly</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_annually</span></code>.</p>
-<p>Note that eexarray’s resampling methods are one-directional: for example, they can be used to aggregate daily data into weekly or weekly data into annual, but not vice versa.</p>
+<div class="section" id="Climatology">
+<h1>Climatology<a class="headerlink" href="#Climatology" title="Permalink to this headline">¶</a></h1>
+<p>In this tutorial, we’ll look at how to use eexarray to calculate long-term climatological normals of gridded weather data. eexarray supports the following climatology methods which can be applied to an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> using the <code class="docutils literal notranslate"><span class="pre">eex</span></code> accessor: <code class="docutils literal notranslate"><span class="pre">climatology_dayofyear</span></code>, <code class="docutils literal notranslate"><span class="pre">climatology_month</span></code></p>
 <div class="section" id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -467,103 +465,131 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 </div>
-<div class="section" id="Hourly-to-Daily">
-<h2>Hourly to Daily<a class="headerlink" href="#Hourly-to-Daily" title="Permalink to this headline">¶</a></h2>
-<p>Load two days worth of RTMA data that contains hourly wind velocity grids. The collection should contain 48 images–one per hour.</p>
+<div class="section" id="Monthly-Median-VPD">
+<h2>Monthly Median VPD<a class="headerlink" href="#Monthly-Median-VPD" title="Permalink to this headline">¶</a></h2>
+<p>gridMET contains daily weather data including vapor pressure deficit (VPD). We’ll load 10 years of data from 2000 - 2010, giving us several thousand daily images.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">rtma</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-10&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;WIND&quot;</span><span class="p">)</span>
-
-<span class="n">rtma</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-48
-</pre></div></div>
-</div>
-<p>Use eexarray to resample hourly data to daily. By default, <code class="docutils literal notranslate"><span class="pre">resample_daily</span></code> uses <code class="docutils literal notranslate"><span class="pre">ee.Reducer.mean()</span></code> to aggregate data, so the output will represent average daily wind speeds. The 48 hourly input images have been aggregated into 2 daily images.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">daily</span> <span class="o">=</span> <span class="n">rtma</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">resample_daily</span><span class="p">()</span>
-
-<span class="n">daily</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2
-</pre></div></div>
-</div>
-<p>Now we can download and visualize the daily data.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">x</span> <span class="o">=</span> <span class="n">daily</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
-<span class="n">x</span><span class="o">.</span><span class="n">WIND</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Downloading collection: 100%|███████████████████████████████████| 2/2 [00:03&lt;00:00,  1.70s/it]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f04557a7880&gt;
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/examples_temporal_resampling_9_2.png" src="../_images/examples_temporal_resampling_9_2.png" />
-</div>
-</div>
-</div>
-<div class="section" id="Daily-to-Monthly">
-<h2>Daily to Monthly<a class="headerlink" href="#Daily-to-Monthly" title="Permalink to this headline">¶</a></h2>
-<p>gridMET contains daily temperature data. We’ll load one year of data from 2020, giving us 366 images (2020 was a leap year).</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;tmmx&quot;</span><span class="p">)</span>
-<span class="n">gridmet</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2021-01&quot;</span><span class="p">)</span>
+<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;vpd&quot;</span><span class="p">)</span>
+<span class="n">gridmet</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2000&quot;</span><span class="p">,</span> <span class="s2">&quot;2010&quot;</span><span class="p">)</span>
 
 <span class="n">gridmet</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+3653
+</pre></div></div>
+</div>
+<p>Now, we’ll calculate the monthly median climatology over the 10 years, giving us just 12 images (one per month).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">climatology_month</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">median</span><span class="p">())</span>
+<span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+12
+</pre></div></div>
+</div>
+<p>Finally, we’ll download the monthly normals as an xarray dataset and plot them.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">x</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
+<span class="n">x</span><span class="o">.</span><span class="n">vpd</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8ed25e6baa304afb8e8e9f3889d30b0b", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7fcf6dac7c10&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_climatology_9_2.png" src="../_images/examples_climatology_9_2.png" />
+</div>
+</div>
+<p>Unsurprisignly, high VPDs in July (month 7) indicate that it was the driest month of the year on average between 2000 and 2010.</p>
+</div>
+<div class="section" id="Climatology-vs. Temporal-Resampling">
+<h2>Climatology vs. Temporal Resampling<a class="headerlink" href="#Climatology-vs. Temporal-Resampling" title="Permalink to this headline">¶</a></h2>
+<p>Climatology and temporal resampling share some characteristics–both use reducers to aggregate time series of images–so it’s important to understand the difference. The easiest way to compare the two is to think about how they would handle the example above with 10 years of raw data:</p>
+<ul class="simple">
+<li><p><strong>Raw data</strong>: 3653 images (1 per day per year)</p>
+<ul>
+<li><p><strong>Monthly median climatology</strong>: 12 images (1 per month)</p>
+<ul>
+<li><p>Each image is the monthly median VPD over all 10 years (e.g. October).</p></li>
+</ul>
+</li>
+<li><p><strong>Monthly median temporal resampling</strong>: 120 images (1 per month per year)</p>
+<ul>
+<li><p>Each image is the monthly median VPD in one year (e.g. October 2005).</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="Daily-Max-Precipitation">
+<h2>Daily Max Precipitation<a class="headerlink" href="#Daily-Max-Precipitation" title="Permalink to this headline">¶</a></h2>
+<p>Once again we’ll look at gridMET daily weather data, but this time we’ll calculate climatological normals of maximum precipitation by day-of-year.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;pr&quot;</span><span class="p">)</span>
+<span class="n">gridmet</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2000&quot;</span><span class="p">,</span> <span class="s2">&quot;2005&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>A day-of-year climatology will give 366 images, one for each day through the 5 years (including leap days).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">climatology_dayofyear</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -571,61 +597,19 @@ Downloading collection: 100%|█████████████████
 366
 </pre></div></div>
 </div>
-<p>Now, we’ll calculate the monthly maximum temperatures, download them an xarray dataset, and plot them by month.</p>
+<p>We could download all 366 images, but maybe we’re only interested in daily precipitation in the month of March. We can use the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> args to set the climatological window of days to look at. Here we’ll set the start to 60 (March 1) and the end to 90 (March 30). Now we only have 31 images.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">monthly</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">resample_monthly</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-
-<span class="n">x</span> <span class="o">=</span> <span class="n">monthly</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
-<span class="n">x</span><span class="o">.</span><span class="n">tmmx</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Downloading collection: 100%|█████████████████████████████████| 12/12 [00:04&lt;00:00,  2.56it/s]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f04b54637f0&gt;
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/examples_temporal_resampling_14_2.png" src="../_images/examples_temporal_resampling_14_2.png" />
-</div>
-</div>
-</div>
-<div class="section" id="Warning">
-<h2>Warning<a class="headerlink" href="#Warning" title="Permalink to this headline">¶</a></h2>
-<p>eexarray’s temporal resampling methods can only be used to aggregate fine time steps into coarse time steps (e.g. hours to days, days to months). Resampling a temporally coarse dataset into a finer time unit may lead to invalid results. Below, you can see that attempting to resample daily data into hourly caused one of the images to be lost.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;tmmx&quot;</span><span class="p">)</span>
-<span class="n">gridmet</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-02&quot;</span><span class="p">)</span>
-
-<span class="n">gridmet</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">climatology_dayofyear</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">start</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -633,23 +617,39 @@ Downloading collection: 100%|█████████████████
 31
 </pre></div></div>
 </div>
+<div class="alert alert-block alert-info"><p>Tip: Downloading is the slowest part of dealing with Earth Engine data in eexarray, so it’s always best to aggregate and filter your data before downloading.</p>
+</div><p>Let’s download and plot them.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">gridmet</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">resample_hourly</span><span class="p">()</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+<span></span><span class="n">march_ppt</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
+<span class="n">march_ppt</span><span class="o">.</span><span class="n">pr</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;dayofyear&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d55096d01363424a8fdedb2ce47df303", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-30
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7fcf5f84b610&gt;
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_climatology_21_2.png" src="../_images/examples_climatology_21_2.png" />
+</div>
 </div>
 </div>
 </div>
@@ -660,8 +660,7 @@ Downloading collection: 100%|█████████████████
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="climatology.html" class="btn btn-neutral float-right" title="Climatology" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="downloading_images_and_collections.html" class="btn btn-neutral float-left" title="Downloading Images and Collections" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="temporal_resampling.html" class="btn btn-neutral float-left" title="Temporal Resampling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

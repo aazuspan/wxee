@@ -159,7 +159,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for eexarray.time_series</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 
@@ -458,7 +458,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resample_time</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_calculate_climatology</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">date_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">reducer</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">date_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Calculate a climatology image collection with a given unit, such as month or dayofyear.</span>
 
@@ -476,6 +482,9 @@
 <span class="sd">            The start coordinate in the given unit, e.g. month 1 will start in January.</span>
 <span class="sd">        end : int</span>
 <span class="sd">            The end coordinate in the given unit, e.g. month 12 will end in December.</span>
+<span class="sd">        keep_bandnames : bool, default True</span>
+<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
+<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -484,8 +493,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">prop</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;eex:</span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span>
 
-        <span class="k">def</span> <span class="nf">reduce_unit</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;Apply a reducer over a time unit, returning None if no images fall within the time window.&quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">reduce_unit</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">]:</span>
+            <span class="sd">&quot;&quot;&quot;Apply a reducer over a time unit, returning None if no images fall within the time window.</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            x : ee.String</span>
+<span class="sd">                The time coordinate to reduce, such as &quot;1&quot; for January.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">imgs</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">filterMetadata</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="s2">&quot;equals&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
             <span class="n">reduced</span> <span class="o">=</span> <span class="n">imgs</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">reducer</span><span class="p">)</span>
             <span class="c1"># Retrieve the time from the image instead of using x because I need a formatted</span>
@@ -494,6 +509,10 @@
             <span class="n">reduced</span> <span class="o">=</span> <span class="n">reduced</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;eex:dimension&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="s2">&quot;eex:coordinate&quot;</span><span class="p">,</span> <span class="n">coord</span><span class="p">)</span>
             <span class="c1"># Reducing makes images unbounded which causes issues</span>
             <span class="n">reduced</span> <span class="o">=</span> <span class="n">reduced</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">geometry</span><span class="p">()</span><span class="o">.</span><span class="n">bounds</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="n">keep_bandnames</span><span class="p">:</span>
+                <span class="n">reduced</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">reduced</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">bandNames</span><span class="p">())</span>
+
             <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Algorithms</span><span class="o">.</span><span class="n">If</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">reduced</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
@@ -514,7 +533,11 @@
         <span class="k">return</span> <span class="n">clim</span>
 
 <div class="viewcode-block" id="TimeSeriesCollection.climatology_month"><a class="viewcode-back" href="../../eexarray.html#eexarray.TimeSeriesCollection.climatology_month">[docs]</a>    <span class="k">def</span> <span class="nf">climatology_month</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClimatologyImageCollection</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Calculate monthly climatology from a time series of data. This method is designed to be run with multiple years</span>
 <span class="sd">        of data to generate long-term monthly normals. To simply calculate monthly aggregates from sub-monthly data, see</span>
@@ -528,6 +551,9 @@
 <span class="sd">            The number of the start month to include in the climatology.</span>
 <span class="sd">        end : int, default 12</span>
 <span class="sd">            The number of the end month to include in the climatology.</span>
+<span class="sd">        keep_bandnames : bool, default True</span>
+<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
+<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -550,12 +576,18 @@
         <span class="c1"># so set the default reducer explicitly. This is also why the type hint above is set to Any.</span>
         <span class="n">reducer</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">reducer</span> <span class="k">else</span> <span class="n">reducer</span>
 
-        <span class="n">monthly_clim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_climatology</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+        <span class="n">monthly_clim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_climatology</span><span class="p">(</span>
+            <span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">keep_bandnames</span>
+        <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">MonthClimatologyImageCollection</span><span class="p">(</span><span class="n">monthly_clim</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">ClimatologyImageCollection</span><span class="p">(</span><span class="n">monthly_clim</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TimeSeriesCollection.climatology_dayofyear"><a class="viewcode-back" href="../../eexarray.html#eexarray.TimeSeriesCollection.climatology_dayofyear">[docs]</a>    <span class="k">def</span> <span class="nf">climatology_dayofyear</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">366</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">366</span><span class="p">,</span>
+        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClimatologyImageCollection</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Calculate day-of-year climatology from a time series of data. This method is designed to be run with multiple years</span>
 <span class="sd">        of data to generate long-term day-of-year normals. To simply calculate daily aggregates from sub-daily data, see</span>
@@ -569,6 +601,9 @@
 <span class="sd">            The number of the start day to include in the climatology.</span>
 <span class="sd">        end : int, default 366</span>
 <span class="sd">            The number of the end day to include in the climatology.</span>
+<span class="sd">        keep_bandnames : bool, default True</span>
+<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
+<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -591,7 +626,9 @@
         <span class="c1"># so set the default reducer explicitly. This is also why the type hint above is set to Any.</span>
         <span class="n">reducer</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">reducer</span> <span class="k">else</span> <span class="n">reducer</span>
 
-        <span class="n">daily_clim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_climatology</span><span class="p">(</span><span class="s2">&quot;dayofyear&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+        <span class="n">daily_clim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_climatology</span><span class="p">(</span>
+            <span class="s2">&quot;dayofyear&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">keep_bandnames</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">ClimatologyImageCollection</span><span class="p">(</span><span class="n">daily_clim</span><span class="p">)</span></div></div>
 </pre></div>

@@ -161,10 +161,11 @@
   <h1>Source code for eexarray.climatology</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 
-<span class="kn">import</span> <span class="nn">ee</span>
+<span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">eexarray.accessors</span> <span class="kn">import</span> <span class="n">eex_accessor</span>
 <span class="kn">from</span> <span class="nn">eexarray.collection</span> <span class="kn">import</span> <span class="n">ImageCollection</span>
+
 
 <span class="k">class</span> <span class="nc">ClimatologyImageCollection</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;An image collection of climatological statistics. Identical to an ee.ImageCollection but accessible through the</span>
@@ -172,6 +173,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">pass</span>
+
 
 <div class="viewcode-block" id="ClimatologyCollection"><a class="viewcode-back" href="../../eexarray.html#eexarray.ClimatologyCollection">[docs]</a><span class="nd">@eex_accessor</span><span class="p">(</span><span class="n">ClimatologyImageCollection</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ClimatologyCollection</span><span class="p">(</span><span class="n">ImageCollection</span><span class="p">):</span>

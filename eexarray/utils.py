@@ -3,9 +3,11 @@ import itertools
 import os
 import re
 import tempfile
-from typing import Any, List, Union
+import warnings
+from typing import Any, List, Tuple, Union
 from zipfile import ZipFile
 
+import ee  # type: ignore
 import rasterio  # type: ignore
 import requests
 import xarray as xr
@@ -31,12 +33,6 @@ def _set_nodata(file: str, nodata: Union[float, int]) -> None:
 def _flatten_list(a: List[Any]) -> List[Any]:
     """Flatten a nested list."""
     return list(itertools.chain.from_iterable(a))
-
-
-def _clean_filename(s: str) -> str:
-    """Convert a string into a safe-ish file path. This removes invalid characters but doesn't check for reserved or
-    invalid names."""
-    return re.sub(r"(?u)[^-\w]", "_", s)
 
 
 def _unpack_file(file: str, out_dir: str) -> List[str]:
@@ -129,23 +125,42 @@ def _dataset_from_files(files: List[str]) -> xr.Dataset:
 def _dataarray_from_file(file: str) -> xr.DataArray:
     """Create an xarray.DataArray from a single file by parsing datetimes and variables from the file name.
 
-    The file name must follow the format "{datetime}.{variable}.{extension}".
+    The file name must follow the format "{dimension}.{coordinate}.{variable}.{extension}".
     """
     da = xr.open_rasterio(file)
-    dt = _datetime_from_filename(file)
-    variable = _variable_from_filename(file)
+    dim, coord, variable = _parse_filename(file)
 
-    da = da.expand_dims({"time": [dt]}).rename(variable).squeeze("band").drop("band")
+    da = da.expand_dims({dim: [coord]}).rename(variable).squeeze("band").drop("band")
 
     return da
 
 
-def _datetime_from_filename(file: str) -> datetime.datetime:
-    """Extract a datetime from a filename that follows the format "{datetime}.{variable}.{extension}" """
-    basename = os.path.basename(file).split(".")[0]
-    return datetime.datetime.strptime(basename, "%Y%m%dT%H%M%S")
+def _parse_filename(file: str) -> Tuple[str, Union[str, datetime.datetime], str]:
+    """Parse the dimension, coordinate, and variable from a filename following the format
+    {id}.{dimension}.{coordinate}.{variable}.{extension}. Return as a tuple.
+    """
+    coord: Union[str, datetime.datetime]
+
+    basename = os.path.basename(file)
+    dim, coord, variable = basename.split(".")[1:4]
+    if dim == "time":
+        try:
+            coord = datetime.datetime.strptime("coord", "%Y%m%dT%H%M%S")
+        except ValueError:
+            coord = coord
+            warnings.warn(
+                f"The time coordinate '{coord}' could not be parsed into a valid datetime. Setting as raw value instead."
+            )
+
+    return (dim, coord, variable)
 
 
-def _variable_from_filename(file: str) -> str:
-    """Extract a variable name from a filename that follows the format "{datetime}.{variable}.{extension}" """
-    return os.path.basename(file).split(".")[1]
+def _replace_if_null(val: Union[ee.String, ee.Number], replacement: Any) -> Any:
+    """Take an Earth Engine object and return either the original non-null object or the given replacement if it is null."""
+    is_null = ee.Algorithms.IsEqual(val, None)
+    return ee.Algorithms.If(is_null, replacement, val)
+
+
+def _format_date(d: ee.Date) -> ee.String:
+    """Format a date using a consistent pattern."""
+    return ee.Date(d).format("yyyyMMdd'T'HHmmss")

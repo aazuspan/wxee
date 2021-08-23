@@ -1,3 +1,5 @@
+import random
+import string
 import tempfile
 import warnings
 from typing import List, Optional
@@ -11,9 +13,10 @@ from eexarray import constants
 from eexarray.accessors import eex_accessor
 from eexarray.exceptions import DownloadError
 from eexarray.utils import (
-    _clean_filename,
     _dataset_from_files,
     _download_url,
+    _format_date,
+    _replace_if_null,
     _set_nodata,
     _unpack_file,
 )
@@ -78,8 +81,6 @@ class Image:
         >>> col.eex.to_xarray(scale=40000, crs="EPSG:5070", nodata=-9999)
         """
         with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
-            self._obj = self._rename_by_time()
-
             files = self.to_tif(
                 out_dir=tmp,
                 region=region,
@@ -90,6 +91,7 @@ class Image:
                 nodata=nodata,
                 max_attempts=max_attempts,
                 progress=progress,
+                clean_filename=False,
             )
 
             ds = _dataset_from_files(files)
@@ -115,6 +117,7 @@ class Image:
         nodata: int = -32_768,
         progress: bool = True,
         max_attempts: int = 10,
+        clean_filename: bool = True,
     ) -> List[str]:
         """Download an image to geoTIFF.
 
@@ -124,7 +127,7 @@ class Image:
             The directory to save the image to.
         description : str, optional
             The name to save the file as with no file extension. If none is provided, the :code:`system:id` of the image
-            will be used after replacing invalid characters with underscores.
+            will be used.
         region : ee.Geometry, optional
             The region to download the image within. If none is provided, the :code:`geometry` of the image will be used.
         scale : int, optional
@@ -143,6 +146,9 @@ class Image:
         max_attempts: int, default 10
             Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
             max_attempts. Must be between 1 and 99.
+        clean_filename: bool, default True
+            If true and no description is provided, the :code:`system:id` will be cleaned by replacing invalid path
+            characters with underscores. If description is provided, this will have no effect.
 
         Returns
         -------
@@ -167,7 +173,15 @@ class Image:
 
         with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
             zipped = self._download(
-                tmp, region, scale, crs, file_per_band, nodata, progress, max_attempts
+                tmp,
+                region,
+                scale,
+                crs,
+                file_per_band,
+                nodata,
+                progress,
+                max_attempts,
+                clean_filename,
             )
             tifs = _unpack_file(zipped, out_dir)
 
@@ -194,6 +208,7 @@ class Image:
         nodata: int = -32_768,
         progress: bool = True,
         max_attempts: int = 10,
+        clean_filename: bool = True,
     ) -> str:
         """Download an image as a ZIP"""
         if max_attempts < 1:
@@ -209,13 +224,15 @@ class Image:
         # Set nodata values. If sameFootprint is true, areas outside of the image bounds will not be set.
         img = self._obj.unmask(nodata, sameFootprint=False)
 
+        image_id = self._get_download_id()
+
         url = None
         attempts = 0
         while attempts < max_attempts and not url:
             try:
                 url = img.getDownloadURL(
                     params=dict(
-                        name=_clean_filename(img.get("system:id").getInfo()),
+                        name=image_id.getInfo(),
                         scale=scale,
                         crs=crs,
                         region=region,
@@ -235,14 +252,24 @@ class Image:
 
         return zip
 
+    def _get_download_id(self) -> ee.String:
+        """Get the image's download ID by concatenating it's cleaned current ID with the time dimension and coordinate set by eexarray. If
+        the eex:dimension and eex:coordinate have not been set, they will be set to "time" and the formatted system:time_start, respectively.
+        """
+        img = self._obj
+        date = _format_date(ee.Image(img).get("system:time_start"))
+
+        original_id = _replace_if_null(img.get("system:id"), "null")
+        # Replace any invalid file path characters with underscores.
+        cleaned_id = ee.String(original_id).replace("([^a-z0-9]+)", "_", "gi")
+
+        dimension = _replace_if_null(img.get("eex:dimension"), "time")
+        coordinate = _replace_if_null(img.get("eex:coordinate"), date)
+
+        return ee.List([cleaned_id, dimension, coordinate]).join(".")
+
     def _prefix_id(self, prefix: str) -> ee.Image:
         """Add a prefix to the image's system:id"""
         return self._obj.set(
-            "system:id", ee.String(prefix).cat(self._obj.get("system:id"))
+            "system:id", ee.String(prefix).cat("_").cat(self._obj.get("system:id"))
         )
-
-    def _rename_by_time(self) -> ee.Image:
-        """Set the image's :code:`system:id` to its formatted :code:`system:time_start`."""
-        date = ee.Date(ee.Image(self._obj).get("system:time_start"))
-        date_string = date.format("yyyyMMdd'T'HHmmss")
-        return self._obj.set("system:id", date_string)

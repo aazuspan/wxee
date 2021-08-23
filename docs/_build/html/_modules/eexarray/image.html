@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>eexarray.Image &mdash; eexarray  documentation</title>
+  <title>eexarray.image &mdash; eexarray  documentation</title>
   
 
   
@@ -143,7 +143,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>eexarray.Image</li>
+      <li>eexarray.image</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -158,8 +158,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for eexarray.Image</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">tempfile</span>
+  <h1>Source code for eexarray.image</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
@@ -172,11 +174,12 @@
 <span class="kn">from</span> <span class="nn">eexarray.accessors</span> <span class="kn">import</span> <span class="n">eex_accessor</span>
 <span class="kn">from</span> <span class="nn">eexarray.exceptions</span> <span class="kn">import</span> <span class="n">DownloadError</span>
 <span class="kn">from</span> <span class="nn">eexarray.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">_clean_filename</span><span class="p">,</span>
     <span class="n">_dataset_from_files</span><span class="p">,</span>
     <span class="n">_download_url</span><span class="p">,</span>
     <span class="n">_set_nodata</span><span class="p">,</span>
     <span class="n">_unpack_file</span><span class="p">,</span>
+    <span class="n">_replace_if_null</span><span class="p">,</span>
+    <span class="n">_format_date</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -239,8 +242,6 @@
 <span class="sd">        &gt;&gt;&gt; col.eex.to_xarray(scale=40000, crs=&quot;EPSG:5070&quot;, nodata=-9999)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">TMP_PREFIX</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rename_by_time</span><span class="p">()</span>
-
             <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span>
                 <span class="n">out_dir</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
                 <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
@@ -250,7 +251,8 @@
                 <span class="n">masked</span><span class="o">=</span><span class="n">masked</span><span class="p">,</span>
                 <span class="n">nodata</span><span class="o">=</span><span class="n">nodata</span><span class="p">,</span>
                 <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
-                <span class="n">progress</span><span class="o">=</span><span class="n">progress</span>
+                <span class="n">progress</span><span class="o">=</span><span class="n">progress</span><span class="p">,</span>
+                <span class="n">clean_filename</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">ds</span> <span class="o">=</span> <span class="n">_dataset_from_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
@@ -276,6 +278,7 @@
         <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
         <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">clean_filename</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Download an image to geoTIFF.</span>
 
@@ -285,7 +288,7 @@
 <span class="sd">            The directory to save the image to.</span>
 <span class="sd">        description : str, optional</span>
 <span class="sd">            The name to save the file as with no file extension. If none is provided, the :code:`system:id` of the image</span>
-<span class="sd">            will be used after replacing invalid characters with underscores.</span>
+<span class="sd">            will be used.</span>
 <span class="sd">        region : ee.Geometry, optional</span>
 <span class="sd">            The region to download the image within. If none is provided, the :code:`geometry` of the image will be used.</span>
 <span class="sd">        scale : int, optional</span>
@@ -304,6 +307,9 @@
 <span class="sd">        max_attempts: int, default 10</span>
 <span class="sd">            Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to</span>
 <span class="sd">            max_attempts. Must be between 1 and 99.</span>
+<span class="sd">        clean_filename: bool, default True</span>
+<span class="sd">            If true and no description is provided, the :code:`system:id` will be cleaned by replacing invalid path</span>
+<span class="sd">            characters with underscores. If description is provided, this will have no effect.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -328,7 +334,15 @@
 
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">TMP_PREFIX</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
             <span class="n">zipped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download</span><span class="p">(</span>
-                <span class="n">tmp</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="n">max_attempts</span>
+                <span class="n">tmp</span><span class="p">,</span>
+                <span class="n">region</span><span class="p">,</span>
+                <span class="n">scale</span><span class="p">,</span>
+                <span class="n">crs</span><span class="p">,</span>
+                <span class="n">file_per_band</span><span class="p">,</span>
+                <span class="n">nodata</span><span class="p">,</span>
+                <span class="n">progress</span><span class="p">,</span>
+                <span class="n">max_attempts</span><span class="p">,</span>
+                <span class="n">clean_filename</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">tifs</span> <span class="o">=</span> <span class="n">_unpack_file</span><span class="p">(</span><span class="n">zipped</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">)</span>
 
@@ -355,6 +369,7 @@
         <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
         <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">clean_filename</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Download an image as a ZIP&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">max_attempts</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -370,13 +385,15 @@
         <span class="c1"># Set nodata values. If sameFootprint is true, areas outside of the image bounds will not be set.</span>
         <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">unmask</span><span class="p">(</span><span class="n">nodata</span><span class="p">,</span> <span class="n">sameFootprint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
+        <span class="n">image_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_download_id</span><span class="p">()</span>
+
         <span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">attempts</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">while</span> <span class="n">attempts</span> <span class="o">&lt;</span> <span class="n">max_attempts</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">url</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">url</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">getDownloadURL</span><span class="p">(</span>
                     <span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                        <span class="n">name</span><span class="o">=</span><span class="n">_clean_filename</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()),</span>
+                        <span class="n">name</span><span class="o">=</span><span class="n">image_id</span><span class="o">.</span><span class="n">getInfo</span><span class="p">(),</span>
                         <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
                         <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">,</span>
                         <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
@@ -396,17 +413,27 @@
 
         <span class="k">return</span> <span class="nb">zip</span>
 
+    <span class="k">def</span> <span class="nf">_get_download_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">String</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get the image&#39;s download ID by concatenating it&#39;s cleaned current ID with the time dimension and coordinate set by eexarray. If</span>
+<span class="sd">        the eex:dimension and eex:coordinate have not been set, they will be set to &quot;time&quot; and the formatted system:time_start, respectively.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">_format_date</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span>
+
+        <span class="n">original_id</span> <span class="o">=</span> <span class="n">_replace_if_null</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">),</span> <span class="s2">&quot;null&quot;</span><span class="p">)</span>
+        <span class="c1"># Replace any invalid file path characters with underscores.</span>
+        <span class="n">cleaned_id</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">original_id</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;([^a-z0-9]+)&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;gi&quot;</span><span class="p">)</span>
+
+        <span class="n">dimension</span> <span class="o">=</span> <span class="n">_replace_if_null</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;eex:dimension&quot;</span><span class="p">),</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span>
+        <span class="n">coordinate</span> <span class="o">=</span> <span class="n">_replace_if_null</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;eex:coordinate&quot;</span><span class="p">),</span> <span class="n">date</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="p">([</span><span class="n">cleaned_id</span><span class="p">,</span> <span class="n">dimension</span><span class="p">,</span> <span class="n">coordinate</span><span class="p">])</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_prefix_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add a prefix to the image&#39;s system:id&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
-            <span class="s2">&quot;system:id&quot;</span><span class="p">,</span> <span class="n">ee</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">))</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_rename_by_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Set the image&#39;s :code:`system:id` to its formatted :code:`system:time_start`.&quot;&quot;&quot;</span>
-        <span class="n">date</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span>
-        <span class="n">date_string</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;YMMdd&#39;T&#39;hhmmss&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">,</span> <span class="n">date_string</span><span class="p">)</span></div>
+            <span class="s2">&quot;system:id&quot;</span><span class="p">,</span> <span class="n">ee</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">))</span>
+        <span class="p">)</span></div>
 </pre></div>
 
            </div>

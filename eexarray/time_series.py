@@ -297,7 +297,13 @@ class TimeSeriesCollection(ImageCollection):
         return self._resample_time("year", reducer, keep_bandnames)
 
     def _calculate_climatology(
-        self, unit: str, date_format: str, reducer: Any, start: int, end: int
+        self,
+        unit: str,
+        date_format: str,
+        reducer: Any,
+        start: int,
+        end: int,
+        keep_bandnames: bool,
     ) -> ee.ImageCollection:
         """Calculate a climatology image collection with a given unit, such as month or dayofyear.
 
@@ -315,6 +321,9 @@ class TimeSeriesCollection(ImageCollection):
             The start coordinate in the given unit, e.g. month 1 will start in January.
         end : int
             The end coordinate in the given unit, e.g. month 12 will end in December.
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
 
         Returns
         -------
@@ -339,6 +348,10 @@ class TimeSeriesCollection(ImageCollection):
             reduced = reduced.set("eex:dimension", unit, "eex:coordinate", coord)
             # Reducing makes images unbounded which causes issues
             reduced = reduced.clip(col.geometry().bounds())
+
+            if keep_bandnames:
+                reduced = ee.Image(reduced).rename(imgs.first().bandNames())
+
             return ee.Algorithms.If(imgs.size().gt(0), reduced, None)
 
         col = self._obj
@@ -359,7 +372,11 @@ class TimeSeriesCollection(ImageCollection):
         return clim
 
     def climatology_month(
-        self, reducer: Optional[Any] = None, start: int = 1, end: int = 12
+        self,
+        reducer: Optional[Any] = None,
+        start: int = 1,
+        end: int = 12,
+        keep_bandnames: bool = True,
     ) -> ClimatologyImageCollection:
         """Calculate monthly climatology from a time series of data. This method is designed to be run with multiple years
         of data to generate long-term monthly normals. To simply calculate monthly aggregates from sub-monthly data, see
@@ -373,6 +390,9 @@ class TimeSeriesCollection(ImageCollection):
             The number of the start month to include in the climatology.
         end : int, default 12
             The number of the end month to include in the climatology.
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
 
         Returns
         -------
@@ -395,12 +415,18 @@ class TimeSeriesCollection(ImageCollection):
         # so set the default reducer explicitly. This is also why the type hint above is set to Any.
         reducer = ee.Reducer.mean() if not reducer else reducer
 
-        monthly_clim = self._calculate_climatology("month", "M", reducer, start, end)
+        monthly_clim = self._calculate_climatology(
+            "month", "M", reducer, start, end, keep_bandnames
+        )
 
         return ClimatologyImageCollection(monthly_clim)
 
     def climatology_dayofyear(
-        self, reducer: Optional[Any] = None, start: int = 1, end: int = 366
+        self,
+        reducer: Optional[Any] = None,
+        start: int = 1,
+        end: int = 366,
+        keep_bandnames: bool = True,
     ) -> ClimatologyImageCollection:
         """Calculate day-of-year climatology from a time series of data. This method is designed to be run with multiple years
         of data to generate long-term day-of-year normals. To simply calculate daily aggregates from sub-daily data, see
@@ -414,6 +440,9 @@ class TimeSeriesCollection(ImageCollection):
             The number of the start day to include in the climatology.
         end : int, default 366
             The number of the end day to include in the climatology.
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
 
         Returns
         -------
@@ -436,6 +465,8 @@ class TimeSeriesCollection(ImageCollection):
         # so set the default reducer explicitly. This is also why the type hint above is set to Any.
         reducer = ee.Reducer.mean() if not reducer else reducer
 
-        daily_clim = self._calculate_climatology("dayofyear", "D", reducer, start, end)
+        daily_clim = self._calculate_climatology(
+            "dayofyear", "D", reducer, start, end, keep_bandnames
+        )
 
         return ClimatologyImageCollection(daily_clim)

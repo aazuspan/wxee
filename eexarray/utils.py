@@ -135,22 +135,24 @@ def _dataarray_from_file(file: str) -> xr.DataArray:
     return da
 
 
-def _parse_filename(file: str) -> Tuple[str, Union[str, datetime.datetime], str]:
+def _parse_filename(file: str) -> Tuple[str, Union[str, int, datetime.datetime], str]:
     """Parse the dimension, coordinate, and variable from a filename following the format
     {id}.{dimension}.{coordinate}.{variable}.{extension}. Return as a tuple.
     """
-    coord: Union[str, datetime.datetime]
+    coord: Union[str, int, datetime.datetime]
 
     basename = os.path.basename(file)
-    dim, coord, variable = basename.split(".")[1:4]
+    dim, coord_name, variable = basename.split(".")[1:4]
     if dim == "time":
         try:
-            coord = datetime.datetime.strptime(coord, "%Y%m%dT%H%M%S")
+            coord = datetime.datetime.strptime(coord_name, "%Y%m%dT%H%M%S")
         except ValueError:
-            coord = coord
+            coord = coord_name
             warnings.warn(
                 f"The time coordinate '{coord}' could not be parsed into a valid datetime. Setting as raw value instead."
             )
+    else:
+        coord = int(coord_name)
 
     return (dim, coord, variable)
 

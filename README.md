@@ -1,5 +1,5 @@
-# eexarray
-[![Documentation Status](https://readthedocs.org/projects/eexarray/badge/?version=latest&style=flat)](https://eexarray.readthedocs.io/en/latest/?badge=latest)
+# wxee
+[![Documentation Status](https://readthedocs.org/projects/wxee/badge/?version=latest&style=flat)](https://wxee.readthedocs.io/en/latest/?badge=latest)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
@@ -7,8 +7,8 @@ A Python interface between Earth Engine and xarray
 
 ![demo](docs/_static/demo_001.gif)
 
-## What is eexarray?
-eexarray was designed to make processing gridded, mesoscale time series data quick and easy by providing a bridge between the data catalog and processing power of [Google Earth Engine](https://earthengine.google.com/) and the flexibility of [xarray](https://github.com/pydata/xarray), with no complicated setup required. To accomplish this, eexarray implements convenient methods for data processing, aggregation, downloading, and ingestion.
+## What is wxee?
+wxee was designed to make processing gridded, mesoscale time series data quick and easy by providing a bridge between the data catalog and processing power of [Google Earth Engine](https://earthengine.google.com/) and the flexibility of [xarray](https://github.com/pydata/xarray), with no complicated setup required. To accomplish this, wxee implements convenient methods for data processing, aggregation, downloading, and ingestion.
 
 ### Features
 - Time series image collections to xarray and NetCDF in one line of code
@@ -18,10 +18,10 @@ eexarray was designed to make processing gridded, mesoscale time series data qui
 - Parallel processing for fast downloads
 - Support for masked nodata values
 
-## What *isn't* eexarray?
-eexarray isn't built to export huge amounts of data. The "no setup required" approach means it has strict download size limits imposed by Earth Engine's URL downloading system. If you run into download issues, try using a larger scale or splitting images into smaller regions. If you are regularly downloading large amounts of high resolution data, consider using Earth Engine's built-in Drive exporting or a tool like [restee](https://github.com/KMarkert/restee).
+## What *isn't* wxee?
+wxee isn't built to export huge amounts of data. The "no setup required" approach means it has strict download size limits imposed by Earth Engine's URL downloading system. If you run into download issues, try using a larger scale or splitting images into smaller regions. If you are regularly downloading large amounts of high resolution data, consider using Earth Engine's built-in Drive exporting or a tool like [restee](https://github.com/KMarkert/restee).
 
-eexarray also isn't a weather/climate processing toolkit. There are great Python packages out there already like [MetPy](https://github.com/Unidata/MetPy) and [ACT](https://github.com/ARM-DOE/ACT), so why reinvent the wheel? eexarray focuses on taking care of the heavy lifting so you can work with your data in domain-specific tools. 
+wxee also isn't a weather/climate processing toolkit. There are great Python packages out there already like [MetPy](https://github.com/Unidata/MetPy) and [ACT](https://github.com/ARM-DOE/ACT), so why reinvent the wheel? wxee focuses on taking care of the heavy lifting so you can work with your data in domain-specific tools. 
 
 ## Installation
 
@@ -29,39 +29,39 @@ Pip and Conda coming soon...
 
 ### From source
 ```bash
-git clone https://github.com/aazuspan/eexarray
-cd eexarray
+git clone https://github.com/aazuspan/wxee
+cd wxee
 make install
 ```
 
 ## Quickstart
 
-Check out the [full documentation](https://eexarray.readthedocs.io/en/latest/) here.
+Check out the [full documentation](https://wxee.readthedocs.io/en/latest/) here.
 
 
-### Using the eex Accessor
+### Using the wx Accessor
 
-eexarray uses the `eex` accessor to extend Earth Engine classes. Just import eexarray and use `.eex` to access eexarray methods.
+wxee uses the `wx` accessor to extend Earth Engine classes. Just import wxee and use `.wx` to access wxee methods.
 
 ```python
-import ee, eexarray
+import ee, wxee
 ee.Initialize()
 
-ee.Image( ... ).eex
-ee.ImageCollection( ... ).eex
+ee.Image( ... ).wx
+ee.ImageCollection( ... ).wx
 ```
 
 ### Converting an Image Collection to xarray
 
 ```python
 hourly = ee.ImageCollection("NOAA/NWS/RTMA").filterDate("2020-09-08", "2020-09-15")
-da = hourly.eex.to_xarray(scale=40_000, crs="EPSG:5070")
+da = hourly.wx.to_xarray(scale=40_000, crs="EPSG:5070")
 ```
 
 ### Temporal Resampling
 ```python
 hourly = ee.ImageCollection("NOAA/NWS/RTMA").filterDate("2020-09-08", "2020-09-15")
-daily_max = hourly.eex.resample_daily(reducer=ee.Reducer.max())
+daily_max = hourly.wx.resample_daily(reducer=ee.Reducer.max())
 ```
 
 ### Climatology
@@ -73,25 +73,25 @@ monthly_max_climatology = daily.eex.climatology_month(ee.Reducer.max())
 ### Downloading Images to GeoTIFF
 ```python
 img = ee.Image("COPERNICUS/S2_SR/20200803T181931_20200803T182946_T11SPA")
-img.eex.to_tif(out_dir="data", scale=200, crs="EPSG:5070")
+img.wx.to_tif(out_dir="data", scale=200, crs="EPSG:5070")
 ```
 
 ### Known Bugs
 #### Download Failures
-Downloading imagery from Earth Engine can fail due to communication issues with Google's servers. eexarray will automatically retry failed downloads, but if downloads continue to fail you can try 1) setting the `max_attempts` argument to a higher value or 2) waiting a few minutes and re-running your download.
+Downloading imagery from Earth Engine can fail due to communication issues with Google's servers. wxee will automatically retry failed downloads, but if downloads continue to fail you can try 1) setting the `max_attempts` argument to a higher value or 2) waiting a few minutes and re-running your download.
 
 ## Contributing
-Bugs or feature requests are always appreciated! They can be submitted [here](https://github.com/aazuspan/eexarray/issues). 
+Bugs or feature requests are always appreciated! They can be submitted [here](https://github.com/aazuspan/wxee/issues). 
 
-Code contributions are also welcome! Please open an [issue](https://github.com/aazuspan/eexarray/issues) to discuss implementation, then follow the steps below.
+Code contributions are also welcome! Please open an [issue](https://github.com/aazuspan/wxee/issues) to discuss implementation, then follow the steps below.
 
 ### Developer Setup
-1. Create a fork of eexarray.
+1. Create a fork of wxee.
 
 2. Download and install the package and developer dependencies from your fork.
 ```bash
-git clone https://github.com/{username}/eexarray
-cd eexarray
+git clone https://github.com/{username}/wxee
+cd wxee
 make install-dev
 ```
 

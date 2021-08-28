@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>eexarray &mdash; eexarray  documentation</title>
+  <title>wxee &mdash; wxee  documentation</title>
   
 
   
@@ -42,7 +42,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API" href="eexarray.html" /> 
+    <link rel="next" title="API" href="wxee.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -56,7 +56,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> eexarray
+            <a href="#" class="icon icon-home"> wxee
           
 
           
@@ -92,7 +92,7 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="eexarray.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wxee.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 
@@ -109,7 +109,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">eexarray</a>
+          <a href="#">wxee</a>
         
       </nav>
 
@@ -142,7 +142,7 @@
     
       <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
-      <li>eexarray</li>
+      <li>wxee</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -185,39 +185,39 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="eexarray">
-<h1>eexarray<a class="headerlink" href="#eexarray" title="Permalink to this headline">¶</a></h1>
-<a class="reference external image-reference" href="https://eexarray.readthedocs.io/en/latest/?badge=latest"><img alt="https://readthedocs.org/projects/eexarray/badge/?version=latest&amp;style=flat" src="https://readthedocs.org/projects/eexarray/badge/?version=latest&amp;style=flat" /></a>
+<div class="section" id="wxee">
+<h1>wxee<a class="headerlink" href="#wxee" title="Permalink to this headline">¶</a></h1>
+<a class="reference external image-reference" href="https://wxee.readthedocs.io/en/latest/?badge=latest"><img alt="https://readthedocs.org/projects/wxee/badge/?version=latest&amp;style=flat" src="https://readthedocs.org/projects/wxee/badge/?version=latest&amp;style=flat" /></a>
 <a class="reference external image-reference" href="https://github.com/psf/black"><img alt="https://img.shields.io/badge/code%20style-black-000000.svg" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a>
 <a class="reference external image-reference" href="https://www.gnu.org/licenses/gpl-3.0"><img alt="https://img.shields.io/badge/License-GPLv3-blue.svg" src="https://img.shields.io/badge/License-GPLv3-blue.svg" /></a>
 <div class="line-block">
 <div class="line"><em>A Python interface between Earth Engine and xarray</em></div>
-<div class="line"><a class="reference external" href="https://github.com/aazuspan/eexarray">https://github.com/aazuspan/eexarray</a></div>
+<div class="line"><a class="reference external" href="https://github.com/aazuspan/wxee">https://github.com/aazuspan/wxee</a></div>
 </div>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p>eexarray was built to make processing gridded, mesoscale time series data quick and easy by integrating the data catalog
+<p>wxee was built to make processing gridded, mesoscale time series data quick and easy by integrating the data catalog
 and processing power of Google Earth Engine with the flexibility of xarray and numpy, with no complicated setup required.</p>
 </div>
 <div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
-<p>eexarray uses the <code class="code docutils literal notranslate"><span class="pre">eex</span></code> accessor to extend Earth Engine classes. Just import eexarray and use <code class="code docutils literal notranslate"><span class="pre">.eex</span></code> to access
-eexarray methods.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">eexarray</span>
+<p>wxee uses the <code class="code docutils literal notranslate"><span class="pre">wx</span></code> accessor to extend Earth Engine classes. Just import wxee and use <code class="code docutils literal notranslate"><span class="pre">.wx</span></code> to access
+wxee methods.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">wxee</span>
 <span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 
-<span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span> <span class="o">...</span> <span class="p">)</span><span class="o">.</span><span class="n">eex</span>
-<span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span> <span class="o">...</span> <span class="p">)</span><span class="o">.</span><span class="n">eex</span>
+<span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span> <span class="o">...</span> <span class="p">)</span><span class="o">.</span><span class="n">wx</span>
+<span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span> <span class="o">...</span> <span class="p">)</span><span class="o">.</span><span class="n">wx</span>
 </pre></div>
 </div>
-<p>eexarray can quickly resample hourly data from Earth Engine to daily averages and download to an xarray Dataset for further
+<p>wxee can quickly resample hourly data from Earth Engine to daily averages and download to an xarray Dataset for further
 processing in Python.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">eexarray</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">wxee</span>
 <span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 
 <span class="n">hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-15&quot;</span><span class="p">)</span>
-<span class="n">daily_max</span> <span class="o">=</span> <span class="n">hourly</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">resample_daily</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-<span class="n">arr</span> <span class="o">=</span> <span class="n">daily_max</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">40_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
+<span class="n">daily_max</span> <span class="o">=</span> <span class="n">hourly</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">resample_daily</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="n">daily_max</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">40_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -225,10 +225,10 @@ processing in Python.</p>
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="eexarray.html">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="eexarray.html#eex-accessors">eex accessors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eexarray.html#ee-image-eex">ee.Image.eex</a></li>
-<li class="toctree-l2"><a class="reference internal" href="eexarray.html#ee-imagecollection-eex">ee.ImageCollection.eex</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wxee.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="wxee.html#wx-accessors">wx accessors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wxee.html#ee-image-wx">ee.Image.wx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wxee.html#ee-imagecollection-wx">ee.ImageCollection.wx</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
@@ -252,7 +252,7 @@ processing in Python.</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="eexarray.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="wxee.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

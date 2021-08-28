@@ -2,8 +2,8 @@ from abc import ABC
 
 import ee  # type: ignore
 
-from eexarray.accessors import eex_accessor
-from eexarray.collection import ImageCollection
+from wxee.accessors import wx_accessor
+from wxee.collection import ImageCollection
 
 
 class ClimatologyImageCollection(ee.ImageCollection):
@@ -14,7 +14,7 @@ class ClimatologyImageCollection(ee.ImageCollection):
     pass
 
 
-@eex_accessor(ClimatologyImageCollection)
+@wx_accessor(ClimatologyImageCollection)
 class ClimatologyCollection(ImageCollection):
     """An image collection of climatological images."""
 

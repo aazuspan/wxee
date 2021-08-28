@@ -23,15 +23,15 @@ extras_require = {
 }
 
 setup(
-    name="eexarray",
+    name="wxee",
     author="Aaron Zuspan",
     author_email="aazuspan@gmail.com",
-    url="https://github.com/aazuspan/eexarray",
+    url="https://github.com/aazuspan/wxee",
     version=version,
     description="Earth Engine to xarray interface",
     long_description=readme + "\n\n",
     long_description_content_type="text/markdown",
-    keywords="eexarray,xarray,earth-engine",
+    keywords="wxee,xarray,earth-engine",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Science/Research",
@@ -46,7 +46,7 @@ setup(
     ],
     license_files=("LICENSE",),
     license="GPLv3+",
-    packages=["eexarray"],
+    packages=["wxee"],
     test_suite="test",
     install_requires=requirements,
     tests_require=test_requirements,

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Downloading Images and Collections &mdash; eexarray  documentation</title>
+  <title>Downloading Images and Collections &mdash; wxee  documentation</title>
   
 
   
@@ -59,7 +59,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> eexarray
+            <a href="../index.html" class="icon icon-home"> wxee
           
 
           
@@ -95,7 +95,7 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../eexarray.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../wxee.html">API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="image_collection_to_xarray.html">Image Collection to xarray</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Downloading Images and Collections</a><ul>
@@ -123,7 +123,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">eexarray</a>
+          <a href="../index.html">wxee</a>
         
       </nav>
 
@@ -449,8 +449,8 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="Downloading-Images-and-Collections">
 <h1>Downloading Images and Collections<a class="headerlink" href="#Downloading-Images-and-Collections" title="Permalink to this headline">¶</a></h1>
-<p>In this tutorial, we’ll look at how we can use eexarray to quickly and easily download images and image collections from Earth Engine to a local drive.</p>
-<p>eexarray isn’t designed to replace Earth Engine’s native downloading functionality–if you need high resolution images or large areas, downloading to a Drive using ee is probably the best option. What eexarray’s downloading system is great for is quickly pulling small regions or mesoscale images for further processing in Python without the hassle of intermediate steps.</p>
+<p>In this tutorial, we’ll look at how we can use <code class="docutils literal notranslate"><span class="pre">wxee</span></code> to quickly and easily download images and image collections from Earth Engine to a local drive.</p>
+<p><code class="docutils literal notranslate"><span class="pre">wxee</span></code> isn’t designed to replace Earth Engine’s native downloading functionality–if you need high resolution images or large areas, downloading to a Drive using ee is probably the best option. What <code class="docutils literal notranslate"><span class="pre">wxee</span></code>’s downloading system is great for is quickly pulling small regions or mesoscale images for further processing in Python without the hassle of intermediate steps.</p>
 <div class="section" id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -459,7 +459,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">ee</span>
-<span class="kn">import</span> <span class="nn">eexarray</span>
+<span class="kn">import</span> <span class="nn">wxee</span>
 
 <span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 </pre></div>
@@ -501,16 +501,22 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="alert alert-block alert-warning"><p>Warning: If an image download fails due to size limits, try using a smaller region or a coarser scale.</p>
-</div><p>Download the image to GeoTIFF. The <code class="docutils literal notranslate"><span class="pre">ee.Image.eex.to_tif</span></code> method returns a path to the downloaded image(s).</p>
+</div><p>Download the image to GeoTIFF. The <code class="docutils literal notranslate"><span class="pre">ee.Image.wx.to_tif</span></code> method returns a path to the downloaded image(s). <code class="docutils literal notranslate"><span class="pre">wxee</span></code> always saves files with the name format <code class="docutils literal notranslate"><span class="pre">{id}.{dimension}.{coordinate}</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">file</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
+<span></span><span class="n">file</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span><span class="n">out_dir</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
 <span class="n">file</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "59fdef8c6bcf49e9816fb8e4543d7b50", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -518,7 +524,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[&#39;./modis_img.tif&#39;]
+[&#39;data/modis_img.time.20210601T000000.tif&#39;]
 </pre></div></div>
 </div>
 <p>Above, we downloaded 1 three-band image, but we could also download it as 3 one-band images by setting <code class="docutils literal notranslate"><span class="pre">file_per_band</span></code> to True.</p>
@@ -527,10 +533,24 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">file</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span></span><span class="n">file</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span>
+    <span class="n">out_dir</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+    <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
+    <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
+    <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">,</span>
+    <span class="n">file_per_band</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
 <span class="n">file</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8a2aebdbd4bc4e10a3d83818bb17a28d", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -538,9 +558,9 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[&#39;./modis_img.sur_refl_b01.tif&#39;,
- &#39;./modis_img.sur_refl_b04.tif&#39;,
- &#39;./modis_img.sur_refl_b03.tif&#39;]
+[&#39;data/modis_img.time.20210601T000000.sur_refl_b01.tif&#39;,
+ &#39;data/modis_img.time.20210601T000000.sur_refl_b04.tif&#39;,
+ &#39;data/modis_img.time.20210601T000000.sur_refl_b03.tif&#39;]
 </pre></div></div>
 </div>
 </div>
@@ -559,13 +579,20 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>Download each image in the collection to GeoTIFF. We’ll use the same parameters as above except for <code class="docutils literal notranslate"><span class="pre">description</span></code>. <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection.eex.to_tif</span></code> doesn’t take a <code class="docutils literal notranslate"><span class="pre">description</span></code> parameter, but it does take a <code class="docutils literal notranslate"><span class="pre">prefix</span></code> that can be added to the beginning of each file name.</p>
+<p>Download each image in the collection to GeoTIFF. We’ll use the same parameters as above except for <code class="docutils literal notranslate"><span class="pre">description</span></code>. <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection.wx.to_tif</span></code> doesn’t take a <code class="docutils literal notranslate"><span class="pre">description</span></code> parameter, but it does take a <code class="docutils literal notranslate"><span class="pre">prefix</span></code> that can be added to the beginning of each file name.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">files</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;eex_&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
+<span></span><span class="n">files</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span>
+    <span class="n">out_dir</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
+    <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;wx_&quot;</span><span class="p">,</span>
+    <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
+    <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
+    <span class="n">crs</span><span class="o">=</span><span class="n">crs</span>
+<span class="p">)</span>
+
 <span class="n">files</span>
 </pre></div>
 </div>
@@ -573,10 +600,8 @@ div.rendered_html tbody tr:hover {
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Downloading collection: 100%|███████████████████████████████████| 4/4 [00:04&lt;00:00,  1.02s/it]
-</pre></div></div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "7ec6cf1c194448978f93a8a29998cce7", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
@@ -584,10 +609,10 @@ Downloading collection: 100%|█████████████████
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[&#39;./eex_MODIS_006_MOD09GA_2021_06_01.tif&#39;,
- &#39;./eex_MODIS_006_MOD09GA_2021_06_02.tif&#39;,
- &#39;./eex_MODIS_006_MOD09GA_2021_06_03.tif&#39;,
- &#39;./eex_MODIS_006_MOD09GA_2021_06_04.tif&#39;]
+[&#39;data/wx_MODIS_006_MOD09GA_2021_06_01.time.20210601T000000.tif&#39;,
+ &#39;data/wx_MODIS_006_MOD09GA_2021_06_04.time.20210604T000000.tif&#39;,
+ &#39;data/wx_MODIS_006_MOD09GA_2021_06_02.time.20210602T000000.tif&#39;,
+ &#39;data/wx_MODIS_006_MOD09GA_2021_06_03.time.20210603T000000.tif&#39;]
 </pre></div></div>
 </div>
 </div>

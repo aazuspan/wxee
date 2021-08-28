@@ -1,35 +1,35 @@
 API
 ================
 
-eex accessors
+wx accessors
 -------------
 
-eexarray extends Earth Engine objects using the `eex` accessor. Import eexarray and use the `eex` accessor to access 
+wxee extends Earth Engine objects using the `wx` accessor. Import wxee and use the `wx` accessor to access 
 custom methods.
 
 .. code-block:: python
 
    import ee
-   import eexarray
+   import wxee
 
-   ee.Image( ... ).eex.to_tif( ... )
+   ee.Image( ... ).wx.to_tif( ... )
 
-ee.Image.eex
+ee.Image.wx
 ------------------------
 
-.. autoclass:: eexarray.Image
+.. autoclass:: wxee.Image
    :members:
 
-ee.ImageCollection.eex
+ee.ImageCollection.wx
 ------------------------
 
 Time Series
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 A time series is a collection of images where each image represents conditions over a specific time. 
-All :code:`ee.ImageCollection` objects are treated as time series in eexarray, and it is assumed that each image
+All :code:`ee.ImageCollection` objects are treated as time series in wxee, and it is assumed that each image
 has a specific :code:`system:time_start` property.
 
-.. autoclass:: eexarray.TimeSeriesCollection
+.. autoclass:: wxee.TimeSeriesCollection
    :inherited-members:
    :members:
 
@@ -40,6 +40,6 @@ A climatology is a collection of images where each image represents multi-year s
 such as maximum monthly precipitation over 30 years. Unlike a time series, an image in a climatology collection does
 not have a specific time (e.g. October 20, 1989) but instead represents a generalized time (e.g. October).
 
-.. autoclass:: eexarray.ClimatologyCollection
+.. autoclass:: wxee.ClimatologyCollection
    :inherited-members:
    :members:

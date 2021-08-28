@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Temporal Resampling &mdash; eexarray  documentation</title>
+  <title>Temporal Resampling &mdash; wxee  documentation</title>
   
 
   
@@ -59,7 +59,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> eexarray
+            <a href="../index.html" class="icon icon-home"> wxee
           
 
           
@@ -95,7 +95,7 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../eexarray.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../wxee.html">API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="image_collection_to_xarray.html">Image Collection to xarray</a></li>
 <li class="toctree-l2"><a class="reference internal" href="downloading_images_and_collections.html">Downloading Images and Collections</a></li>
@@ -124,7 +124,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">eexarray</a>
+          <a href="../index.html">wxee</a>
         
       </nav>
 
@@ -450,8 +450,8 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="Temporal-Resampling">
 <h1>Temporal Resampling<a class="headerlink" href="#Temporal-Resampling" title="Permalink to this headline">¶</a></h1>
-<p>In this tutorial, we’ll use eexarray to aggregate image collections over time. eexarray supports the following resampling methods which can be applied to an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> using the <code class="docutils literal notranslate"><span class="pre">eex</span></code> accessor: <code class="docutils literal notranslate"><span class="pre">resample_hourly</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_daily</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_weekly</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_monthly</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_annually</span></code>.</p>
-<p>Note that eexarray’s resampling methods are one-directional: for example, they can be used to aggregate daily data into weekly or weekly data into annual, but not vice versa.</p>
+<p>In this tutorial, we’ll use wxee to aggregate image collections over time. wxee supports the following resampling methods which can be applied to an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> using the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accessor: <code class="docutils literal notranslate"><span class="pre">resample_hourly</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_daily</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_weekly</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_monthly</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_annually</span></code>.</p>
+<p>Note that wxee’s resampling methods are one-directional: for example, they can be used to aggregate daily data into weekly or weekly data into annual, but not vice versa.</p>
 <div class="section" id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -460,7 +460,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">ee</span>
-<span class="kn">import</span> <span class="nn">eexarray</span>
+<span class="kn">import</span> <span class="nn">wxee</span>
 
 <span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 </pre></div>
@@ -490,13 +490,13 @@ div.rendered_html tbody tr:hover {
 48
 </pre></div></div>
 </div>
-<p>Use eexarray to resample hourly data to daily. By default, <code class="docutils literal notranslate"><span class="pre">resample_daily</span></code> uses <code class="docutils literal notranslate"><span class="pre">ee.Reducer.mean()</span></code> to aggregate data, so the output will represent average daily wind speeds. The 48 hourly input images have been aggregated into 2 daily images.</p>
+<p>Use wxee to resample hourly data to daily. By default, <code class="docutils literal notranslate"><span class="pre">resample_daily</span></code> uses <code class="docutils literal notranslate"><span class="pre">ee.Reducer.mean()</span></code> to aggregate data, so the output will represent average daily wind speeds. The 48 hourly input images have been aggregated into 2 daily images.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">daily</span> <span class="o">=</span> <span class="n">rtma</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">resample_daily</span><span class="p">()</span>
+<span></span><span class="n">daily</span> <span class="o">=</span> <span class="n">rtma</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">resample_daily</span><span class="p">()</span>
 
 <span class="n">daily</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
@@ -517,7 +517,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">x</span> <span class="o">=</span> <span class="n">daily</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
+<span></span><span class="n">x</span> <span class="o">=</span> <span class="n">daily</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
 <span class="n">x</span><span class="o">.</span><span class="n">WIND</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -525,10 +525,8 @@ div.rendered_html tbody tr:hover {
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Downloading collection: 100%|███████████████████████████████████| 2/2 [00:03&lt;00:00,  1.70s/it]
-</pre></div></div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "0078a09aac2549b1b868d31a935a0204", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -536,7 +534,7 @@ Downloading collection: 100%|█████████████████
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f04557a7880&gt;
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7fb114939ee0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -577,9 +575,9 @@ Downloading collection: 100%|█████████████████
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">monthly</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">resample_monthly</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span></span><span class="n">monthly</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">resample_monthly</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
 
-<span class="n">x</span> <span class="o">=</span> <span class="n">monthly</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">monthly</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
 <span class="n">x</span><span class="o">.</span><span class="n">tmmx</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -587,10 +585,8 @@ Downloading collection: 100%|█████████████████
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Downloading collection: 100%|█████████████████████████████████| 12/12 [00:04&lt;00:00,  2.56it/s]
-</pre></div></div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "3086cae940be45fab49a1b2d57f384c9", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -598,7 +594,7 @@ Downloading collection: 100%|█████████████████
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f04b54637f0&gt;
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7fb111d85070&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -611,7 +607,7 @@ Downloading collection: 100%|█████████████████
 </div>
 <div class="section" id="Warning">
 <h2>Warning<a class="headerlink" href="#Warning" title="Permalink to this headline">¶</a></h2>
-<p>eexarray’s temporal resampling methods can only be used to aggregate fine time steps into coarse time steps (e.g. hours to days, days to months). Resampling a temporally coarse dataset into a finer time unit may lead to invalid results. Below, you can see that attempting to resample daily data into hourly caused one of the images to be lost.</p>
+<p>wxee’s temporal resampling methods can only be used to aggregate fine time steps into coarse time steps (e.g. hours to days, days to months). Resampling a temporally coarse dataset into a finer time unit may lead to invalid results. Below, you can see that attempting to resample daily data into hourly caused one of the images to be lost.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -638,7 +634,7 @@ Downloading collection: 100%|█████████████████
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">gridmet</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">resample_hourly</span><span class="p">()</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+<span></span><span class="n">gridmet</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">resample_hourly</span><span class="p">()</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

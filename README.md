@@ -8,7 +8,7 @@ A Python interface between Earth Engine and xarray for processing weather and cl
 ![demo](docs/_static/demo_001.gif)
 
 ## What is wxee?
-wxee was designed to make processing gridded, mesoscale time series weather and climate data quick and easy by providing a bridge between the data catalog and processing power of [Google Earth Engine](https://earthengine.google.com/) and the flexibility of [xarray](https://github.com/pydata/xarray), with no complicated setup required. To accomplish this, wxee implements convenient methods for data processing, aggregation, downloading, and ingestion.
+wxee _(formerly eexarray)_ was designed to make processing gridded, mesoscale time series weather and climate data quick and easy by providing a bridge between the data catalog and processing power of [Google Earth Engine](https://earthengine.google.com/) and the flexibility of [xarray](https://github.com/pydata/xarray), with no complicated setup required. To accomplish this, wxee implements convenient methods for data processing, aggregation, downloading, and ingestion.
 
 ### Features
 - Time series image collections to xarray and NetCDF in one line of code

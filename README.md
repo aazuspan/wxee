@@ -3,7 +3,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-A Python interface between Earth Engine and xarray
+A Python interface between Earth Engine and xarray for processing weather and climate data.
 
 ![demo](docs/_static/demo_001.gif)
 
@@ -67,7 +67,7 @@ daily_max = hourly.wx.resample_daily(reducer=ee.Reducer.max())
 ### Climatology
 ```python
 daily = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").select("vpd").filterDate("2000", "2010")
-monthly_max_climatology = daily.eex.climatology_month(ee.Reducer.max())
+monthly_max_climatology = daily.wx.climatology_month(ee.Reducer.max())
 ```
 
 ### Downloading Images to GeoTIFF

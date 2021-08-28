@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
-project = "eexarray"
+project = "wxee"
 copyright = "2021, Aaron Zuspan"
 author = "Aaron Zuspan"
 version = "0.0.1"

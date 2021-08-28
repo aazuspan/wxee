@@ -9,8 +9,8 @@ import ee  # type: ignore
 import xarray as xr
 from tqdm.auto import tqdm  # type: ignore
 
-from eexarray import constants
-from eexarray.utils import _dataset_from_files, _flatten_list
+from wxee import constants
+from wxee.utils import _dataset_from_files, _flatten_list
 
 
 class ImageCollection(ABC):
@@ -114,14 +114,14 @@ class ImageCollection(ABC):
 
         Examples
         --------
-        >>> import ee, eexarray
+        >>> import ee, wxee
         >>> ee.Initialize()
         >>> col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").filterDate("2020-09-08", "2020-09-15")
-        >>> col.eex.to_xarray(scale=40000, crs="EPSG:5070", nodata=-9999)
+        >>> col.wx.to_xarray(scale=40000, crs="EPSG:5070", nodata=-9999)
         """
         with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
 
-            files = self._obj.eex.to_tif(
+            files = self._obj.wx.to_tif(
                 out_dir=tmp,
                 region=region,
                 scale=scale,
@@ -207,15 +207,15 @@ class ImageCollection(ABC):
 
         Example
         -------
-        >>> import ee, eexarray
+        >>> import ee, wxee
         >>> ee.Initialize()
         >>> col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").filterDate("2020-09-08", "2020-09-15")
-        >>> col.eex.to_tif(scale=40000, crs="EPSG:5070", nodata=-9999)
+        >>> col.wx.to_tif(scale=40000, crs="EPSG:5070", nodata=-9999)
         """
         num_cores = mp.cpu_count() if not num_cores else num_cores
 
         if prefix:
-            self._obj = self._obj.map(lambda img: img.eex._prefix_id(prefix))
+            self._obj = self._obj.map(lambda img: img.wx._prefix_id(prefix))
 
         imgs = self._to_image_list()
         n = len(imgs)
@@ -249,7 +249,7 @@ class ImageCollection(ABC):
                 )
         else:
             tifs = [
-                img.eex.to_tif(**kwargs)
+                img.wx.to_tif(**kwargs)
                 for img in tqdm(
                     imgs, disable=not progress, desc="Downloading collection"
                 )
@@ -272,10 +272,10 @@ def _image_to_tif_alias(
     max_attempts: int = 10,
     clean_filename: bool = True,
 ) -> List[str]:
-    """A pickleable wrapper around the ee.Image.eex.to_tif instance method, allowing it to be used in multiprocessing.
+    """A pickleable wrapper around the ee.Image.wx.to_tif instance method, allowing it to be used in multiprocessing.
     See https://stackoverflow.com/questions/27318290/why-can-i-pass-an-instance-method-to-multiprocessing-process-but-not-a-multipro
     """
-    return img.eex.to_tif(
+    return img.wx.to_tif(
         out_dir,
         description,
         region,

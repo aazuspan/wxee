@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Climatology &mdash; eexarray  documentation</title>
+  <title>Climatology &mdash; wxee  documentation</title>
   
 
   
@@ -58,7 +58,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> eexarray
+            <a href="../index.html" class="icon icon-home"> wxee
           
 
           
@@ -94,7 +94,7 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../eexarray.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../wxee.html">API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="image_collection_to_xarray.html">Image Collection to xarray</a></li>
 <li class="toctree-l2"><a class="reference internal" href="downloading_images_and_collections.html">Downloading Images and Collections</a></li>
@@ -123,7 +123,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">eexarray</a>
+          <a href="../index.html">wxee</a>
         
       </nav>
 
@@ -449,7 +449,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="Climatology">
 <h1>Climatology<a class="headerlink" href="#Climatology" title="Permalink to this headline">¶</a></h1>
-<p>In this tutorial, we’ll look at how to use eexarray to calculate long-term climatological normals of gridded weather data. eexarray supports the following climatology methods which can be applied to an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> using the <code class="docutils literal notranslate"><span class="pre">eex</span></code> accessor: <code class="docutils literal notranslate"><span class="pre">climatology_dayofyear</span></code>, <code class="docutils literal notranslate"><span class="pre">climatology_month</span></code></p>
+<p>In this tutorial, we’ll look at how to use wxee to calculate long-term climatological means of gridded weather data. wxee supports the following climatology methods which can be applied to an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> using the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accessor: <code class="docutils literal notranslate"><span class="pre">climatology_dayofyear</span></code>, <code class="docutils literal notranslate"><span class="pre">climatology_month</span></code></p>
 <div class="section" id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -458,7 +458,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">ee</span>
-<span class="kn">import</span> <span class="nn">eexarray</span>
+<span class="kn">import</span> <span class="nn">wxee</span>
 
 <span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 </pre></div>
@@ -495,7 +495,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">climatology_month</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">median</span><span class="p">())</span>
+<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">climatology_month</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">median</span><span class="p">())</span>
 <span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -515,7 +515,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">x</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
+<span></span><span class="n">x</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
 <span class="n">x</span><span class="o">.</span><span class="n">vpd</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -524,7 +524,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8ed25e6baa304afb8e8e9f3889d30b0b", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "6cf5b8e6884845c8b66354b305dbae0c", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -532,7 +532,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7fcf6dac7c10&gt;
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7f3b43395c10&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -566,9 +566,9 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="section" id="Daily-Max-Precipitation">
 <h2>Daily Max Precipitation<a class="headerlink" href="#Daily-Max-Precipitation" title="Permalink to this headline">¶</a></h2>
-<p>Once again we’ll look at gridMET daily weather data, but this time we’ll calculate climatological normals of maximum precipitation by day-of-year.</p>
+<p>Once again we’ll look at gridMET daily weather data, but this time we’ll calculate climatological mean of maximum precipitation by day-of-year.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -579,17 +579,17 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>A day-of-year climatology will give 366 images, one for each day through the 5 years (including leap days).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">climatology_dayofyear</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">climatology_dayofyear</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
 <span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -599,17 +599,17 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>We could download all 366 images, but maybe we’re only interested in daily precipitation in the month of March. We can use the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> args to set the climatological window of days to look at. Here we’ll set the start to 60 (March 1) and the end to 90 (March 30). Now we only have 31 images.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">climatology_dayofyear</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">start</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">climatology_dayofyear</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">start</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
 <span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -617,14 +617,14 @@ div.rendered_html tbody tr:hover {
 31
 </pre></div></div>
 </div>
-<div class="alert alert-block alert-info"><p>Tip: Downloading is the slowest part of dealing with Earth Engine data in eexarray, so it’s always best to aggregate and filter your data before downloading.</p>
+<div class="alert alert-block alert-info"><p>Tip: Downloading is the slowest part of dealing with Earth Engine data in wxee, so it’s always best to aggregate and filter your data before downloading.</p>
 </div><p>Let’s download and plot them.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">march_ppt</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
+<span></span><span class="n">march_ppt</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
 <span class="n">march_ppt</span><span class="o">.</span><span class="n">pr</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;dayofyear&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -633,15 +633,15 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d55096d01363424a8fdedb2ce47df303", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "7c4b8d96c7384ef982b1a94b678a11a2", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7fcf5f84b610&gt;
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7f3b433951f0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">

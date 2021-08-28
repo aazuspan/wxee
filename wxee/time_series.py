@@ -2,12 +2,12 @@ from typing import Any, List, Optional, Union
 
 import ee  # type: ignore
 
-from eexarray.accessors import eex_accessor
-from eexarray.climatology import ClimatologyImageCollection
-from eexarray.collection import ImageCollection
+from wxee.accessors import wx_accessor
+from wxee.climatology import ClimatologyImageCollection
+from wxee.collection import ImageCollection
 
 
-@eex_accessor(ee.imagecollection.ImageCollection)
+@wx_accessor(ee.imagecollection.ImageCollection)
 class TimeSeriesCollection(ImageCollection):
     """An image collection of chronological images."""
 
@@ -103,7 +103,7 @@ class TimeSeriesCollection(ImageCollection):
             resampled = resampled.set(
                 {
                     "system:time_start": imgs.first().get("system:time_start"),
-                    "system:time_end": imgs.eex.last().get("system:time_end"),
+                    "system:time_end": imgs.wx.last().get("system:time_end"),
                 }
             )
 
@@ -307,12 +307,12 @@ class TimeSeriesCollection(ImageCollection):
     ) -> ee.ImageCollection:
         """Calculate a climatology image collection with a given unit, such as month or dayofyear.
 
-        This method sets the :code:`eex:dimension` and :code:`eex:coordinate` properties of each image in the collection.
+        This method sets the :code:`wx:dimension` and :code:`wx:coordinate` properties of each image in the collection.
 
         Parameters
         ----------
         unit : str
-            The name of the time unit, e.g. month or dayofyear. This will be set in the :code:`eex:dimension` unit.
+            The name of the time unit, e.g. month or dayofyear. This will be set in the :code:`wx:dimension` unit.
         date_format : str
             The formatting string passed to ee.Date.format. See http://joda-time.sourceforge.net/apidocs/org/joda/time/format/DateTimeFormat.html.
         reducer : ee.Reducer
@@ -330,7 +330,7 @@ class TimeSeriesCollection(ImageCollection):
         ee.ImageCollection
             The reduced collection.
         """
-        prop = f"eex:{unit}"
+        prop = f"wx:{unit}"
 
         def reduce_unit(x: ee.String) -> Union[None, ee.Image]:
             """Apply a reducer over a time unit, returning None if no images fall within the time window.
@@ -345,7 +345,7 @@ class TimeSeriesCollection(ImageCollection):
             # Retrieve the time from the image instead of using x because I need a formatted
             # string for concatenating into the system:id later.
             coord = ee.Date(imgs.first().get("system:time_start")).format(date_format)
-            reduced = reduced.set("eex:dimension", unit, "eex:coordinate", coord)
+            reduced = reduced.set("wx:dimension", unit, "wx:coordinate", coord)
             # Reducing makes images unbounded which causes issues
             reduced = reduced.clip(col.geometry().bounds())
 
@@ -403,7 +403,7 @@ class TimeSeriesCollection(ImageCollection):
         -------
         >>> collection = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET")
         >>> collection = collection.filterDate("1980", "2000")
-        >>> monthly_max = collection.eex.climatology_month(ee.Reducer.max())
+        >>> monthly_max = collection.wx.climatology_month(ee.Reducer.max())
         >>> monthly_max.size().getInfo()
         12
 
@@ -453,7 +453,7 @@ class TimeSeriesCollection(ImageCollection):
         -------
         >>> collection = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET")
         >>> collection = collection.filterDate("1980", "2000")
-        >>> daily_max = collection.eex.climatology_dayofyear(ee.Reducer.max())
+        >>> daily_max = collection.wx.climatology_dayofyear(ee.Reducer.max())
         >>> daily_max.size().getInfo()
         366
 

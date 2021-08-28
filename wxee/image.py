@@ -9,10 +9,10 @@ import rasterio  # type: ignore
 import xarray as xr
 from urllib3.exceptions import ProtocolError  # type: ignore
 
-from eexarray import constants
-from eexarray.accessors import eex_accessor
-from eexarray.exceptions import DownloadError
-from eexarray.utils import (
+from wxee import constants
+from wxee.accessors import wx_accessor
+from wxee.exceptions import DownloadError
+from wxee.utils import (
     _dataset_from_files,
     _download_url,
     _format_date,
@@ -22,7 +22,7 @@ from eexarray.utils import (
 )
 
 
-@eex_accessor(ee.image.Image)
+@wx_accessor(ee.image.Image)
 class Image:
     def __init__(self, obj: ee.image.Image):
         self._obj = obj
@@ -75,10 +75,10 @@ class Image:
 
         Examples
         --------
-        >>> import ee, eexarray
+        >>> import ee, wxee
         >>> ee.Initialize()
         >>> col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").filterDate("2020-09-08", "2020-09-15")
-        >>> col.eex.to_xarray(scale=40000, crs="EPSG:5070", nodata=-9999)
+        >>> col.wx.to_xarray(scale=40000, crs="EPSG:5070", nodata=-9999)
         """
         with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
             files = self.to_tif(
@@ -162,10 +162,10 @@ class Image:
 
         Example
         -------
-        >>> import ee, eexarray
+        >>> import ee, wxee
         >>> ee.Initialize()
         >>> img = ee.Image("COPERNICUS/S2_SR/20200803T181931_20200803T182946_T11SPA")
-        >>> img.eex.to_tif(description="las_vegas", scale=200, crs="EPSG:5070", nodata=-9999)
+        >>> img.wx.to_tif(description="las_vegas", scale=200, crs="EPSG:5070", nodata=-9999)
         """
         self._obj = (
             self._obj.set("system:id", description) if description else self._obj
@@ -253,8 +253,8 @@ class Image:
         return zip
 
     def _get_download_id(self) -> ee.String:
-        """Get the image's download ID by concatenating it's cleaned current ID with the time dimension and coordinate set by eexarray. If
-        the eex:dimension and eex:coordinate have not been set, they will be set to "time" and the formatted system:time_start, respectively.
+        """Get the image's download ID by concatenating it's cleaned current ID with the time dimension and coordinate set by wxee. If
+        the wx:dimension and wx:coordinate have not been set, they will be set to "time" and the formatted system:time_start, respectively.
         """
         img = self._obj
         date = _format_date(ee.Image(img).get("system:time_start"))
@@ -263,8 +263,8 @@ class Image:
         # Replace any invalid file path characters with underscores.
         cleaned_id = ee.String(original_id).replace("([^a-z0-9]+)", "_", "gi")
 
-        dimension = _replace_if_null(img.get("eex:dimension"), "time")
-        coordinate = _replace_if_null(img.get("eex:coordinate"), date)
+        dimension = _replace_if_null(img.get("wx:dimension"), "time")
+        coordinate = _replace_if_null(img.get("wx:coordinate"), date)
 
         return ee.List([cleaned_id, dimension, coordinate]).join(".")
 

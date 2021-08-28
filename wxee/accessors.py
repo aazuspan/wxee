@@ -12,8 +12,8 @@ class Accessor:
         return self.accessor(obj)
 
 
-def eex_accessor(cls: Type) -> Callable:
-    """Create an accessor through the eex namespace to a given class.
+def wx_accessor(cls: Type) -> Callable:
+    """Create an accessor through the wx namespace to a given class.
 
     Parameters
     ----------
@@ -27,7 +27,7 @@ def eex_accessor(cls: Type) -> Callable:
     """
 
     def decorator(accessor: Any) -> Any:
-        setattr(cls, "eex", Accessor("eex", accessor))
+        setattr(cls, "wx", Accessor("wx", accessor))
         return accessor
 
     return decorator

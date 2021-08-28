@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>eexarray.time_series &mdash; eexarray  documentation</title>
+  <title>wxee.time_series &mdash; wxee  documentation</title>
   
 
   
@@ -55,7 +55,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> eexarray
+            <a href="../../index.html" class="icon icon-home"> wxee
           
 
           
@@ -91,7 +91,7 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../eexarray.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../wxee.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
 </ul>
 
@@ -108,7 +108,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">eexarray</a>
+          <a href="../../index.html">wxee</a>
         
       </nav>
 
@@ -143,7 +143,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>eexarray.time_series</li>
+      <li>wxee.time_series</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -158,17 +158,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for eexarray.time_series</h1><div class="highlight"><pre>
+  <h1>Source code for wxee.time_series</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 
-<span class="kn">from</span> <span class="nn">eexarray.accessors</span> <span class="kn">import</span> <span class="n">eex_accessor</span>
-<span class="kn">from</span> <span class="nn">eexarray.climatology</span> <span class="kn">import</span> <span class="n">ClimatologyImageCollection</span>
-<span class="kn">from</span> <span class="nn">eexarray.collection</span> <span class="kn">import</span> <span class="n">ImageCollection</span>
+<span class="kn">from</span> <span class="nn">wxee.accessors</span> <span class="kn">import</span> <span class="n">wx_accessor</span>
+<span class="kn">from</span> <span class="nn">wxee.climatology</span> <span class="kn">import</span> <span class="n">ClimatologyImageCollection</span>
+<span class="kn">from</span> <span class="nn">wxee.collection</span> <span class="kn">import</span> <span class="n">ImageCollection</span>
 
 
-<div class="viewcode-block" id="TimeSeriesCollection"><a class="viewcode-back" href="../../eexarray.html#eexarray.TimeSeriesCollection">[docs]</a><span class="nd">@eex_accessor</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">imagecollection</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">)</span>
+<div class="viewcode-block" id="TimeSeriesCollection"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection">[docs]</a><span class="nd">@wx_accessor</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">imagecollection</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">TimeSeriesCollection</span><span class="p">(</span><span class="n">ImageCollection</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;An image collection of chronological images.&quot;&quot;&quot;</span>
 
@@ -264,7 +264,7 @@
             <span class="n">resampled</span> <span class="o">=</span> <span class="n">resampled</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="s2">&quot;system:time_start&quot;</span><span class="p">:</span> <span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">),</span>
-                    <span class="s2">&quot;system:time_end&quot;</span><span class="p">:</span> <span class="n">imgs</span><span class="o">.</span><span class="n">eex</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_end&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;system:time_end&quot;</span><span class="p">:</span> <span class="n">imgs</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_end&quot;</span><span class="p">),</span>
                 <span class="p">}</span>
             <span class="p">)</span>
 
@@ -282,7 +282,7 @@
 
         <span class="k">return</span> <span class="n">resampled</span>
 
-<div class="viewcode-block" id="TimeSeriesCollection.resample_hourly"><a class="viewcode-back" href="../../eexarray.html#eexarray.TimeSeriesCollection.resample_hourly">[docs]</a>    <span class="k">def</span> <span class="nf">resample_hourly</span><span class="p">(</span>
+<div class="viewcode-block" id="TimeSeriesCollection.resample_hourly"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.resample_hourly">[docs]</a>    <span class="k">def</span> <span class="nf">resample_hourly</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -317,7 +317,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resample_time</span><span class="p">(</span><span class="s2">&quot;hour&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TimeSeriesCollection.resample_daily"><a class="viewcode-back" href="../../eexarray.html#eexarray.TimeSeriesCollection.resample_daily">[docs]</a>    <span class="k">def</span> <span class="nf">resample_daily</span><span class="p">(</span>
+<div class="viewcode-block" id="TimeSeriesCollection.resample_daily"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.resample_daily">[docs]</a>    <span class="k">def</span> <span class="nf">resample_daily</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -352,7 +352,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resample_time</span><span class="p">(</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TimeSeriesCollection.resample_weekly"><a class="viewcode-back" href="../../eexarray.html#eexarray.TimeSeriesCollection.resample_weekly">[docs]</a>    <span class="k">def</span> <span class="nf">resample_weekly</span><span class="p">(</span>
+<div class="viewcode-block" id="TimeSeriesCollection.resample_weekly"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.resample_weekly">[docs]</a>    <span class="k">def</span> <span class="nf">resample_weekly</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -387,7 +387,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resample_time</span><span class="p">(</span><span class="s2">&quot;week&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TimeSeriesCollection.resample_monthly"><a class="viewcode-back" href="../../eexarray.html#eexarray.TimeSeriesCollection.resample_monthly">[docs]</a>    <span class="k">def</span> <span class="nf">resample_monthly</span><span class="p">(</span>
+<div class="viewcode-block" id="TimeSeriesCollection.resample_monthly"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.resample_monthly">[docs]</a>    <span class="k">def</span> <span class="nf">resample_monthly</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -422,7 +422,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resample_time</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TimeSeriesCollection.resample_annually"><a class="viewcode-back" href="../../eexarray.html#eexarray.TimeSeriesCollection.resample_annually">[docs]</a>    <span class="k">def</span> <span class="nf">resample_annually</span><span class="p">(</span>
+<div class="viewcode-block" id="TimeSeriesCollection.resample_annually"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.resample_annually">[docs]</a>    <span class="k">def</span> <span class="nf">resample_annually</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -468,12 +468,12 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Calculate a climatology image collection with a given unit, such as month or dayofyear.</span>
 
-<span class="sd">        This method sets the :code:`eex:dimension` and :code:`eex:coordinate` properties of each image in the collection.</span>
+<span class="sd">        This method sets the :code:`wx:dimension` and :code:`wx:coordinate` properties of each image in the collection.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        unit : str</span>
-<span class="sd">            The name of the time unit, e.g. month or dayofyear. This will be set in the :code:`eex:dimension` unit.</span>
+<span class="sd">            The name of the time unit, e.g. month or dayofyear. This will be set in the :code:`wx:dimension` unit.</span>
 <span class="sd">        date_format : str</span>
 <span class="sd">            The formatting string passed to ee.Date.format. See http://joda-time.sourceforge.net/apidocs/org/joda/time/format/DateTimeFormat.html.</span>
 <span class="sd">        reducer : ee.Reducer</span>
@@ -491,7 +491,7 @@
 <span class="sd">        ee.ImageCollection</span>
 <span class="sd">            The reduced collection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">prop</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;eex:</span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">prop</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;wx:</span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span>
 
         <span class="k">def</span> <span class="nf">reduce_unit</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">]:</span>
             <span class="sd">&quot;&quot;&quot;Apply a reducer over a time unit, returning None if no images fall within the time window.</span>
@@ -506,7 +506,7 @@
             <span class="c1"># Retrieve the time from the image instead of using x because I need a formatted</span>
             <span class="c1"># string for concatenating into the system:id later.</span>
             <span class="n">coord</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">date_format</span><span class="p">)</span>
-            <span class="n">reduced</span> <span class="o">=</span> <span class="n">reduced</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;eex:dimension&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="s2">&quot;eex:coordinate&quot;</span><span class="p">,</span> <span class="n">coord</span><span class="p">)</span>
+            <span class="n">reduced</span> <span class="o">=</span> <span class="n">reduced</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;wx:dimension&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="s2">&quot;wx:coordinate&quot;</span><span class="p">,</span> <span class="n">coord</span><span class="p">)</span>
             <span class="c1"># Reducing makes images unbounded which causes issues</span>
             <span class="n">reduced</span> <span class="o">=</span> <span class="n">reduced</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">geometry</span><span class="p">()</span><span class="o">.</span><span class="n">bounds</span><span class="p">())</span>
 
@@ -532,7 +532,7 @@
 
         <span class="k">return</span> <span class="n">clim</span>
 
-<div class="viewcode-block" id="TimeSeriesCollection.climatology_month"><a class="viewcode-back" href="../../eexarray.html#eexarray.TimeSeriesCollection.climatology_month">[docs]</a>    <span class="k">def</span> <span class="nf">climatology_month</span><span class="p">(</span>
+<div class="viewcode-block" id="TimeSeriesCollection.climatology_month"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.climatology_month">[docs]</a>    <span class="k">def</span> <span class="nf">climatology_month</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -564,7 +564,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        &gt;&gt;&gt; collection = ee.ImageCollection(&quot;IDAHO_EPSCOR/GRIDMET&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; collection = collection.filterDate(&quot;1980&quot;, &quot;2000&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; monthly_max = collection.eex.climatology_month(ee.Reducer.max())</span>
+<span class="sd">        &gt;&gt;&gt; monthly_max = collection.wx.climatology_month(ee.Reducer.max())</span>
 <span class="sd">        &gt;&gt;&gt; monthly_max.size().getInfo()</span>
 <span class="sd">        12</span>
 
@@ -582,7 +582,7 @@
 
         <span class="k">return</span> <span class="n">ClimatologyImageCollection</span><span class="p">(</span><span class="n">monthly_clim</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TimeSeriesCollection.climatology_dayofyear"><a class="viewcode-back" href="../../eexarray.html#eexarray.TimeSeriesCollection.climatology_dayofyear">[docs]</a>    <span class="k">def</span> <span class="nf">climatology_dayofyear</span><span class="p">(</span>
+<div class="viewcode-block" id="TimeSeriesCollection.climatology_dayofyear"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.climatology_dayofyear">[docs]</a>    <span class="k">def</span> <span class="nf">climatology_dayofyear</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -614,7 +614,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        &gt;&gt;&gt; collection = ee.ImageCollection(&quot;IDAHO_EPSCOR/GRIDMET&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; collection = collection.filterDate(&quot;1980&quot;, &quot;2000&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; daily_max = collection.eex.climatology_dayofyear(ee.Reducer.max())</span>
+<span class="sd">        &gt;&gt;&gt; daily_max = collection.wx.climatology_dayofyear(ee.Reducer.max())</span>
 <span class="sd">        &gt;&gt;&gt; daily_max.size().getInfo()</span>
 <span class="sd">        366</span>
 

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>eexarray.climatology &mdash; eexarray  documentation</title>
+  <title>wxee.climatology &mdash; wxee  documentation</title>
   
 
   
@@ -55,7 +55,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> eexarray
+            <a href="../../index.html" class="icon icon-home"> wxee
           
 
           
@@ -91,7 +91,7 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../eexarray.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../wxee.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
 </ul>
 
@@ -108,7 +108,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">eexarray</a>
+          <a href="../../index.html">wxee</a>
         
       </nav>
 
@@ -143,7 +143,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>eexarray.climatology</li>
+      <li>wxee.climatology</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -158,13 +158,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for eexarray.climatology</h1><div class="highlight"><pre>
+  <h1>Source code for wxee.climatology</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 
-<span class="kn">from</span> <span class="nn">eexarray.accessors</span> <span class="kn">import</span> <span class="n">eex_accessor</span>
-<span class="kn">from</span> <span class="nn">eexarray.collection</span> <span class="kn">import</span> <span class="n">ImageCollection</span>
+<span class="kn">from</span> <span class="nn">wxee.accessors</span> <span class="kn">import</span> <span class="n">wx_accessor</span>
+<span class="kn">from</span> <span class="nn">wxee.collection</span> <span class="kn">import</span> <span class="n">ImageCollection</span>
 
 
 <span class="k">class</span> <span class="nc">ClimatologyImageCollection</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">):</span>
@@ -175,7 +175,7 @@
     <span class="k">pass</span>
 
 
-<div class="viewcode-block" id="ClimatologyCollection"><a class="viewcode-back" href="../../eexarray.html#eexarray.ClimatologyCollection">[docs]</a><span class="nd">@eex_accessor</span><span class="p">(</span><span class="n">ClimatologyImageCollection</span><span class="p">)</span>
+<div class="viewcode-block" id="ClimatologyCollection"><a class="viewcode-back" href="../../wxee.html#wxee.ClimatologyCollection">[docs]</a><span class="nd">@wx_accessor</span><span class="p">(</span><span class="n">ClimatologyImageCollection</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ClimatologyCollection</span><span class="p">(</span><span class="n">ImageCollection</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;An image collection of climatological images.&quot;&quot;&quot;</span>
 

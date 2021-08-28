@@ -8,20 +8,17 @@ A Python interface between Earth Engine and xarray for processing weather and cl
 ![demo](docs/_static/demo_001.gif)
 
 ## What is wxee?
-wxee was designed to make processing gridded, mesoscale time series data quick and easy by providing a bridge between the data catalog and processing power of [Google Earth Engine](https://earthengine.google.com/) and the flexibility of [xarray](https://github.com/pydata/xarray), with no complicated setup required. To accomplish this, wxee implements convenient methods for data processing, aggregation, downloading, and ingestion.
+wxee was designed to make processing gridded, mesoscale time series weather and climate data quick and easy by providing a bridge between the data catalog and processing power of [Google Earth Engine](https://earthengine.google.com/) and the flexibility of [xarray](https://github.com/pydata/xarray), with no complicated setup required. To accomplish this, wxee implements convenient methods for data processing, aggregation, downloading, and ingestion.
 
 ### Features
 - Time series image collections to xarray and NetCDF in one line of code
+- Climatological calculations in EE (day-of-year, monthly)
 - Temporal resampling in EE (hourly to daily, daily to monthly, etc.)
-- Climatological normals in EE (day-of-year, monthly)
 - Images and image collections to GeoTIFF
 - Parallel processing for fast downloads
-- Support for masked nodata values
 
 ## What *isn't* wxee?
 wxee isn't built to export huge amounts of data. The "no setup required" approach means it has strict download size limits imposed by Earth Engine's URL downloading system. If you run into download issues, try using a larger scale or splitting images into smaller regions. If you are regularly downloading large amounts of high resolution data, consider using Earth Engine's built-in Drive exporting or a tool like [restee](https://github.com/KMarkert/restee).
-
-wxee also isn't a weather/climate processing toolkit. There are great Python packages out there already like [MetPy](https://github.com/Unidata/MetPy) and [ACT](https://github.com/ARM-DOE/ACT), so why reinvent the wheel? wxee focuses on taking care of the heavy lifting so you can work with your data in domain-specific tools. 
 
 ## Installation
 

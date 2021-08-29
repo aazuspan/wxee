@@ -93,6 +93,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../wxee.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Developer Setup</a></li>
 </ul>
 
             
@@ -159,22 +160,22 @@
            <div itemprop="articleBody">
             
   <h1>Source code for wxee.time_series</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 
-<span class="kn">from</span> <span class="nn">wxee.accessors</span> <span class="kn">import</span> <span class="n">wx_accessor</span>
-<span class="kn">from</span> <span class="nn">wxee.climatology</span> <span class="kn">import</span> <span class="n">ClimatologyImageCollection</span>
-<span class="kn">from</span> <span class="nn">wxee.collection</span> <span class="kn">import</span> <span class="n">ImageCollection</span>
+<span class="kn">from</span> <span class="nn">wxee.climatology</span> <span class="kn">import</span> <span class="n">ClimatologyMean</span><span class="p">,</span> <span class="n">_ClimatologyFrequency</span>
 
 
-<div class="viewcode-block" id="TimeSeriesCollection"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection">[docs]</a><span class="nd">@wx_accessor</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">imagecollection</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">TimeSeriesCollection</span><span class="p">(</span><span class="n">ImageCollection</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeSeries"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries">[docs]</a><span class="k">class</span> <span class="nc">TimeSeries</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">imagecollection</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;An image collection of chronological images.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_times</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the the :code:`system:time_start` of each image in the collection&quot;&quot;&quot;</span>
-        <span class="n">imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+        <span class="n">imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">imgs</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
@@ -201,20 +202,17 @@
         <span class="n">times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_times</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
 
-    <span class="k">def</span> <span class="nf">_resample_time</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="TimeSeries.aggregate_time"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.aggregate_time">[docs]</a>    <span class="k">def</span> <span class="nf">aggregate_time</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">frequency</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension to a specified unit. This method can only be used to go from</span>
-<span class="sd">        small time units to larger time units, such as hours to days, not vice-versa. If the resampling unit is smaller</span>
+        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension to a specified frequency. This method can only be used to go from</span>
+<span class="sd">        small time frequencies to larger time frequencies, such as hours to days, not vice-versa. If the resampling frequency is smaller</span>
 <span class="sd">        than the time between images, un-aggregated images will be returned.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        unit : str</span>
-<span class="sd">            The unit of time to resample to. One of &#39;year&#39;, &#39;month&#39; &#39;week&#39;, &#39;day&#39;, &#39;hour&#39;.</span>
+<span class="sd">        frequency : str</span>
+<span class="sd">            The time frequency to aggregate to. One of &#39;year&#39;, &#39;month&#39; &#39;week&#39;, &#39;day&#39;, &#39;hour&#39;.</span>
 <span class="sd">        reducer : ee.Reducer, optional</span>
 <span class="sd">            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</span>
 <span class="sd">        keep_bandnames : bool, default True</span>
@@ -224,39 +222,33 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        ee.ImageCollection</span>
-<span class="sd">            The input image collection aggregated to the specified time unit.</span>
+<span class="sd">            The input image collection aggregated to the specified time frequency.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
-<span class="sd">            If an invalid unit is passed.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        TimeSeriesCollection.resample_hourly</span>
-<span class="sd">        TimeSeriesCollection.resample_daily</span>
-<span class="sd">        TimeSeriesCollection.resample_weekly</span>
-<span class="sd">        TimeSeriesCollection.resample_monthly</span>
-<span class="sd">        TimeSeriesCollection.resample_annually</span>
+<span class="sd">            If an invalid frequency is passed.</span>
 
 <span class="sd">        Example</span>
 <span class="sd">        -------</span>
-<span class="sd">        &gt;&gt;&gt; collection_hourly = ee.ImageCollection(&quot;NOAA/NWS/RTMA&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; daily_max = collection_hourly._resample_time(unit=&quot;day&quot;, reducer=ee.Reducer.max())</span>
+<span class="sd">        &gt;&gt;&gt; ts_hourly = wxee.TimeSeries(&quot;NOAA/NWS/RTMA&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; daily_max = ts_hourly.aggregate_time(frequency=&quot;day&quot;, reducer=ee.Reducer.max())</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># ee.Reducer can&#39;t be used without initializing ee (see https://github.com/google/earthengine-api/issues/164),</span>
         <span class="c1"># so set the default reducer explicitly. This is also why the type hint above is set to Any.</span>
         <span class="n">reducer</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">reducer</span> <span class="k">else</span> <span class="n">reducer</span>
 
-        <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="s2">&quot;week&quot;</span><span class="p">,</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="s2">&quot;hour&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">units</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unit must be one of </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">, not &#39;</span><span class="si">{</span><span class="n">unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&#39;.&quot;</span><span class="p">)</span>
+        <span class="n">frequencies</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="s2">&quot;week&quot;</span><span class="p">,</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="s2">&quot;hour&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">frequency</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">frequencies</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Frequency must be one of </span><span class="si">{</span><span class="n">frequencies</span><span class="si">}</span><span class="s2">, not &#39;</span><span class="si">{</span><span class="n">frequency</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&#39;.&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">resample_step</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
             <span class="sd">&quot;&quot;&quot;Resample one time step in the given unit from a specified start time.&quot;&quot;&quot;</span>
             <span class="n">start</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
-            <span class="n">imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">start</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">frequency</span><span class="p">)</span>
+            <span class="n">imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
             <span class="n">resampled</span> <span class="o">=</span> <span class="n">imgs</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">reducer</span><span class="p">)</span>
             <span class="n">resampled</span> <span class="o">=</span> <span class="n">resampled</span><span class="o">.</span><span class="n">copyProperties</span><span class="p">(</span>
                 <span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">(),</span> <span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">propertyNames</span><span class="p">()</span>
@@ -274,379 +266,109 @@
             <span class="c1"># If the resampling step falls between images, just return null</span>
             <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Algorithms</span><span class="o">.</span><span class="n">If</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">resampled</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-        <span class="n">n_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">ceil</span><span class="p">()</span>
+        <span class="n">n_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="n">frequency</span><span class="p">)</span><span class="o">.</span><span class="n">ceil</span><span class="p">()</span>
         <span class="n">steps</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="o">.</span><span class="n">sequence</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-        <span class="n">start_times</span> <span class="o">=</span> <span class="n">steps</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">unit</span><span class="p">))</span>
+        <span class="n">start_times</span> <span class="o">=</span> <span class="n">steps</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">frequency</span><span class="p">))</span>
 
         <span class="n">resampled</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="n">start_times</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">resample_step</span><span class="p">,</span> <span class="n">dropNulls</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">resampled</span>
+        <span class="k">return</span> <span class="n">resampled</span></div>
 
-<div class="viewcode-block" id="TimeSeriesCollection.resample_hourly"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.resample_hourly">[docs]</a>    <span class="k">def</span> <span class="nf">resample_hourly</span><span class="p">(</span>
+<div class="viewcode-block" id="TimeSeries.climatology_mean"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.climatology_mean">[docs]</a>    <span class="k">def</span> <span class="nf">climatology_mean</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension hourly. This method can only be used with collections that</span>
-<span class="sd">        are sub-hourly. If the time between images is greater than one hour, un-aggregated images will be returned.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClimatologyMean</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate a mean climatology image collection with a given frequency.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        reducer : ee.Reducer, optional</span>
-<span class="sd">            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</span>
-<span class="sd">        keep_bandnames : bool, default True</span>
-<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
-<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        ee.ImageCollection</span>
-<span class="sd">            The input image collection aggregated hourly.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        TimeSeriesCollection.resample_daily</span>
-<span class="sd">        TimeSeriesCollection.resample_weekly</span>
-<span class="sd">        TimeSeriesCollection.resample_monthly</span>
-<span class="sd">        TimeSeriesCollection.resample_annually</span>
-
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
-<span class="sd">        &gt;&gt;&gt; collection_sub_hourly = ee.ImageCollection(&quot;NOAA/GOES/16/FDCC&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; hourly_max = collection_sub_hourly.resample_hourly(reducer=ee.Reducer.max())</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resample_time</span><span class="p">(</span><span class="s2">&quot;hour&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="TimeSeriesCollection.resample_daily"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.resample_daily">[docs]</a>    <span class="k">def</span> <span class="nf">resample_daily</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension daily. This method can only be used with collections that</span>
-<span class="sd">        are sub-daily. If the time between images is greater than one day, un-aggregated images will be returned.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        reducer : ee.Reducer, optional</span>
-<span class="sd">            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</span>
-<span class="sd">        keep_bandnames : bool, default True</span>
-<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
-<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        ee.ImageCollection</span>
-<span class="sd">            The input image collection aggregated daily.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        TimeSeriesCollection.resample_hourly</span>
-<span class="sd">        TimeSeriesCollection.resample_weekly</span>
-<span class="sd">        TimeSeriesCollection.resample_monthly</span>
-<span class="sd">        TimeSeriesCollection.resample_annually</span>
-
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
-<span class="sd">        &gt;&gt;&gt; collection_hourly = ee.ImageCollection(&quot;NOAA/NWS/RTMA&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; daily_max = collection_hourly.resample_daily(reducer=ee.Reducer.max())</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resample_time</span><span class="p">(</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="TimeSeriesCollection.resample_weekly"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.resample_weekly">[docs]</a>    <span class="k">def</span> <span class="nf">resample_weekly</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension weekly. This method can only be used with collections that</span>
-<span class="sd">        are sub-weekly. If the time between images is greater than one week, un-aggregated images will be returned.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        reducer : ee.Reducer, optional</span>
-<span class="sd">            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</span>
-<span class="sd">        keep_bandnames : bool, default True</span>
-<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
-<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        ee.ImageCollection</span>
-<span class="sd">            The input image collection aggregated weekly.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        TimeSeriesCollection.resample_hourly</span>
-<span class="sd">        TimeSeriesCollection.resample_daily</span>
-<span class="sd">        TimeSeriesCollection.resample_monthly</span>
-<span class="sd">        TimeSeriesCollection.resample_annually</span>
-
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
-<span class="sd">        &gt;&gt;&gt; collection_hourly = ee.ImageCollection(&quot;NOAA/NWS/RTMA&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; weekly_max = collection_hourly.resample_weekly(reducer=ee.Reducer.max())</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resample_time</span><span class="p">(</span><span class="s2">&quot;week&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="TimeSeriesCollection.resample_monthly"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.resample_monthly">[docs]</a>    <span class="k">def</span> <span class="nf">resample_monthly</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension monthly. This method can only be used with collections that</span>
-<span class="sd">        are sub-monthly. If the time between images is greater than one month, un-aggregated images will be returned.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        reducer : ee.Reducer, optional</span>
-<span class="sd">            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</span>
-<span class="sd">        keep_bandnames : bool, default True</span>
-<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
-<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        ee.ImageCollection</span>
-<span class="sd">            The input image collection aggregated monthly.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        TimeSeriesCollection.resample_hourly</span>
-<span class="sd">        TimeSeriesCollection.resample_daily</span>
-<span class="sd">        TimeSeriesCollection.resample_weekly</span>
-<span class="sd">        TimeSeriesCollection.resample_annually</span>
-
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
-<span class="sd">        &gt;&gt;&gt; collection_hourly = ee.ImageCollection(&quot;NOAA/NWS/RTMA&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; monthly_max = collection_hourly.resample_monthly(unit=&quot;month&quot;, reducer=ee.Reducer.max())</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resample_time</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="TimeSeriesCollection.resample_annually"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.resample_annually">[docs]</a>    <span class="k">def</span> <span class="nf">resample_annually</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Aggregate the collection over the time dimension annually. This method can only be used with collections that</span>
-<span class="sd">        are sub-annual. If the time between images is greater than one year, un-aggregated images will be returned.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        reducer : ee.Reducer, optional</span>
-<span class="sd">            The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</span>
-<span class="sd">        keep_bandnames : bool, default True</span>
-<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
-<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        ee.ImageCollection</span>
-<span class="sd">            The input image collection aggregated annually.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        TimeSeriesCollection.resample_hourly</span>
-<span class="sd">        TimeSeriesCollection.resample_daily</span>
-<span class="sd">        TimeSeriesCollection.resample_weekly</span>
-<span class="sd">        TimeSeriesCollection.resample_monthly</span>
-
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
-<span class="sd">        &gt;&gt;&gt; collection_hourly = ee.ImageCollection(&quot;NOAA/NWS/RTMA&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; annual_max = collection_hourly.resample_annually(reducer=ee.Reducer.max())</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resample_time</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_calculate_climatology_mean</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">date_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">reducer</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Calculate a mean climatology image collection with a given unit, such as month or dayofyear.</span>
-
-<span class="sd">        This method sets the :code:`wx:dimension` and :code:`wx:coordinate` properties of each image in the collection.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        unit : str</span>
-<span class="sd">            The name of the time unit, e.g. month or dayofyear. This will be set in the :code:`wx:dimension` unit.</span>
-<span class="sd">        date_format : str</span>
-<span class="sd">            The formatting string passed to ee.Date.format. See http://joda-time.sourceforge.net/apidocs/org/joda/time/format/DateTimeFormat.html.</span>
-<span class="sd">        reducer : ee.Reducer</span>
-<span class="sd">            The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily for a daily </span>
+<span class="sd">        frequency : str</span>
+<span class="sd">            The name of the time frequency. One of &quot;day&quot;, &quot;month&quot;.</span>
+<span class="sd">        reducer : Optional[ee.Reducer]</span>
+<span class="sd">            The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily for a daily</span>
 <span class="sd">            climatology. If the data is already in the temporal scale of the climatology, e.g. creating a daily</span>
 <span class="sd">            climatology from daily data, the reducer will have no effect.</span>
-<span class="sd">        start : int</span>
-<span class="sd">            The start coordinate in the given unit, e.g. month 1 will start in January.</span>
-<span class="sd">        end : int</span>
-<span class="sd">            The end coordinate in the given unit, e.g. month 12 will end in December.</span>
+<span class="sd">        start : Optional[int]</span>
+<span class="sd">            The start coordinate in the time frequency to include in the climatology, e.g. 1 for January if the</span>
+<span class="sd">            frequency is &quot;month&quot;. If none is provided, the default will be 1 for both &quot;day&quot; and &quot;month&quot;.</span>
+<span class="sd">        end : Optional[int]</span>
+<span class="sd">            The end coordinate in the time frequency to include in the climatology, e.g. 8 for August if the</span>
+<span class="sd">            frequency is &quot;month&quot;. If none is provided, the default will be 366 for &quot;day&quot; or 12 for &quot;month&quot;</span>
 <span class="sd">        keep_bandnames : bool, default True</span>
 <span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
 <span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        ee.ImageCollection</span>
-<span class="sd">            The reduced collection.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">prop</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;wx:</span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        wxee.climatology.ClimatologyMean</span>
+<span class="sd">            The climatological mean collection.</span>
 
-        <span class="k">def</span> <span class="nf">reduce_unit</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">]:</span>
-            <span class="sd">&quot;&quot;&quot;Apply a mean reducer over a time unit, returning None if no images fall within the time window.</span>
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; collection = ee.ImageCollection(&quot;IDAHO_EPSCOR/GRIDMET&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; collection = collection.filterDate(&quot;1980&quot;, &quot;2000&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; ts = wxee.TimeSeries(collection)</span>
+<span class="sd">        &gt;&gt;&gt; daily_max = ts.climatology_mean(frequency=&quot;day&quot;, reducer=ee.Reducer.max())</span>
+<span class="sd">        &gt;&gt;&gt; daily_max.size().getInfo()</span>
+<span class="sd">        366</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reducer</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">reducer</span> <span class="k">else</span> <span class="n">reducer</span>
+
+        <span class="n">freq</span> <span class="o">=</span> <span class="n">_ClimatologyFrequency</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">start</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">start</span> <span class="k">else</span> <span class="n">start</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">end</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">end</span> <span class="k">else</span> <span class="n">end</span>
+        <span class="n">prop</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;wx:</span><span class="si">{</span><span class="n">frequency</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">def</span> <span class="nf">reduce_frequency</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">]:</span>
+            <span class="sd">&quot;&quot;&quot;Apply a mean reducer over a time frequency, returning None if no images fall within the time window.</span>
 
 <span class="sd">            Parameters</span>
 <span class="sd">            ----------</span>
 <span class="sd">            x : ee.String</span>
 <span class="sd">                The time coordinate to reduce, such as &quot;1&quot; for January.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">imgs</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">filterMetadata</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="s2">&quot;equals&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            <span class="n">imgs</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">filterMetadata</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="s2">&quot;equals&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
             <span class="n">reduced</span> <span class="o">=</span> <span class="n">imgs</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
             <span class="c1"># Retrieve the time from the image instead of using x because I need a formatted</span>
             <span class="c1"># string for concatenating into the system:id later.</span>
-            <span class="n">coord</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">date_format</span><span class="p">)</span>
-            <span class="n">reduced</span> <span class="o">=</span> <span class="n">reduced</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;wx:dimension&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="s2">&quot;wx:coordinate&quot;</span><span class="p">,</span> <span class="n">coord</span><span class="p">)</span>
+            <span class="n">coord</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">freq</span><span class="o">.</span><span class="n">date_format</span>
+            <span class="p">)</span>
+            <span class="n">reduced</span> <span class="o">=</span> <span class="n">reduced</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;wx:dimension&quot;</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="s2">&quot;wx:coordinate&quot;</span><span class="p">,</span> <span class="n">coord</span><span class="p">)</span>
             <span class="c1"># Reducing makes images unbounded which causes issues</span>
-            <span class="n">reduced</span> <span class="o">=</span> <span class="n">reduced</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">geometry</span><span class="p">()</span><span class="o">.</span><span class="n">bounds</span><span class="p">())</span>
+            <span class="n">reduced</span> <span class="o">=</span> <span class="n">reduced</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">collection</span><span class="o">.</span><span class="n">geometry</span><span class="p">()</span><span class="o">.</span><span class="n">bounds</span><span class="p">())</span>
 
             <span class="k">if</span> <span class="n">keep_bandnames</span><span class="p">:</span>
                 <span class="n">reduced</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">reduced</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">bandNames</span><span class="p">())</span>
 
             <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Algorithms</span><span class="o">.</span><span class="n">If</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">reduced</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;dayofyear&quot;</span><span class="p">:</span>
-            <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">resample_daily</span><span class="p">(</span><span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;month&quot;</span><span class="p">:</span>
-            <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">resample_monthly</span><span class="p">(</span><span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span>
-        
-        <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
-        <span class="n">col</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+        <span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate_time</span><span class="p">(</span><span class="n">freq</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span>
+        <span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
             <span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">img</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
                 <span class="n">prop</span><span class="p">,</span>
                 <span class="n">ee</span><span class="o">.</span><span class="n">Number</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-                    <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">date_format</span><span class="p">)</span>
+                    <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">freq</span><span class="o">.</span><span class="n">date_format</span>
+                    <span class="p">)</span>
                 <span class="p">),</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="n">coord_list</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="o">.</span><span class="n">sequence</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
 
-        <span class="n">clim</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span>
-            <span class="n">coord_list</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">reduce_unit</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">dropNulls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">clim</span> <span class="o">=</span> <span class="n">ClimatologyMean</span><span class="p">(</span>
+            <span class="n">coord_list</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">reduce_frequency</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">dropNulls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">clim</span>
+        <span class="n">clim</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">clim</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="n">clim</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span>
 
-<div class="viewcode-block" id="TimeSeriesCollection.climatology_mean_month"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.climatology_mean_month">[docs]</a>    <span class="k">def</span> <span class="nf">climatology_mean_month</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
-        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClimatologyImageCollection</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Calculate monthly mean climatology from a time series of data. This method works by aggregating raw data to</span>
-<span class="sd">        monthly using a given reducer and then calculating per-month means over multiple years. The output will have</span>
-<span class="sd">        one image for each month.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        reducer : ee.Reducer, optional</span>
-<span class="sd">            The reducer to apply when aggregating over time, e.g. aggregating daily data to monthly. If the data </span>
-<span class="sd">            is already monthly, the reducer will have no effect. If none is provided, ee.Reducer.mean() will be used.</span>
-<span class="sd">        start : int, default 1</span>
-<span class="sd">            The number of the start month to include in the climatology.</span>
-<span class="sd">        end : int, default 12</span>
-<span class="sd">            The number of the end month to include in the climatology.</span>
-<span class="sd">        keep_bandnames : bool, default True</span>
-<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
-<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        ClimatologyImageCollection</span>
-<span class="sd">            The image collection reduced to the number of months between start and end.</span>
-
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
-<span class="sd">        &gt;&gt;&gt; collection = ee.ImageCollection(&quot;IDAHO_EPSCOR/GRIDMET&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; collection = collection.filterDate(&quot;1980&quot;, &quot;2000&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; monthly_max = collection.wx.climatology_month(ee.Reducer.max())</span>
-<span class="sd">        &gt;&gt;&gt; monthly_max.size().getInfo()</span>
-<span class="sd">        12</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        TimeSeriesCollection.climatology_mean_dayofyear</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># ee.Reducer can&#39;t be used without initializing ee (see https://github.com/google/earthengine-api/issues/164),</span>
-        <span class="c1"># so set the default reducer explicitly. This is also why the type hint above is set to Any.</span>
-        <span class="n">reducer</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">reducer</span> <span class="k">else</span> <span class="n">reducer</span>
-
-        <span class="n">monthly_clim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_climatology_mean</span><span class="p">(</span>
-            <span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">keep_bandnames</span>
-        <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">ClimatologyImageCollection</span><span class="p">(</span><span class="n">monthly_clim</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="TimeSeriesCollection.climatology_mean_dayofyear"><a class="viewcode-back" href="../../wxee.html#wxee.TimeSeriesCollection.climatology_mean_dayofyear">[docs]</a>    <span class="k">def</span> <span class="nf">climatology_mean_dayofyear</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">366</span><span class="p">,</span>
-        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClimatologyImageCollection</span><span class="p">:</span>
-
-        <span class="sd">&quot;&quot;&quot;Calculate day-of-year mean climatology from a time series of data. This method works by aggregating raw data to</span>
-<span class="sd">        daily using a given reducer and then calculating per-day-of-year means over multiple years. The output will have</span>
-<span class="sd">        one image for each day.</span>
-
-<span class="sd">        Note</span>
-<span class="sd">        ----</span>
-<span class="sd">        Julian dates are used to calculate day-of-year means, so days after February 29 will be offset by one in leap years.</span>
-<span class="sd">        For example, day-of-year 365 will represent December 31 in non-leap years and December 30 in leap years. Day 366 </span>
-<span class="sd">        will always represent December 31, but will be aggregated from 1/4 as many days as other days of the year. </span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        reducer : ee.Reducer, optional</span>
-<span class="sd">            The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily. If the data </span>
-<span class="sd">            is already daily, the reducer will have no effect. If none is provided, ee.Reducer.mean() will be used.</span>
-<span class="sd">        start : int, default 1</span>
-<span class="sd">            The number of the start day to include in the climatology.</span>
-<span class="sd">        end : int, default 366</span>
-<span class="sd">            The number of the end day to include in the climatology.</span>
-<span class="sd">        keep_bandnames : bool, default True</span>
-<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
-<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        ClimatologyImageCollection</span>
-<span class="sd">            The image collection reduced to the number of days between start and end.</span>
-
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
-<span class="sd">        &gt;&gt;&gt; collection = ee.ImageCollection(&quot;IDAHO_EPSCOR/GRIDMET&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; collection = collection.filterDate(&quot;1980&quot;, &quot;2000&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; daily_max = collection.wx.climatology_dayofyear(ee.Reducer.max())</span>
-<span class="sd">        &gt;&gt;&gt; daily_max.size().getInfo()</span>
-<span class="sd">        366</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        TimeSeriesCollection.climatology_mean_month</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># ee.Reducer can&#39;t be used without initializing ee (see https://github.com/google/earthengine-api/issues/164),</span>
-        <span class="c1"># so set the default reducer explicitly. This is also why the type hint above is set to Any.</span>
-        <span class="n">reducer</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">reducer</span> <span class="k">else</span> <span class="n">reducer</span>
-
-        <span class="n">daily_clim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_climatology_mean</span><span class="p">(</span>
-            <span class="s2">&quot;dayofyear&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">keep_bandnames</span>
-        <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">ClimatologyImageCollection</span><span class="p">(</span><span class="n">daily_clim</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">clim</span></div></div>
 </pre></div>
 
            </div>

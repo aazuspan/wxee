@@ -93,6 +93,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../wxee.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Developer Setup</a></li>
 </ul>
 
             
@@ -159,9 +160,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for wxee.image</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">string</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
+<span></span><span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
@@ -252,7 +251,6 @@
                 <span class="n">nodata</span><span class="o">=</span><span class="n">nodata</span><span class="p">,</span>
                 <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
                 <span class="n">progress</span><span class="o">=</span><span class="n">progress</span><span class="p">,</span>
-                <span class="n">clean_filename</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">ds</span> <span class="o">=</span> <span class="n">_dataset_from_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
@@ -278,7 +276,6 @@
         <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
         <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">clean_filename</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Download an image to geoTIFF.</span>
 
@@ -307,9 +304,6 @@
 <span class="sd">        max_attempts: int, default 10</span>
 <span class="sd">            Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to</span>
 <span class="sd">            max_attempts. Must be between 1 and 99.</span>
-<span class="sd">        clean_filename: bool, default True</span>
-<span class="sd">            If true and no description is provided, the :code:`system:id` will be cleaned by replacing invalid path</span>
-<span class="sd">            characters with underscores. If description is provided, this will have no effect.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -342,7 +336,6 @@
                 <span class="n">nodata</span><span class="p">,</span>
                 <span class="n">progress</span><span class="p">,</span>
                 <span class="n">max_attempts</span><span class="p">,</span>
-                <span class="n">clean_filename</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">tifs</span> <span class="o">=</span> <span class="n">_unpack_file</span><span class="p">(</span><span class="n">zipped</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">)</span>
 
@@ -369,7 +362,6 @@
         <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
         <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">clean_filename</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Download an image as a ZIP&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">max_attempts</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>

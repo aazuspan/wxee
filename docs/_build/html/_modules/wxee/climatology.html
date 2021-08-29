@@ -93,6 +93,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../wxee.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Developer Setup</a></li>
 </ul>
 
             
@@ -159,27 +160,64 @@
            <div itemprop="articleBody">
             
   <h1>Source code for wxee.climatology</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
-
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 
-<span class="kn">from</span> <span class="nn">wxee.accessors</span> <span class="kn">import</span> <span class="n">wx_accessor</span>
-<span class="kn">from</span> <span class="nn">wxee.collection</span> <span class="kn">import</span> <span class="n">ImageCollection</span>
 
+<div class="viewcode-block" id="ClimatologyMean"><a class="viewcode-back" href="../../wxee.html#wxee.climatology.ClimatologyMean">[docs]</a><span class="k">class</span> <span class="nc">ClimatologyMean</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">imagecollection</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An image collection of climatological means.</span>
 
-<span class="k">class</span> <span class="nc">ClimatologyImageCollection</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;An image collection of climatological statistics. Identical to an ee.ImageCollection but accessible through the</span>
-<span class="sd">    ClimatologyCollection class (and more importantly, not accessible through the TimeSeriesCollection class).</span>
+<span class="sd">    Must be instantiated through :code:`wxee.time_series.TimeSeries.mean_climatology`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frequency : str</span>
+<span class="sd">        The time frequency of the climatology. One of &quot;day&quot;, &quot;month&quot;.</span>
+<span class="sd">    reducer : ee.Reducer</span>
+<span class="sd">        The reducer used to aggregate the climatology.</span>
+<span class="sd">    start : int</span>
+<span class="sd">        The start coordinate in the time frequency included in the climatology, e.g. 1 for January if the</span>
+<span class="sd">        frequency is &quot;month&quot;.</span>
+<span class="sd">    end : int</span>
+<span class="sd">        The end coordinate in the time frequency included in the climatology, e.g. 8 for August if the</span>
+<span class="sd">        frequency is &quot;month&quot;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">pass</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ClimatologyCollection"><a class="viewcode-back" href="../../wxee.html#wxee.ClimatologyCollection">[docs]</a><span class="nd">@wx_accessor</span><span class="p">(</span><span class="n">ClimatologyImageCollection</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">ClimatologyCollection</span><span class="p">(</span><span class="n">ImageCollection</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;An image collection of climatological images.&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">_ClimatologyFrequency</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;An internal class for storing and retrieving valid climatological frequency</span>
+<span class="sd">    attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">pass</span></div>
+    <span class="n">options</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;_ClimatologyFrequency&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">date_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_format</span> <span class="o">=</span> <span class="n">date_format</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">option_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get all valid names&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">option</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">options</span><span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;_ClimatologyFrequency&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve a Frequency by name if it exists.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">option</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">option</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequency must be in </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">option_names</span><span class="p">()</span><span class="si">}</span><span class="s2">, not &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+
+
+<span class="n">_MONTH</span> <span class="o">=</span> <span class="n">_ClimatologyFrequency</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+<span class="n">_DAY</span> <span class="o">=</span> <span class="n">_ClimatologyFrequency</span><span class="p">(</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">366</span><span class="p">)</span>
 </pre></div>
 
            </div>

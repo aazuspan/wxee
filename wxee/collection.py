@@ -1,21 +1,21 @@
 import functools
 import multiprocessing as mp
 import tempfile
-from abc import ABC, abstractmethod
 from multiprocessing.pool import ThreadPool
-from typing import Any, List, Optional
+from typing import List, Optional
 
 import ee  # type: ignore
 import xarray as xr
 from tqdm.auto import tqdm  # type: ignore
 
 from wxee import constants
+from wxee.accessors import wx_accessor
+from wxee.time_series import TimeSeries
 from wxee.utils import _dataset_from_files, _flatten_list
 
 
-class ImageCollection(ABC):
-    """Abstract class for Collection specialized subclasses like TimeSeriesCollection and ClimatologyCollection."""
-
+@wx_accessor(ee.imagecollection.ImageCollection)
+class ImageCollection:
     def __init__(self, obj: ee.imagecollection.ImageCollection):
         """
         Parameters
@@ -132,7 +132,6 @@ class ImageCollection(ABC):
                 num_cores=num_cores,
                 progress=progress,
                 max_attempts=max_attempts,
-                clean_filename=False,
             )
 
             ds = _dataset_from_files(files)
@@ -159,7 +158,6 @@ class ImageCollection(ABC):
         num_cores: Optional[int] = None,
         progress: bool = True,
         max_attempts: int = 10,
-        clean_filename: bool = True,
     ) -> List[str]:
         """Download all images in the collection to geoTIFF. Image file names will be the :code:`system:id` of each image
         after replacing invalid characters with underscores, with an optional user-defined prefix.
@@ -192,8 +190,6 @@ class ImageCollection(ABC):
         max_attempts: int, default 10
             Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
             max_attempts. Must be between 1 and 99.
-        clean_filename: bool, default True
-            If true the :code:`system:id` of all images will be cleaned by replacing invalid path characters with underscores.
 
         Returns
         -------
@@ -230,7 +226,6 @@ class ImageCollection(ABC):
             nodata=nodata,
             progress=False,
             max_attempts=max_attempts,
-            clean_filename=clean_filename,
         )
 
         if num_cores > 1:
@@ -257,6 +252,10 @@ class ImageCollection(ABC):
 
         return _flatten_list(tifs)
 
+    def to_time_series(self) -> TimeSeries:
+        """Convert to a :code:`wxee.TimeSeries` collection with associated methods."""
+        return TimeSeries(self._obj)
+
 
 def _image_to_tif_alias(
     img: ee.Image,
@@ -270,7 +269,6 @@ def _image_to_tif_alias(
     nodata: int = -32_768,
     progress: bool = True,
     max_attempts: int = 10,
-    clean_filename: bool = True,
 ) -> List[str]:
     """A pickleable wrapper around the ee.Image.wx.to_tif instance method, allowing it to be used in multiprocessing.
     See https://stackoverflow.com/questions/27318290/why-can-i-pass-an-instance-method-to-multiprocessing-process-but-not-a-multipro
@@ -286,5 +284,4 @@ def _image_to_tif_alias(
         nodata,
         progress,
         max_attempts,
-        clean_filename,
     )

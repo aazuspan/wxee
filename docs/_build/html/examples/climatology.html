@@ -101,9 +101,8 @@
 <li class="toctree-l2"><a class="reference internal" href="temporal_resampling.html">Temporal Resampling</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Climatology</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Setup">Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Monthly-Median-VPD">Monthly Median VPD</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Climatology-vs. Temporal-Resampling">Climatology vs. Temporal Resampling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Daily-Max-Precipitation">Daily Max Precipitation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Monthly-Total-Rainfall">Monthly Total Rainfall</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Daily-Mean-Burning-Index">Daily Mean Burning Index</a></li>
 </ul>
 </li>
 </ul>
@@ -449,7 +448,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="Climatology">
 <h1>Climatology<a class="headerlink" href="#Climatology" title="Permalink to this headline">¶</a></h1>
-<p>In this tutorial, we’ll look at how to use wxee to calculate long-term climatological means of gridded weather data. wxee supports the following climatology methods which can be applied to an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> using the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accessor: <code class="docutils literal notranslate"><span class="pre">climatology_dayofyear</span></code>, <code class="docutils literal notranslate"><span class="pre">climatology_month</span></code></p>
+<p>In this tutorial, we’ll look at how to use wxee to calculate long-term climatological means of gridded weather data. wxee supports the following climatology methods which can be applied to an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> using the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accessor: <code class="docutils literal notranslate"><span class="pre">climatology_mean_dayofyear</span></code>, <code class="docutils literal notranslate"><span class="pre">climatology_mean_month</span></code>.</p>
 <div class="section" id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -465,15 +464,15 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 </div>
-<div class="section" id="Monthly-Median-VPD">
-<h2>Monthly Median VPD<a class="headerlink" href="#Monthly-Median-VPD" title="Permalink to this headline">¶</a></h2>
-<p>gridMET contains daily weather data including vapor pressure deficit (VPD). We’ll load 10 years of data from 2000 - 2010, giving us several thousand daily images.</p>
+<div class="section" id="Monthly-Total-Rainfall">
+<h2>Monthly Total Rainfall<a class="headerlink" href="#Monthly-Total-Rainfall" title="Permalink to this headline">¶</a></h2>
+<p>gridMET contains daily weather data including precipitation. First, we’ll load 10 years of data from 2000 - 2010, giving us several thousand daily images.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;vpd&quot;</span><span class="p">)</span>
+<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;pr&quot;</span><span class="p">)</span>
 <span class="n">gridmet</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2000&quot;</span><span class="p">,</span> <span class="s2">&quot;2010&quot;</span><span class="p">)</span>
 
 <span class="n">gridmet</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
@@ -489,13 +488,13 @@ div.rendered_html tbody tr:hover {
 3653
 </pre></div></div>
 </div>
-<p>Now, we’ll calculate the monthly median climatology over the 10 years, giving us just 12 images (one per month).</p>
+<p>Now, we’ll calculate the monthly mean total rainfall over the 10 years, giving us just 12 images (one per month).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">climatology_month</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">median</span><span class="p">())</span>
+<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">climatology_mean_month</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
 <span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -509,14 +508,15 @@ div.rendered_html tbody tr:hover {
 12
 </pre></div></div>
 </div>
-<p>Finally, we’ll download the monthly normals as an xarray dataset and plot them.</p>
+<div class="alert alert-block alert-info"><p>Tip: The reducer argument defines how data will be aggregated before the mean climatology is calculated. In this case, we’ll sum the daily precipitation to get monthly totals. The mean monthly climatology will be calculated from those totals.</p>
+</div><p>Finally, we’ll download the monthly mean totals as an xarray dataset and plot them.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">x</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
-<span class="n">x</span><span class="o">.</span><span class="n">vpd</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="n">x</span><span class="o">.</span><span class="n">pr</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Blues&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -524,7 +524,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "6cf5b8e6884845c8b66354b305dbae0c", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "bccadad85d4648b7bef9a4bbbc3aae3e", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -532,58 +532,37 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f3b43395c10&gt;
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7fcdad7404c0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_climatology_9_2.png" src="../_images/examples_climatology_9_2.png" />
+<img alt="../_images/examples_climatology_10_2.png" src="../_images/examples_climatology_10_2.png" />
 </div>
 </div>
-<p>Unsurprisingly, high VPDs in July (month 7) indicate that it was the driest month of the year on average between 2000 and 2010.</p>
 </div>
-<div class="section" id="Climatology-vs. Temporal-Resampling">
-<h2>Climatology vs. Temporal Resampling<a class="headerlink" href="#Climatology-vs. Temporal-Resampling" title="Permalink to this headline">¶</a></h2>
-<p>Climatology and temporal resampling share some characteristics–both use reducers to aggregate time series of images–so it’s important to understand the difference. The easiest way to compare the two is to think about how they would handle the example above with 10 years of raw data:</p>
-<ul class="simple">
-<li><p><strong>Raw data</strong>: 3653 images (1 per day per year)</p>
-<ul>
-<li><p><strong>Monthly median climatology</strong>: 12 images (1 per month)</p>
-<ul>
-<li><p>Each image is the monthly median VPD over all 10 years (e.g. October).</p></li>
-</ul>
-</li>
-<li><p><strong>Monthly median temporal resampling</strong>: 120 images (1 per month per year)</p>
-<ul>
-<li><p>Each image is the monthly median VPD in one year (e.g. October 2005).</p></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
-<div class="section" id="Daily-Max-Precipitation">
-<h2>Daily Max Precipitation<a class="headerlink" href="#Daily-Max-Precipitation" title="Permalink to this headline">¶</a></h2>
-<p>Once again we’ll look at gridMET daily weather data, but this time we’ll calculate climatological mean of maximum precipitation by day-of-year.</p>
+<div class="section" id="Daily-Mean-Burning-Index">
+<h2>Daily Mean Burning Index<a class="headerlink" href="#Daily-Mean-Burning-Index" title="Permalink to this headline">¶</a></h2>
+<p>Once again we’ll look at gridMET daily weather data, but this time we’ll calculate the climatological mean burning index (a measure of wildfire potential) by day-of-year. Day-of-year climatologies require processing a lot more data, so we’ll just use 4 years for this example.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;pr&quot;</span><span class="p">)</span>
-<span class="n">gridmet</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2000&quot;</span><span class="p">,</span> <span class="s2">&quot;2005&quot;</span><span class="p">)</span>
+<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;bi&quot;</span><span class="p">)</span>
+<span class="n">gridmet</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2000&quot;</span><span class="p">,</span> <span class="s2">&quot;2004&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>A day-of-year climatology will give 366 images, one for each day through the 5 years (including leap days).</p>
+<p>A day-of-year climatology will give 366 images, one for each day through the 4 years (including leap days).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">climatology_dayofyear</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">climatology_mean_dayofyear</span><span class="p">()</span>
 <span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -597,13 +576,14 @@ div.rendered_html tbody tr:hover {
 366
 </pre></div></div>
 </div>
-<p>We could download all 366 images, but maybe we’re only interested in daily precipitation in the month of March. We can use the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> args to set the climatological window of days to look at. Here we’ll set the start to 60 (March 1) and the end to 90 (March 30). Now we only have 31 images.</p>
+<p>We could download all 366 images, but maybe we’re only interested in burning index for the month of August. We can use the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> args to set the climatological window of days to look at.</p>
+<p>Here we’ll set the <code class="docutils literal notranslate"><span class="pre">start</span></code> to 213 and the <code class="docutils literal notranslate"><span class="pre">end</span></code> to 243 (Aug. 1 and Aug. 31 in non-leap years). Now we only have 31 images.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">climatology_dayofyear</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">start</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">climatology_mean_dayofyear</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">213</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">243</span><span class="p">)</span>
 <span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -618,37 +598,46 @@ div.rendered_html tbody tr:hover {
 </pre></div></div>
 </div>
 <div class="alert alert-block alert-info"><p>Tip: Downloading is the slowest part of dealing with Earth Engine data in wxee, so it’s always best to aggregate and filter your data before downloading.</p>
-</div><p>Let’s download and plot them.</p>
+</div><p>Let’s download them.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">march_ppt</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
-<span class="n">march_ppt</span><span class="o">.</span><span class="n">pr</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;dayofyear&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span></span><span class="n">aug_bi</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "62c56d76cc004b25b714030442232e2a", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<p>And finally, we’ll plot a timeline of 95th percentile burning index values over the CONUS.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">aug_bi</span><span class="o">.</span><span class="n">bi</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.95</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "7c4b8d96c7384ef982b1a94b678a11a2", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f3b433951f0&gt;
+[&lt;matplotlib.lines.Line2D at 0x7fcda7fb9340&gt;]
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_climatology_21_2.png" src="../_images/examples_climatology_21_2.png" />
+<img alt="../_images/examples_climatology_22_1.png" src="../_images/examples_climatology_22_1.png" />
 </div>
 </div>
 </div>

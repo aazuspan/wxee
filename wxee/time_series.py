@@ -296,7 +296,7 @@ class TimeSeriesCollection(ImageCollection):
         """
         return self._resample_time("year", reducer, keep_bandnames)
 
-    def _calculate_climatology(
+    def _calculate_climatology_mean(
         self,
         unit: str,
         date_format: str,
@@ -305,7 +305,7 @@ class TimeSeriesCollection(ImageCollection):
         end: int,
         keep_bandnames: bool,
     ) -> ee.ImageCollection:
-        """Calculate a climatology image collection with a given unit, such as month or dayofyear.
+        """Calculate a mean climatology image collection with a given unit, such as month or dayofyear.
 
         This method sets the :code:`wx:dimension` and :code:`wx:coordinate` properties of each image in the collection.
 
@@ -316,7 +316,9 @@ class TimeSeriesCollection(ImageCollection):
         date_format : str
             The formatting string passed to ee.Date.format. See http://joda-time.sourceforge.net/apidocs/org/joda/time/format/DateTimeFormat.html.
         reducer : ee.Reducer
-            The reducer to apply over the time unit.
+            The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily for a daily
+            climatology. If the data is already in the temporal scale of the climatology, e.g. creating a daily
+            climatology from daily data, the reducer will have no effect.
         start : int
             The start coordinate in the given unit, e.g. month 1 will start in January.
         end : int
@@ -333,7 +335,7 @@ class TimeSeriesCollection(ImageCollection):
         prop = f"wx:{unit}"
 
         def reduce_unit(x: ee.String) -> Union[None, ee.Image]:
-            """Apply a reducer over a time unit, returning None if no images fall within the time window.
+            """Apply a mean reducer over a time unit, returning None if no images fall within the time window.
 
             Parameters
             ----------
@@ -341,7 +343,7 @@ class TimeSeriesCollection(ImageCollection):
                 The time coordinate to reduce, such as "1" for January.
             """
             imgs = col.filterMetadata(prop, "equals", x)
-            reduced = imgs.reduce(reducer)
+            reduced = imgs.reduce(ee.Reducer.mean())
             # Retrieve the time from the image instead of using x because I need a formatted
             # string for concatenating into the system:id later.
             coord = ee.Date(imgs.first().get("system:time_start")).format(date_format)
@@ -353,6 +355,11 @@ class TimeSeriesCollection(ImageCollection):
                 reduced = ee.Image(reduced).rename(imgs.first().bandNames())
 
             return ee.Algorithms.If(imgs.size().gt(0), reduced, None)
+
+        if unit == "dayofyear":
+            col = self._obj.wx.resample_daily(reducer, keep_bandnames)
+        elif unit == "month":
+            col = self._obj.wx.resample_monthly(reducer, keep_bandnames)
 
         col = self._obj
         col = col.map(
@@ -371,21 +378,22 @@ class TimeSeriesCollection(ImageCollection):
 
         return clim
 
-    def climatology_month(
+    def climatology_mean_month(
         self,
         reducer: Optional[Any] = None,
         start: int = 1,
         end: int = 12,
         keep_bandnames: bool = True,
     ) -> ClimatologyImageCollection:
-        """Calculate monthly climatology from a time series of data. This method is designed to be run with multiple years
-        of data to generate long-term monthly normals. To simply calculate monthly aggregates from sub-monthly data, see
-        :code:`TimeSeriesCollection.resample_monthly`.
+        """Calculate monthly mean climatology from a time series of data. This method works by aggregating raw data to
+        monthly using a given reducer and then calculating per-month means over multiple years. The output will have
+        one image for each month.
 
         Parameters
         ----------
         reducer : ee.Reducer, optional
-            The reducer to apply when calculating the climatology. If none is provided, ee.Reducer.mean() will be used.
+            The reducer to apply when aggregating over time, e.g. aggregating daily data to monthly. If the data
+            is already monthly, the reducer will have no effect. If none is provided, ee.Reducer.mean() will be used.
         start : int, default 1
             The number of the start month to include in the climatology.
         end : int, default 12
@@ -409,33 +417,41 @@ class TimeSeriesCollection(ImageCollection):
 
         See Also
         --------
-        TimeSeriesCollection.climatology_dayofyear
+        TimeSeriesCollection.climatology_mean_dayofyear
         """
         # ee.Reducer can't be used without initializing ee (see https://github.com/google/earthengine-api/issues/164),
         # so set the default reducer explicitly. This is also why the type hint above is set to Any.
         reducer = ee.Reducer.mean() if not reducer else reducer
 
-        monthly_clim = self._calculate_climatology(
+        monthly_clim = self._calculate_climatology_mean(
             "month", "M", reducer, start, end, keep_bandnames
         )
 
         return ClimatologyImageCollection(monthly_clim)
 
-    def climatology_dayofyear(
+    def climatology_mean_dayofyear(
         self,
         reducer: Optional[Any] = None,
         start: int = 1,
         end: int = 366,
         keep_bandnames: bool = True,
     ) -> ClimatologyImageCollection:
-        """Calculate day-of-year climatology from a time series of data. This method is designed to be run with multiple years
-        of data to generate long-term day-of-year normals. To simply calculate daily aggregates from sub-daily data, see
-        :code:`TimeSeriesCollection.resample_daily`.
+
+        """Calculate day-of-year mean climatology from a time series of data. This method works by aggregating raw data to
+        daily using a given reducer and then calculating per-day-of-year means over multiple years. The output will have
+        one image for each day.
+
+        Note
+        ----
+        Julian dates are used to calculate day-of-year means, so days after February 29 will be offset by one in leap years.
+        For example, day-of-year 365 will represent December 31 in non-leap years and December 30 in leap years. Day 366
+        will always represent December 31, but will be aggregated from 1/4 as many days as other days of the year.
 
         Parameters
         ----------
         reducer : ee.Reducer, optional
-            The reducer to apply when calculating the climatology. If none is provided, ee.Reducer.mean() will be used.
+            The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily. If the data
+            is already daily, the reducer will have no effect. If none is provided, ee.Reducer.mean() will be used.
         start : int, default 1
             The number of the start day to include in the climatology.
         end : int, default 366
@@ -459,13 +475,13 @@ class TimeSeriesCollection(ImageCollection):
 
         See Also
         --------
-        TimeSeriesCollection.climatology_month
+        TimeSeriesCollection.climatology_mean_month
         """
         # ee.Reducer can't be used without initializing ee (see https://github.com/google/earthengine-api/issues/164),
         # so set the default reducer explicitly. This is also why the type hint above is set to Any.
         reducer = ee.Reducer.mean() if not reducer else reducer
 
-        daily_clim = self._calculate_climatology(
+        daily_clim = self._calculate_climatology_mean(
             "dayofyear", "D", reducer, start, end, keep_bandnames
         )
 

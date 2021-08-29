@@ -36,8 +36,8 @@ has a specific :code:`system:time_start` property.
 
 Climatology
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-A climatology is a collection of images where each image represents multi-year statistics over a general unit of time, 
-such as maximum monthly precipitation over 30 years. Unlike a time series, an image in a climatology collection does
+A climatology is a collection of images where each image represents multi-year means over a general unit of time, 
+such as mean total monthly precipitation over 30 years. Unlike a time series, an image in a climatology collection does
 not have a specific time (e.g. October 20, 1989) but instead represents a generalized time (e.g. October).
 
 .. autoclass:: wxee.ClimatologyCollection

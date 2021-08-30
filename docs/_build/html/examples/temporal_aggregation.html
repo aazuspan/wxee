@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Temporal Resampling &mdash; wxee  documentation</title>
+  <title>Temporal Aggregation &mdash; wxee  documentation</title>
   
 
   
@@ -99,10 +99,15 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="image_collection_to_xarray.html">Image Collection to xarray</a></li>
 <li class="toctree-l2"><a class="reference internal" href="downloading_images_and_collections.html">Downloading Images and Collections</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Temporal Resampling</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Temporal Aggregation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Setup">Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Hourly-to-Daily">Hourly to Daily</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Daily-to-Monthly">Daily to Monthly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Create-a-Time-Series">Create a Time Series</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#From-an-Image-Collection">From an Image Collection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#From-Scratch">From Scratch</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Aggregate-Hourly-to-Daily">Aggregate Hourly to Daily</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Aggregate-Daily-to-Monthly">Aggregate Daily to Monthly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Warning">Warning</a></li>
 </ul>
 </li>
@@ -160,13 +165,13 @@
         
           <li><a href="../examples.html">Examples</a> &raquo;</li>
         
-      <li>Temporal Resampling</li>
+      <li>Temporal Aggregation</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/examples/temporal_resampling.ipynb.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/examples/temporal_aggregation.ipynb.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -449,10 +454,9 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="Temporal-Resampling">
-<h1>Temporal Resampling<a class="headerlink" href="#Temporal-Resampling" title="Permalink to this headline">¶</a></h1>
-<p>In this tutorial, we’ll use wxee to aggregate image collections over time. wxee supports the following resampling methods which can be applied to an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> using the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accessor: <code class="docutils literal notranslate"><span class="pre">resample_hourly</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_daily</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_weekly</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_monthly</span></code>, <code class="docutils literal notranslate"><span class="pre">resample_annually</span></code>.</p>
-<p>Note that wxee’s resampling methods are one-directional: for example, they can be used to aggregate daily data into weekly or weekly data into annual, but not vice versa.</p>
+<div class="section" id="Temporal-Aggregation">
+<h1>Temporal Aggregation<a class="headerlink" href="#Temporal-Aggregation" title="Permalink to this headline">¶</a></h1>
+<p>In this tutorial, we’ll use wxee to aggregate time series image collections over time. Image collections can be aggregated to monthly, weekly, daily, and hourly frequencies, but the input data must have finer temporal resolution than the output (e.g. daily data can be aggregated to weekly, but not vice versa).</p>
 <div class="section" id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -468,22 +472,53 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 </div>
-<div class="section" id="Hourly-to-Daily">
-<h2>Hourly to Daily<a class="headerlink" href="#Hourly-to-Daily" title="Permalink to this headline">¶</a></h2>
-<p>Load two days worth of RTMA data that contains hourly wind velocity grids. The collection should contain 48 images–one per hour.</p>
-<div class="nbinput docutils container">
+<div class="section" id="Create-a-Time-Series">
+<h2>Create a Time Series<a class="headerlink" href="#Create-a-Time-Series" title="Permalink to this headline">¶</a></h2>
+<p>Time-based methods in wxee, like temporal aggregation and climatology, work with the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> subclass of <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code>. To use them, we’ll need to create a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>. There are two ways to do this.</p>
+<div class="section" id="From-an-Image-Collection">
+<h3>From an Image Collection<a class="headerlink" href="#From-an-Image-Collection" title="Permalink to this headline">¶</a></h3>
+<p>Create an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> and use the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accessor and the <code class="docutils literal notranslate"><span class="pre">to_time_series</span></code> method to convert the Image Collection to a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.</p>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">rtma</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-10&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;WIND&quot;</span><span class="p">)</span>
+<span></span><span class="n">rtma</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">rtma</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_time_series</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="From-Scratch">
+<h3>From Scratch<a class="headerlink" href="#From-Scratch" title="Permalink to this headline">¶</a></h3>
+<p>As a shortcut, you can create a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> just like you would create an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code>. Just pass a collection ID or list of Images.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="Aggregate-Hourly-to-Daily">
+<h2>Aggregate Hourly to Daily<a class="headerlink" href="#Aggregate-Hourly-to-Daily" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have out time series, let’s get two days of wind velocity grids. The collection should contain 48 images–one per hour.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-10&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;WIND&quot;</span><span class="p">)</span>
 
-<span class="n">rtma</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -491,20 +526,20 @@ div.rendered_html tbody tr:hover {
 48
 </pre></div></div>
 </div>
-<p>Use wxee to resample hourly data to daily. By default, <code class="docutils literal notranslate"><span class="pre">resample_daily</span></code> uses <code class="docutils literal notranslate"><span class="pre">ee.Reducer.mean()</span></code> to aggregate data, so the output will represent average daily wind speeds. The 48 hourly input images have been aggregated into 2 daily images.</p>
+<p>Now we’ll aggregate hourly data to daily data. By default, <code class="docutils literal notranslate"><span class="pre">aggregate_time</span></code> uses <code class="docutils literal notranslate"><span class="pre">ee.Reducer.mean()</span></code> to aggregate data, so the output will represent average daily wind speeds. The 48 hourly input images have been aggregated into 2 daily images.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">daily</span> <span class="o">=</span> <span class="n">rtma</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">resample_daily</span><span class="p">()</span>
+<span></span><span class="n">daily</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">aggregate_time</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">)</span>
 
 <span class="n">daily</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -514,7 +549,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Now we can download and visualize the daily data.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -527,34 +562,34 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "0078a09aac2549b1b868d31a935a0204", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "825bc33bd62146b9942b7717a3944c00", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7fb114939ee0&gt;
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7f1dd578cac0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_temporal_resampling_9_2.png" src="../_images/examples_temporal_resampling_9_2.png" />
+<img alt="../_images/examples_temporal_aggregation_15_2.png" src="../_images/examples_temporal_aggregation_15_2.png" />
 </div>
 </div>
 </div>
-<div class="section" id="Daily-to-Monthly">
-<h2>Daily to Monthly<a class="headerlink" href="#Daily-to-Monthly" title="Permalink to this headline">¶</a></h2>
-<p>gridMET contains daily temperature data. We’ll load one year of data from 2020, giving us 366 images (2020 was a leap year).</p>
+<div class="section" id="Aggregate-Daily-to-Monthly">
+<h2>Aggregate Daily to Monthly<a class="headerlink" href="#Aggregate-Daily-to-Monthly" title="Permalink to this headline">¶</a></h2>
+<p>gridMET contains daily temperature data. We’ll load a time series with one year of data from 2020, giving us 366 images (2020 was a leap year).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;tmmx&quot;</span><span class="p">)</span>
+<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;tmmx&quot;</span><span class="p">)</span>
 <span class="n">gridmet</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2021-01&quot;</span><span class="p">)</span>
 
 <span class="n">gridmet</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
@@ -562,7 +597,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -572,11 +607,11 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Now, we’ll calculate the monthly maximum temperatures, download them an xarray dataset, and plot them by month.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">monthly</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">resample_monthly</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span></span><span class="n">monthly</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">aggregate_time</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">monthly</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
 <span class="n">x</span><span class="o">.</span><span class="n">tmmx</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
@@ -587,22 +622,22 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "3086cae940be45fab49a1b2d57f384c9", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f437f0236ee94b1aba4da8b3440d1083", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7fb111d85070&gt;
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7f1dcebe3dc0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_temporal_resampling_14_2.png" src="../_images/examples_temporal_resampling_14_2.png" />
+<img alt="../_images/examples_temporal_aggregation_20_2.png" src="../_images/examples_temporal_aggregation_20_2.png" />
 </div>
 </div>
 </div>
@@ -610,11 +645,11 @@ div.rendered_html tbody tr:hover {
 <h2>Warning<a class="headerlink" href="#Warning" title="Permalink to this headline">¶</a></h2>
 <p>wxee’s temporal resampling methods can only be used to aggregate fine time steps into coarse time steps (e.g. hours to days, days to months). Resampling a temporally coarse dataset into a finer time unit may lead to invalid results. Below, you can see that attempting to resample daily data into hourly caused one of the images to be lost.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;tmmx&quot;</span><span class="p">)</span>
+<span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;tmmx&quot;</span><span class="p">)</span>
 <span class="n">gridmet</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-02&quot;</span><span class="p">)</span>
 
 <span class="n">gridmet</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
@@ -622,7 +657,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -631,16 +666,16 @@ div.rendered_html tbody tr:hover {
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">gridmet</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">resample_hourly</span><span class="p">()</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+<span></span><span class="n">gridmet</span><span class="o">.</span><span class="n">aggregate_time</span><span class="p">(</span><span class="s2">&quot;hour&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="output_area docutils container">

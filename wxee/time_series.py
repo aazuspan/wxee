@@ -42,7 +42,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
 
     def aggregate_time(
         self, frequency: str, reducer: Optional[Any] = None, keep_bandnames: bool = True
-    ) -> ee.ImageCollection:
+    ) -> "TimeSeries":
         """Aggregate the collection over the time dimension to a specified frequency. This method can only be used to go from
         small time frequencies to larger time frequencies, such as hours to days, not vice-versa. If the resampling frequency is smaller
         than the time between images, un-aggregated images will be returned.
@@ -59,7 +59,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
 
         Returns
         -------
-        ee.ImageCollection
+        TimeSeries
             The input image collection aggregated to the specified time frequency.
 
         Raises
@@ -108,9 +108,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         steps = ee.List.sequence(0, n_steps.subtract(1))
         start_times = steps.map(lambda x: self.start_time.advance(x, frequency))
 
-        resampled = ee.ImageCollection(start_times.map(resample_step, dropNulls=True))
-
-        return resampled
+        return TimeSeries(start_times.map(resample_step, dropNulls=True))
 
     def climatology_mean(
         self,

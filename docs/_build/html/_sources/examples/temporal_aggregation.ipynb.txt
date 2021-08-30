@@ -5,11 +5,9 @@
    "id": "2856ecae",
    "metadata": {},
    "source": [
-    "# Temporal Resampling\n",
+    "# Temporal Aggregation\n",
     "\n",
-    "In this tutorial, we'll use wxee to aggregate image collections over time. wxee supports the following resampling methods which can be applied to an `ee.ImageCollection` using the `wx` accessor: `resample_hourly`, `resample_daily`, `resample_weekly`, `resample_monthly`, `resample_annually`.\n",
-    "\n",
-    "Note that wxee's resampling methods are one-directional: for example, they can be used to aggregate daily data into weekly or weekly data into annual, but not vice versa."
+    "In this tutorial, we'll use wxee to aggregate time series image collections over time. Image collections can be aggregated to monthly, weekly, daily, and hourly frequencies, but the input data must have finer temporal resolution than the output (e.g. daily data can be aggregated to weekly, but not vice versa)."
    ]
   },
   {
@@ -40,28 +38,80 @@
   },
   {
    "cell_type": "markdown",
-   "id": "852b2ca2",
+   "id": "34977e0e",
    "metadata": {},
    "source": [
-    "## Hourly to Daily"
+    "## Create a Time Series"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "c018dc6e",
-   "metadata": {
-    "ExecuteTime": {
-     "end_time": "2021-07-31T05:20:33.472879Z",
-     "start_time": "2021-07-31T05:20:33.462393Z"
-    }
-   },
+   "id": "930fc801",
+   "metadata": {},
    "source": [
-    "Load two days worth of RTMA data that contains hourly wind velocity grids. The collection should contain 48 images--one per hour."
+    "Time-based methods in wxee, like temporal aggregation and climatology, work with the `TimeSeries` subclass of `ee.ImageCollection`. To use them, we'll need to create a `TimeSeries`. There are two ways to do this."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5d99bf94",
+   "metadata": {},
+   "source": [
+    "### From an Image Collection\n",
+    "Create an `ee.ImageCollection` and use the `wx` accessor and the `to_time_series` method to convert the Image Collection to a `TimeSeries`. "
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 2,
+   "id": "b6826d1f",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "rtma = ee.ImageCollection(\"NOAA/NWS/RTMA\")\n",
+    "ts = rtma.wx.to_time_series()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "87a4e7e3",
+   "metadata": {},
+   "source": [
+    "### From Scratch\n",
+    "As a shortcut, you can create a `TimeSeries` just like you would create an `ee.ImageCollection`. Just pass a collection ID or list of Images."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "a1d6066c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ts = wxee.TimeSeries(\"NOAA/NWS/RTMA\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "852b2ca2",
+   "metadata": {},
+   "source": [
+    "## Aggregate Hourly to Daily"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "80f11f33",
+   "metadata": {},
+   "source": [
+    "Now that we have out time series, let's get two days of wind velocity grids. The collection should contain 48 images--one per hour."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
    "id": "84ef9689",
    "metadata": {
     "ExecuteTime": {
@@ -76,15 +126,15 @@
        "48"
       ]
      },
-     "execution_count": 2,
+     "execution_count": 4,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "rtma = ee.ImageCollection(\"NOAA/NWS/RTMA\").filterDate(\"2020-09-08\", \"2020-09-10\").select(\"WIND\")\n",
+    "ts = ts.filterDate(\"2020-09-08\", \"2020-09-10\").select(\"WIND\")\n",
     "\n",
-    "rtma.size().getInfo()"
+    "ts.size().getInfo()"
    ]
   },
   {
@@ -92,12 +142,12 @@
    "id": "a69a71bb",
    "metadata": {},
    "source": [
-    "Use wxee to resample hourly data to daily. By default, `resample_daily` uses `ee.Reducer.mean()` to aggregate data, so the output will represent average daily wind speeds. The 48 hourly input images have been aggregated into 2 daily images."
+    "Now we'll aggregate hourly data to daily data. By default, `aggregate_time` uses `ee.Reducer.mean()` to aggregate data, so the output will represent average daily wind speeds. The 48 hourly input images have been aggregated into 2 daily images."
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 3,
+   "execution_count": 5,
    "id": "dc4b506d",
    "metadata": {
     "ExecuteTime": {
@@ -112,13 +162,13 @@
        "2"
       ]
      },
-     "execution_count": 3,
+     "execution_count": 5,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "daily = rtma.wx.resample_daily()\n",
+    "daily = ts.aggregate_time(frequency=\"day\")\n",
     "\n",
     "daily.size().getInfo()"
    ]
@@ -133,7 +183,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 4,
+   "execution_count": 6,
    "id": "ec8f916c",
    "metadata": {
     "ExecuteTime": {
@@ -145,7 +195,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "0078a09aac2549b1b868d31a935a0204",
+       "model_id": "825bc33bd62146b9942b7717a3944c00",
        "version_major": 2,
        "version_minor": 0
       },
@@ -159,10 +209,10 @@
     {
      "data": {
       "text/plain": [
-       "<xarray.plot.facetgrid.FacetGrid at 0x7fb114939ee0>"
+       "<xarray.plot.facetgrid.FacetGrid at 0x7f1dd578cac0>"
       ]
      },
-     "execution_count": 4,
+     "execution_count": 6,
      "metadata": {},
      "output_type": "execute_result"
     },
@@ -189,7 +239,7 @@
    "id": "0b842e94",
    "metadata": {},
    "source": [
-    "## Daily to Monthly"
+    "## Aggregate Daily to Monthly"
    ]
   },
   {
@@ -197,12 +247,12 @@
    "id": "633d0b4c",
    "metadata": {},
    "source": [
-    "gridMET contains daily temperature data. We'll load one year of data from 2020, giving us 366 images (2020 was a leap year)."
+    "gridMET contains daily temperature data. We'll load a time series with one year of data from 2020, giving us 366 images (2020 was a leap year)."
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 5,
+   "execution_count": 7,
    "id": "1c1989f6",
    "metadata": {
     "ExecuteTime": {
@@ -217,13 +267,13 @@
        "366"
       ]
      },
-     "execution_count": 5,
+     "execution_count": 7,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "gridmet = ee.ImageCollection(\"IDAHO_EPSCOR/GRIDMET\").select(\"tmmx\")\n",
+    "gridmet = wxee.TimeSeries(\"IDAHO_EPSCOR/GRIDMET\").select(\"tmmx\")\n",
     "gridmet = gridmet.filterDate(\"2020-01\", \"2021-01\")\n",
     "\n",
     "gridmet.size().getInfo()"
@@ -239,7 +289,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 6,
+   "execution_count": 8,
    "id": "27073a4f",
    "metadata": {
     "ExecuteTime": {
@@ -251,7 +301,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "3086cae940be45fab49a1b2d57f384c9",
+       "model_id": "f437f0236ee94b1aba4da8b3440d1083",
        "version_major": 2,
        "version_minor": 0
       },
@@ -265,10 +315,10 @@
     {
      "data": {
       "text/plain": [
-       "<xarray.plot.facetgrid.FacetGrid at 0x7fb111d85070>"
+       "<xarray.plot.facetgrid.FacetGrid at 0x7f1dcebe3dc0>"
       ]
      },
-     "execution_count": 6,
+     "execution_count": 8,
      "metadata": {},
      "output_type": "execute_result"
     },
@@ -286,7 +336,7 @@
     }
    ],
    "source": [
-    "monthly = gridmet.wx.resample_monthly(reducer=ee.Reducer.max())\n",
+    "monthly = gridmet.aggregate_time(frequency=\"month\", reducer=ee.Reducer.max())\n",
     "\n",
     "x = monthly.wx.to_xarray(scale=50_000, crs=\"EPSG:5070\")\n",
     "x.tmmx.plot(col=\"time\", col_wrap=3, figsize=(16, 12))"
@@ -310,7 +360,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 7,
+   "execution_count": 9,
    "id": "65191447",
    "metadata": {
     "ExecuteTime": {
@@ -325,13 +375,13 @@
        "31"
       ]
      },
-     "execution_count": 7,
+     "execution_count": 9,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "gridmet = ee.ImageCollection(\"IDAHO_EPSCOR/GRIDMET\").select(\"tmmx\")\n",
+    "gridmet = wxee.TimeSeries(\"IDAHO_EPSCOR/GRIDMET\").select(\"tmmx\")\n",
     "gridmet = gridmet.filterDate(\"2020-01\", \"2020-02\")\n",
     "\n",
     "gridmet.size().getInfo()"
@@ -339,7 +389,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 8,
+   "execution_count": 10,
    "id": "250cb0d7",
    "metadata": {
     "ExecuteTime": {
@@ -355,13 +405,13 @@
        "30"
       ]
      },
-     "execution_count": 8,
+     "execution_count": 10,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
-    "gridmet.wx.resample_hourly().size().getInfo()"
+    "gridmet.aggregate_time(\"hour\").size().getInfo()"
    ]
   }
  ],

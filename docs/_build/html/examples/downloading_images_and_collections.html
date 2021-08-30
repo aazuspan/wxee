@@ -44,7 +44,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Temporal Resampling" href="temporal_resampling.html" />
+    <link rel="next" title="Temporal Aggregation" href="temporal_aggregation.html" />
     <link rel="prev" title="Image Collection to xarray" href="image_collection_to_xarray.html" /> 
 </head>
 
@@ -104,7 +104,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#Downloading-an-Image-Collection">Downloading an Image Collection</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="temporal_resampling.html">Temporal Resampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="temporal_aggregation.html">Temporal Aggregation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="climatology.html">Climatology</a></li>
 </ul>
 </li>
@@ -450,7 +450,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="Downloading-Images-and-Collections">
 <h1>Downloading Images and Collections<a class="headerlink" href="#Downloading-Images-and-Collections" title="Permalink to this headline">¶</a></h1>
-<p>In this tutorial, we’ll look at how we can use <code class="docutils literal notranslate"><span class="pre">wxee</span></code> to quickly and easily download images and image collections from Earth Engine to a local drive.</p>
+<p>In this tutorial, we’ll look at how we can use <code class="docutils literal notranslate"><span class="pre">wxee</span></code> and the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accesor to quickly and easily download images and image collections from Earth Engine to a local drive.</p>
 <p><code class="docutils literal notranslate"><span class="pre">wxee</span></code> isn’t designed to replace Earth Engine’s native downloading functionality–if you need high resolution images or large areas, downloading to a Drive using ee is probably the best option. What <code class="docutils literal notranslate"><span class="pre">wxee</span></code>’s downloading system is great for is quickly pulling small regions or mesoscale images for further processing in Python without the hassle of intermediate steps.</p>
 <div class="section" id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
@@ -502,7 +502,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="alert alert-block alert-warning"><p>Warning: If an image download fails due to size limits, try using a smaller region or a coarser scale.</p>
-</div><p>Download the image to GeoTIFF. The <code class="docutils literal notranslate"><span class="pre">ee.Image.wx.to_tif</span></code> method returns a path to the downloaded image(s). <code class="docutils literal notranslate"><span class="pre">wxee</span></code> always saves files with the name format <code class="docutils literal notranslate"><span class="pre">{id}.{dimension}.{coordinate}</span></code>.</p>
+</div><p>Download the image to GeoTIFF. The <code class="docutils literal notranslate"><span class="pre">ee.Image.wx.to_tif</span></code> method returns a path to the downloaded image(s). <code class="docutils literal notranslate"><span class="pre">wxee</span></code> always saves files with the name format <code class="docutils literal notranslate"><span class="pre">{id}.{dimension}.{coordinate}</span></code>. If no <code class="docutils literal notranslate"><span class="pre">description</span></code> is passed, the <code class="docutils literal notranslate"><span class="pre">system:id</span></code> property of the image will determine the file ID.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -517,7 +517,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "59fdef8c6bcf49e9816fb8e4543d7b50", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "4a6959b7a09944d1bbbd5bc64d87478f", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -551,7 +551,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8a2aebdbd4bc4e10a3d83818bb17a28d", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f310670997e946b2a0c150826a3d0275", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -580,7 +580,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>Download each image in the collection to GeoTIFF. We’ll use the same parameters as above except for <code class="docutils literal notranslate"><span class="pre">description</span></code>. <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection.wx.to_tif</span></code> doesn’t take a <code class="docutils literal notranslate"><span class="pre">description</span></code> parameter, but it does take a <code class="docutils literal notranslate"><span class="pre">prefix</span></code> that can be added to the beginning of each file name.</p>
+<p>Download each image in the collection to GeoTIFF. We’ll use the same parameters as above except for <code class="docutils literal notranslate"><span class="pre">description</span></code>. <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection.wx.to_tif</span></code> doesn’t take a <code class="docutils literal notranslate"><span class="pre">description</span></code> parameter, but it does take a <code class="docutils literal notranslate"><span class="pre">prefix</span></code> that can be added to the beginning of each file name. File names are based on the <code class="docutils literal notranslate"><span class="pre">system:id</span></code> property of each image.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -625,7 +625,7 @@ div.rendered_html tbody tr:hover {
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="temporal_resampling.html" class="btn btn-neutral float-right" title="Temporal Resampling" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="temporal_aggregation.html" class="btn btn-neutral float-right" title="Temporal Aggregation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="image_collection_to_xarray.html" class="btn btn-neutral float-left" title="Image Collection to xarray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

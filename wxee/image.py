@@ -1,5 +1,3 @@
-import random
-import string
 import tempfile
 import warnings
 from typing import List, Optional
@@ -91,7 +89,6 @@ class Image:
                 nodata=nodata,
                 max_attempts=max_attempts,
                 progress=progress,
-                clean_filename=False,
             )
 
             ds = _dataset_from_files(files)
@@ -117,7 +114,6 @@ class Image:
         nodata: int = -32_768,
         progress: bool = True,
         max_attempts: int = 10,
-        clean_filename: bool = True,
     ) -> List[str]:
         """Download an image to geoTIFF.
 
@@ -146,9 +142,6 @@ class Image:
         max_attempts: int, default 10
             Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
             max_attempts. Must be between 1 and 99.
-        clean_filename: bool, default True
-            If true and no description is provided, the :code:`system:id` will be cleaned by replacing invalid path
-            characters with underscores. If description is provided, this will have no effect.
 
         Returns
         -------
@@ -181,7 +174,6 @@ class Image:
                 nodata,
                 progress,
                 max_attempts,
-                clean_filename,
             )
             tifs = _unpack_file(zipped, out_dir)
 
@@ -208,7 +200,6 @@ class Image:
         nodata: int = -32_768,
         progress: bool = True,
         max_attempts: int = 10,
-        clean_filename: bool = True,
     ) -> str:
         """Download an image as a ZIP"""
         if max_attempts < 1:

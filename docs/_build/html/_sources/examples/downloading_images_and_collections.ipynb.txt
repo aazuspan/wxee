@@ -6,7 +6,7 @@
    "metadata": {},
    "source": [
     "# Downloading Images and Collections\n",
-    "In this tutorial, we'll look at how we can use `wxee` to quickly and easily download images and image collections from Earth Engine to a local drive. \n",
+    "In this tutorial, we'll look at how we can use `wxee` and the `wx` accesor to quickly and easily download images and image collections from Earth Engine to a local drive. \n",
     "\n",
     "`wxee` isn't designed to replace Earth Engine's native downloading functionality--if you need high resolution images or large areas, downloading to a Drive using ee is probably the best option. What `wxee`'s downloading system is great for is quickly pulling small regions or mesoscale images for further processing in Python without the hassle of intermediate steps."
    ]
@@ -118,7 +118,7 @@
    "id": "39659dfa",
    "metadata": {},
    "source": [
-    "Download the image to GeoTIFF. The `ee.Image.wx.to_tif` method returns a path to the downloaded image(s). `wxee` always saves files with the name format `{id}.{dimension}.{coordinate}`."
+    "Download the image to GeoTIFF. The `ee.Image.wx.to_tif` method returns a path to the downloaded image(s). `wxee` always saves files with the name format `{id}.{dimension}.{coordinate}`. If no `description` is passed, the `system:id` property of the image will determine the file ID."
    ]
   },
   {
@@ -135,7 +135,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "59fdef8c6bcf49e9816fb8e4543d7b50",
+       "model_id": "4a6959b7a09944d1bbbd5bc64d87478f",
        "version_major": 2,
        "version_minor": 0
       },
@@ -189,7 +189,7 @@
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "8a2aebdbd4bc4e10a3d83818bb17a28d",
+       "model_id": "f310670997e946b2a0c150826a3d0275",
        "version_major": 2,
        "version_minor": 0
       },
@@ -265,7 +265,7 @@
    "id": "66b5b5d6",
    "metadata": {},
    "source": [
-    "Download each image in the collection to GeoTIFF. We'll use the same parameters as above except for `description`. `ee.ImageCollection.wx.to_tif` doesn't take a `description` parameter, but it does take a `prefix` that can be added to the beginning of each file name."
+    "Download each image in the collection to GeoTIFF. We'll use the same parameters as above except for `description`. `ee.ImageCollection.wx.to_tif` doesn't take a `description` parameter, but it does take a `prefix` that can be added to the beginning of each file name. File names are based on the `system:id` property of each image."
    ]
   },
   {

@@ -93,6 +93,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../wxee.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Developer Setup</a></li>
 </ul>
 
             
@@ -162,21 +163,21 @@
 <span></span><span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">ThreadPool</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 <span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 <span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">wxee</span> <span class="kn">import</span> <span class="n">constants</span>
+<span class="kn">from</span> <span class="nn">wxee.accessors</span> <span class="kn">import</span> <span class="n">wx_accessor</span>
+<span class="kn">from</span> <span class="nn">wxee.time_series</span> <span class="kn">import</span> <span class="n">TimeSeries</span>
 <span class="kn">from</span> <span class="nn">wxee.utils</span> <span class="kn">import</span> <span class="n">_dataset_from_files</span><span class="p">,</span> <span class="n">_flatten_list</span>
 
 
-<span class="k">class</span> <span class="nc">ImageCollection</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Abstract class for Collection specialized subclasses like TimeSeriesCollection and ClimatologyCollection.&quot;&quot;&quot;</span>
-
+<div class="viewcode-block" id="ImageCollection"><a class="viewcode-back" href="../../wxee.html#wxee.ImageCollection">[docs]</a><span class="nd">@wx_accessor</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">imagecollection</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ImageCollection</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">imagecollection</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
@@ -193,7 +194,7 @@
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">())</span>
         <span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">get_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
+<div class="viewcode-block" id="ImageCollection.get_image"><a class="viewcode-back" href="../../wxee.html#wxee.ImageCollection.get_image">[docs]</a>    <span class="k">def</span> <span class="nf">get_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the image at the specified index in the collection. A negative index counts backwards from the end of</span>
 <span class="sd">        the collection.</span>
 
@@ -207,9 +208,9 @@
 <span class="sd">        ee.Image</span>
 <span class="sd">            The image at the given index.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">())</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">())</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">index</span><span class="p">))</span></div>
 
-    <span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
+<div class="viewcode-block" id="ImageCollection.last"><a class="viewcode-back" href="../../wxee.html#wxee.ImageCollection.last">[docs]</a>    <span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the last image in the collection.</span>
 
 <span class="sd">        Returns</span>
@@ -217,9 +218,9 @@
 <span class="sd">        ee.Image</span>
 <span class="sd">            The last image in the collection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span></div>
 
-    <span class="k">def</span> <span class="nf">to_xarray</span><span class="p">(</span>
+<div class="viewcode-block" id="ImageCollection.to_xarray"><a class="viewcode-back" href="../../wxee.html#wxee.ImageCollection.to_xarray">[docs]</a>    <span class="k">def</span> <span class="nf">to_xarray</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">region</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -293,7 +294,6 @@
                 <span class="n">num_cores</span><span class="o">=</span><span class="n">num_cores</span><span class="p">,</span>
                 <span class="n">progress</span><span class="o">=</span><span class="n">progress</span><span class="p">,</span>
                 <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
-                <span class="n">clean_filename</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">ds</span> <span class="o">=</span> <span class="n">_dataset_from_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
@@ -305,9 +305,9 @@
         <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
             <span class="n">ds</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">ds</span>
+        <span class="k">return</span> <span class="n">ds</span></div>
 
-    <span class="k">def</span> <span class="nf">to_tif</span><span class="p">(</span>
+<div class="viewcode-block" id="ImageCollection.to_tif"><a class="viewcode-back" href="../../wxee.html#wxee.ImageCollection.to_tif">[docs]</a>    <span class="k">def</span> <span class="nf">to_tif</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
         <span class="n">prefix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -320,7 +320,6 @@
         <span class="n">num_cores</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-        <span class="n">clean_filename</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Download all images in the collection to geoTIFF. Image file names will be the :code:`system:id` of each image</span>
 <span class="sd">        after replacing invalid characters with underscores, with an optional user-defined prefix.</span>
@@ -353,8 +352,6 @@
 <span class="sd">        max_attempts: int, default 10</span>
 <span class="sd">            Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to</span>
 <span class="sd">            max_attempts. Must be between 1 and 99.</span>
-<span class="sd">        clean_filename: bool, default True</span>
-<span class="sd">            If true the :code:`system:id` of all images will be cleaned by replacing invalid path characters with underscores.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -391,7 +388,6 @@
             <span class="n">nodata</span><span class="o">=</span><span class="n">nodata</span><span class="p">,</span>
             <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
-            <span class="n">clean_filename</span><span class="o">=</span><span class="n">clean_filename</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">num_cores</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -416,7 +412,11 @@
                 <span class="p">)</span>
             <span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">_flatten_list</span><span class="p">(</span><span class="n">tifs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_flatten_list</span><span class="p">(</span><span class="n">tifs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImageCollection.to_time_series"><a class="viewcode-back" href="../../wxee.html#wxee.ImageCollection.to_time_series">[docs]</a>    <span class="k">def</span> <span class="nf">to_time_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Convert to a :code:`wxee.TimeSeries` collection with associated methods.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">_image_to_tif_alias</span><span class="p">(</span>
@@ -431,7 +431,6 @@
     <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
     <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-    <span class="n">clean_filename</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;A pickleable wrapper around the ee.Image.wx.to_tif instance method, allowing it to be used in multiprocessing.</span>
 <span class="sd">    See https://stackoverflow.com/questions/27318290/why-can-i-pass-an-instance-method-to-multiprocessing-process-but-not-a-multipro</span>
@@ -447,7 +446,6 @@
         <span class="n">nodata</span><span class="p">,</span>
         <span class="n">progress</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">,</span>
-        <span class="n">clean_filename</span><span class="p">,</span>
     <span class="p">)</span>
 </pre></div>
 

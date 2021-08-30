@@ -1,11 +1,11 @@
 API
 ================
 
-wx accessors
+wx accessor
 -------------
 
-wxee extends Earth Engine objects using the `wx` accessor. Import wxee and use the `wx` accessor to access 
-custom methods.
+wxee adds functionality such as :code:`xarray` and :code:`tif` conversion to base Earth Engine objects using the :code:`wx` accessor. 
+Just :code:`import wxee` and use the :code:`wx` accessor to access those methods.
 
 .. code-block:: python
 
@@ -15,31 +15,92 @@ custom methods.
    ee.Image( ... ).wx.to_tif( ... )
 
 ee.Image.wx
-------------------------
+~~~~~~~~~~~
 
 .. autoclass:: wxee.Image
    :members:
 
 ee.ImageCollection.wx
-------------------------
+~~~~~~~~~~~~~~~~~~~~~
 
-Time Series
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-A time series is a collection of images where each image represents conditions over a specific time. 
-All :code:`ee.ImageCollection` objects are treated as time series in wxee, and it is assumed that each image
-has a specific :code:`system:time_start` property.
-
-.. autoclass:: wxee.TimeSeriesCollection
-   :inherited-members:
+.. autoclass:: wxee.ImageCollection
    :members:
 
+Time Series
+-----------
+Time series are image collections with added functionality for processing in the time dimension. They can be instantiated in two ways:
+
+From a Collection ID
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   import ee
+   import wxee
+
+   ts = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET")
+
+From an Existing Collection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   import ee
+   import wxee
+
+   col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET")
+   ts = col.wx.to_time_series()
+
+Methods and Properties
+~~~~~~~~~~~~~~~~~~~~~~
+
+Once instantiated, a :code:`TimeSeries` has all of the methods of :code:`ee.ImageCollection` plus additional methods and 
+properties for processing in the time dimension.
+
+.. note::
+
+   A :code:`TimeSeries` can be converted to :code:`xarray` and :code:`tif` using the :code:`wx` accessor, just like an 
+   :code:`ee.ImageCollection`.
+
+.. autoclass:: wxee.time_series.TimeSeries
+   :members:
 
 Climatology
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-A climatology is a collection of images where each image represents multi-year means over a general unit of time, 
-such as mean total monthly precipitation over 30 years. Unlike a time series, an image in a climatology collection does
-not have a specific time (e.g. October 20, 1989) but instead represents a generalized time (e.g. October).
+-----------
 
-.. autoclass:: wxee.ClimatologyCollection
-   :inherited-members:
+A climatology describes long-term trends in weather over multiple years. The frequency of the climatology defines the time unit
+of the climatology (e.g. months or days). For example, a monthly mean climatology of daily rainfall data over 30 years would
+have 12 images, with each image describing the mean total rainfall in each month over those 30 years.
+
+Creating a Climatology
+~~~~~~~~~~~~~~~~~~~~~~
+
+Climatologies are created from a :code:`TimeSeries` using the :code:`climatology_mean` method.
+
+.. warning::
+
+   The :code:`ClimatologyMean` class should never be instantiated directly.
+
+.. code-block:: python
+
+   import ee
+   import wxee
+
+   ts = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET").select("pr")
+   monthly_mean_rainfall = ts.climatology_mean("month", reducer=ee.Reducer.sum())
+
+.. note::
+
+   The :code:`reducer` argument defines how the raw data will be aggregated before calculating the climatological mean.
+   In this case, we use :code:`ee.Reducer.sum()` to aggregate the daily rainfall measurements into monthly totals. If the
+   data were already monthly, the reducer would have no effect.
+
+
+Methods and Properties
+~~~~~~~~~~~~~~~~~~~~~~
+
+Once instantiated, a :code:`ClimatologyMean` has all of the methods of :code:`ee.ImageCollection` (including those extended by the
+:code:`wx` accessor) plus additional properties describing the climatology.
+
+.. autoclass:: wxee.climatology.ClimatologyMean
    :members:

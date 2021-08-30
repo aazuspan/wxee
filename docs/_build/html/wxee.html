@@ -94,16 +94,26 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#wx-accessors">wx accessors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ee-image-wx">ee.Image.wx</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#ee-imagecollection-wx">ee.ImageCollection.wx</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#time-series">Time Series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#climatology">Climatology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#wx-accessor">wx accessor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ee-image-wx">ee.Image.wx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ee-imagecollection-wx">ee.ImageCollection.wx</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#time-series">Time Series</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#from-a-collection-id">From a Collection ID</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#from-an-existing-collection">From an Existing Collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#methods-and-properties">Methods and Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#climatology">Climatology</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-climatology">Creating a Climatology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Methods and Properties</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Developer Setup</a></li>
 </ul>
 
             
@@ -197,19 +207,18 @@
 </style>
 <div class="section" id="api">
 <h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="wx-accessors">
-<h2>wx accessors<a class="headerlink" href="#wx-accessors" title="Permalink to this headline">¶</a></h2>
-<p>wxee extends Earth Engine objects using the <cite>wx</cite> accessor. Import wxee and use the <cite>wx</cite> accessor to access
-custom methods.</p>
+<div class="section" id="wx-accessor">
+<h2>wx accessor<a class="headerlink" href="#wx-accessor" title="Permalink to this headline">¶</a></h2>
+<p>wxee adds functionality such as <code class="code docutils literal notranslate"><span class="pre">xarray</span></code> and <code class="code docutils literal notranslate"><span class="pre">tif</span></code> conversion to base Earth Engine objects using the <code class="code docutils literal notranslate"><span class="pre">wx</span></code> accessor.
+Just <code class="code docutils literal notranslate"><span class="pre">import</span> <span class="pre">wxee</span></code> and use the <code class="code docutils literal notranslate"><span class="pre">wx</span></code> accessor to access those methods.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span>
 <span class="kn">import</span> <span class="nn">wxee</span>
 
 <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span> <span class="o">...</span> <span class="p">)</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span> <span class="o">...</span> <span class="p">)</span>
 </pre></div>
 </div>
-</div>
 <div class="section" id="ee-image-wx">
-<h2>ee.Image.wx<a class="headerlink" href="#ee-image-wx" title="Permalink to this headline">¶</a></h2>
+<h3>ee.Image.wx<a class="headerlink" href="#ee-image-wx" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="wxee.Image">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">wxee.</span></span><span class="sig-name descname"><span class="pre">Image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">ee.image.Image</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wxee/image.html#Image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.Image" title="Permalink to this definition">¶</a></dt>
@@ -255,7 +264,7 @@ max_attempts. Must be between 1 and 99.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wxee.Image.to_tif">
-<span class="sig-name descname"><span class="pre">to_tif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_per_band</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/wxee/image.html#Image.to_tif"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.Image.to_tif" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_tif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_per_band</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/wxee/image.html#Image.to_tif"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.Image.to_tif" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download an image to geoTIFF.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -273,8 +282,6 @@ of the image will be used.</p></li>
 <li><p><strong>progress</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, a progress bar will be displayed to track download progress.</p></li>
 <li><p><strong>max_attempts</strong> (<em>int</em><em>, </em><em>default 10</em>) – Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
 max_attempts. Must be between 1 and 99.</p></li>
-<li><p><strong>clean_filename</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true and no description is provided, the <code class="code docutils literal notranslate"><span class="pre">system:id</span></code> will be cleaned by replacing invalid path
-characters with underscores. If description is provided, this will have no effect.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -300,19 +307,180 @@ characters with underscores. If description is provided, this will have no effec
 
 </div>
 <div class="section" id="ee-imagecollection-wx">
-<h2>ee.ImageCollection.wx<a class="headerlink" href="#ee-imagecollection-wx" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="time-series">
-<h3>Time Series<a class="headerlink" href="#time-series" title="Permalink to this headline">¶</a></h3>
-<p>A time series is a collection of images where each image represents conditions over a specific time.
-All <code class="code docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> objects are treated as time series in wxee, and it is assumed that each image
-has a specific <code class="code docutils literal notranslate"><span class="pre">system:time_start</span></code> property.</p>
+<h3>ee.ImageCollection.wx<a class="headerlink" href="#ee-imagecollection-wx" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">wxee.</span></span><span class="sig-name descname"><span class="pre">TimeSeriesCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">ee.imagecollection.ImageCollection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeriesCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.TimeSeriesCollection" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wxee.ImageCollection">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">wxee.</span></span><span class="sig-name descname"><span class="pre">ImageCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">ee.imagecollection.ImageCollection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wxee/collection.html#ImageCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.ImageCollection" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="wxee.ImageCollection.get_image">
+<span class="sig-name descname"><span class="pre">get_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.Image</span></span></span><a class="reference internal" href="_modules/wxee/collection.html#ImageCollection.get_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.ImageCollection.get_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the image at the specified index in the collection. A negative index counts backwards from the end of
+the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index of the image in the collection.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The image at the given index.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ee.Image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wxee.ImageCollection.last">
+<span class="sig-name descname"><span class="pre">last</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.Image</span></span></span><a class="reference internal" href="_modules/wxee/collection.html#ImageCollection.last"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.ImageCollection.last" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the last image in the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The last image in the collection.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>ee.Image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wxee.ImageCollection.to_xarray">
+<span class="sig-name descname"><span class="pre">to_xarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.Dataset</span></span></span><a class="reference internal" href="_modules/wxee/collection.html#ImageCollection.to_xarray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.ImageCollection.to_xarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an image collection to an xarray.Dataset. The <code class="code docutils literal notranslate"><span class="pre">system:time_start</span></code> property of each image in the
+collection is used to arrange the time dimension, and each image variable is loaded as a separate array in
+the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to save the dataset to as a NetCDF. If none is given, the dataset will be stored in memory.</p></li>
+<li><p><strong>region</strong> (<em>ee.Geometry</em><em>, </em><em>optional</em>) – The region to download the images within. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">geometry</span></code> of the image collection
+will be used. If geometry varies between images in the collection, the region will encompass all images
+which may lead to very large arrays and download limits.</p></li>
+<li><p><strong>scale</strong> (<em>int</em><em>, </em><em>optional</em>) – The scale to download the array at in the CRS units. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">projection.nominalScale</span></code>
+of the images will be used.</p></li>
+<li><p><strong>crs</strong> (<em>str</em><em>, </em><em>default &quot;EPSG:4326&quot;</em>) – The coordinate reference system to download the array in.</p></li>
+<li><p><strong>masked</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, nodata pixels in the array will be masked by replacing them with numpy.nan. This will silently
+cast integer datatypes to float.</p></li>
+<li><p><strong>nodata</strong> (<em>int</em><em>, </em><em>default -32</em><em>,</em><em>768</em>) – The value to set as nodata in the array. Any masked pixels will be filled with this value.</p></li>
+<li><p><strong>num_cores</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be
+used.</p></li>
+<li><p><strong>progress</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, a progress bar will be displayed to track download progress.</p></li>
+<li><p><strong>max_attempts</strong> (<em>int</em><em>, </em><em>default 10</em>) – Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
+max_attempts. Must be between 1 and 99.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dataset containing all images in the collection with an assigned time dimension and variables set from
+each image.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xarray.Dataset</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>DownloadError</strong> – Raised if the image cannot be successfully downloaded after the maximum number of attempts.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">wxee</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-15&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">40000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">,</span> <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wxee.ImageCollection.to_tif">
+<span class="sig-name descname"><span class="pre">to_tif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_per_band</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/wxee/collection.html#ImageCollection.to_tif"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.ImageCollection.to_tif" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download all images in the collection to geoTIFF. Image file names will be the <code class="code docutils literal notranslate"><span class="pre">system:id</span></code> of each image
+after replacing invalid characters with underscores, with an optional user-defined prefix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>out_dir</strong> (<em>str</em><em>, </em><em>default &quot;.&quot;</em>) – The directory to save the images to.</p></li>
+<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – A description to prefix to all image file names. If none is provided, no prefix will be added.</p></li>
+<li><p><strong>region</strong> (<em>ee.Geometry</em><em>, </em><em>optional</em>) – The region to download the image within. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">geometry</span></code> of each image will be used.</p></li>
+<li><p><strong>scale</strong> (<em>int</em><em>, </em><em>optional</em>) – The scale to download each image at in the CRS units. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">projection.nominalScale</span></code>
+of each image will be used.</p></li>
+<li><p><strong>crs</strong> (<em>str</em><em>, </em><em>default &quot;EPSG:4326&quot;</em>) – The coordinate reference system to download each image in.</p></li>
+<li><p><strong>file_per_band</strong> (<em>bool</em><em>, </em><em>default False</em>) – If true, one file will be downloaded per band per image. If false, one multiband file will be downloaded per
+image instead.</p></li>
+<li><p><strong>masked</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the nodata value of each image will be set in the image metadata.</p></li>
+<li><p><strong>nodata</strong> (<em>int</em><em>, </em><em>default -32</em><em>,</em><em>768</em>) – The value to set as nodata in each image. Any masked pixels in the images will be filled with this value.</p></li>
+<li><p><strong>num_cores</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be
+used.</p></li>
+<li><p><strong>progress</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, a progress bar will be displayed to track download progress.</p></li>
+<li><p><strong>max_attempts</strong> (<em>int</em><em>, </em><em>default 10</em>) – Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
+max_attempts. Must be between 1 and 99.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Paths to downloaded images.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>DownloadError</strong> – Raised if the image cannot be successfully downloaded after the maximum number of attempts.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">wxee</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-15&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">40000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">,</span> <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wxee.ImageCollection.to_time_series">
+<span class="sig-name descname"><span class="pre">to_time_series</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#wxee.time_series.TimeSeries" title="wxee.time_series.TimeSeries"><span class="pre">wxee.time_series.TimeSeries</span></a></span></span><a class="reference internal" href="_modules/wxee/collection.html#ImageCollection.to_time_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.ImageCollection.to_time_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to a <code class="code docutils literal notranslate"><span class="pre">wxee.TimeSeries</span></code> collection with associated methods.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="time-series">
+<h2>Time Series<a class="headerlink" href="#time-series" title="Permalink to this headline">¶</a></h2>
+<p>Time series are image collections with added functionality for processing in the time dimension. They can be instantiated in two ways:</p>
+<div class="section" id="from-a-collection-id">
+<h3>From a Collection ID<a class="headerlink" href="#from-a-collection-id" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span>
+<span class="kn">import</span> <span class="nn">wxee</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="from-an-existing-collection">
+<h3>From an Existing Collection<a class="headerlink" href="#from-an-existing-collection" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span>
+<span class="kn">import</span> <span class="nn">wxee</span>
+
+<span class="n">col</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_time_series</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="methods-and-properties">
+<h3>Methods and Properties<a class="headerlink" href="#methods-and-properties" title="Permalink to this headline">¶</a></h3>
+<p>Once instantiated, a <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> has all of the methods of <code class="code docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> plus additional methods and
+properties for processing in the time dimension.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> can be converted to <code class="code docutils literal notranslate"><span class="pre">xarray</span></code> and <code class="code docutils literal notranslate"><span class="pre">tif</span></code> using the <code class="code docutils literal notranslate"><span class="pre">wx</span></code> accessor, just like an
+<code class="code docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code>.</p>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="wxee.time_series.TimeSeries">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">wxee.time_series.</span></span><span class="sig-name descname"><span class="pre">TimeSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.time_series.TimeSeries" title="Permalink to this definition">¶</a></dt>
 <dd><p>An image collection of chronological images.</p>
 <dl class="py property">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection.start_time">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">start_time</span></span><em class="property"><span class="pre">:</span> <span class="pre">ee.Date</span></em><a class="headerlink" href="#wxee.TimeSeriesCollection.start_time" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wxee.time_series.TimeSeries.start_time">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">start_time</span></span><em class="property"><span class="pre">:</span> <span class="pre">ee.Date</span></em><a class="headerlink" href="#wxee.time_series.TimeSeries.start_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <code class="code docutils literal notranslate"><span class="pre">system:time_start</span></code> of first chronological image in the collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -325,8 +493,8 @@ has a specific <code class="code docutils literal notranslate"><span class="pre"
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection.end_time">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">end_time</span></span><em class="property"><span class="pre">:</span> <span class="pre">ee.Date</span></em><a class="headerlink" href="#wxee.TimeSeriesCollection.end_time" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wxee.time_series.TimeSeries.end_time">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">end_time</span></span><em class="property"><span class="pre">:</span> <span class="pre">ee.Date</span></em><a class="headerlink" href="#wxee.time_series.TimeSeries.end_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <code class="code docutils literal notranslate"><span class="pre">system:time_start</span></code> of last chronological image in the collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -339,498 +507,157 @@ has a specific <code class="code docutils literal notranslate"><span class="pre"
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection.resample_hourly">
-<span class="sig-name descname"><span class="pre">resample_hourly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.ImageCollection</span></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeriesCollection.resample_hourly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.TimeSeriesCollection.resample_hourly" title="Permalink to this definition">¶</a></dt>
-<dd><p>Aggregate the collection over the time dimension hourly. This method can only be used with collections that
-are sub-hourly. If the time between images is greater than one hour, un-aggregated images will be returned.</p>
+<dt class="sig sig-object py" id="wxee.time_series.TimeSeries.aggregate_time">
+<span class="sig-name descname"><span class="pre">aggregate_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#wxee.time_series.TimeSeries" title="wxee.time_series.TimeSeries"><span class="pre">wxee.time_series.TimeSeries</span></a></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeries.aggregate_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.time_series.TimeSeries.aggregate_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aggregate the collection over the time dimension to a specified frequency. This method can only be used to go from
+small time frequencies to larger time frequencies, such as hours to days, not vice-versa. If the resampling frequency is smaller
+than the time between images, un-aggregated images will be returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>str</em>) – The time frequency to aggregate to. One of ‘year’, ‘month’ ‘week’, ‘day’, ‘hour’.</p></li>
 <li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</p></li>
 <li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
 reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The input image collection aggregated hourly.</p>
+<dd class="field-even"><p>The input image collection aggregated to the specified time frequency.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ee.ImageCollection</p>
+<dd class="field-odd"><p><a class="reference internal" href="#wxee.time_series.TimeSeries" title="wxee.time_series.TimeSeries">TimeSeries</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If an invalid frequency is passed.</p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#wxee.TimeSeriesCollection.resample_daily" title="wxee.TimeSeriesCollection.resample_daily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_daily</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_weekly" title="wxee.TimeSeriesCollection.resample_weekly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_weekly</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_monthly" title="wxee.TimeSeriesCollection.resample_monthly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_monthly</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_annually" title="wxee.TimeSeriesCollection.resample_annually"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_annually</span></code></a></p>
-</div>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection_sub_hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/GOES/16/FDCC&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hourly_max</span> <span class="o">=</span> <span class="n">collection_sub_hourly</span><span class="o">.</span><span class="n">resample_hourly</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ts_hourly</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">daily_max</span> <span class="o">=</span> <span class="n">ts_hourly</span><span class="o">.</span><span class="n">aggregate_time</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection.resample_daily">
-<span class="sig-name descname"><span class="pre">resample_daily</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.ImageCollection</span></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeriesCollection.resample_daily"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.TimeSeriesCollection.resample_daily" title="Permalink to this definition">¶</a></dt>
-<dd><p>Aggregate the collection over the time dimension daily. This method can only be used with collections that
-are sub-daily. If the time between images is greater than one day, un-aggregated images will be returned.</p>
+<dt class="sig sig-object py" id="wxee.time_series.TimeSeries.climatology_mean">
+<span class="sig-name descname"><span class="pre">climatology_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#wxee.climatology.ClimatologyMean" title="wxee.climatology.ClimatologyMean"><span class="pre">wxee.climatology.ClimatologyMean</span></a></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeries.climatology_mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.time_series.TimeSeries.climatology_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a mean climatology image collection with a given frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</p></li>
+<li><p><strong>frequency</strong> (<em>str</em>) – The name of the time frequency. One of “day”, “month”.</p></li>
+<li><p><strong>reducer</strong> (<em>Optional</em><em>[</em><em>ee.Reducer</em><em>]</em>) – The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily for a daily
+climatology. If the data is already in the temporal scale of the climatology, e.g. creating a daily
+climatology from daily data, the reducer will have no effect.</p></li>
+<li><p><strong>start</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The start coordinate in the time frequency to include in the climatology, e.g. 1 for January if the
+frequency is “month”. If none is provided, the default will be 1 for both “day” and “month”.</p></li>
+<li><p><strong>end</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The end coordinate in the time frequency to include in the climatology, e.g. 8 for August if the
+frequency is “month”. If none is provided, the default will be 366 for “day” or 12 for “month”</p></li>
 <li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
 reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The input image collection aggregated daily.</p>
+<dd class="field-even"><p>The climatological mean collection.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ee.ImageCollection</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#wxee.TimeSeriesCollection.resample_hourly" title="wxee.TimeSeriesCollection.resample_hourly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_hourly</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_weekly" title="wxee.TimeSeriesCollection.resample_weekly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_weekly</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_monthly" title="wxee.TimeSeriesCollection.resample_monthly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_monthly</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_annually" title="wxee.TimeSeriesCollection.resample_annually"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_annually</span></code></a></p>
-</div>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection_hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">daily_max</span> <span class="o">=</span> <span class="n">collection_hourly</span><span class="o">.</span><span class="n">resample_daily</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection.resample_weekly">
-<span class="sig-name descname"><span class="pre">resample_weekly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.ImageCollection</span></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeriesCollection.resample_weekly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.TimeSeriesCollection.resample_weekly" title="Permalink to this definition">¶</a></dt>
-<dd><p>Aggregate the collection over the time dimension weekly. This method can only be used with collections that
-are sub-weekly. If the time between images is greater than one week, un-aggregated images will be returned.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</p></li>
-<li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
-reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The input image collection aggregated weekly.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ee.ImageCollection</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#wxee.TimeSeriesCollection.resample_hourly" title="wxee.TimeSeriesCollection.resample_hourly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_hourly</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_daily" title="wxee.TimeSeriesCollection.resample_daily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_daily</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_monthly" title="wxee.TimeSeriesCollection.resample_monthly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_monthly</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_annually" title="wxee.TimeSeriesCollection.resample_annually"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_annually</span></code></a></p>
-</div>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection_hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">weekly_max</span> <span class="o">=</span> <span class="n">collection_hourly</span><span class="o">.</span><span class="n">resample_weekly</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection.resample_monthly">
-<span class="sig-name descname"><span class="pre">resample_monthly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.ImageCollection</span></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeriesCollection.resample_monthly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.TimeSeriesCollection.resample_monthly" title="Permalink to this definition">¶</a></dt>
-<dd><p>Aggregate the collection over the time dimension monthly. This method can only be used with collections that
-are sub-monthly. If the time between images is greater than one month, un-aggregated images will be returned.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</p></li>
-<li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
-reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The input image collection aggregated monthly.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ee.ImageCollection</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#wxee.TimeSeriesCollection.resample_hourly" title="wxee.TimeSeriesCollection.resample_hourly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_hourly</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_daily" title="wxee.TimeSeriesCollection.resample_daily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_daily</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_weekly" title="wxee.TimeSeriesCollection.resample_weekly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_weekly</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_annually" title="wxee.TimeSeriesCollection.resample_annually"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_annually</span></code></a></p>
-</div>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection_hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">monthly_max</span> <span class="o">=</span> <span class="n">collection_hourly</span><span class="o">.</span><span class="n">resample_monthly</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection.resample_annually">
-<span class="sig-name descname"><span class="pre">resample_annually</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.ImageCollection</span></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeriesCollection.resample_annually"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.TimeSeriesCollection.resample_annually" title="Permalink to this definition">¶</a></dt>
-<dd><p>Aggregate the collection over the time dimension annually. This method can only be used with collections that
-are sub-annual. If the time between images is greater than one year, un-aggregated images will be returned.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply when aggregating over time. If none is provided, ee.Reducer.mean() will be used.</p></li>
-<li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
-reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The input image collection aggregated annually.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ee.ImageCollection</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#wxee.TimeSeriesCollection.resample_hourly" title="wxee.TimeSeriesCollection.resample_hourly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_hourly</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_daily" title="wxee.TimeSeriesCollection.resample_daily"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_daily</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_weekly" title="wxee.TimeSeriesCollection.resample_weekly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_weekly</span></code></a>, <a class="reference internal" href="#wxee.TimeSeriesCollection.resample_monthly" title="wxee.TimeSeriesCollection.resample_monthly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.resample_monthly</span></code></a></p>
-</div>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection_hourly</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;NOAA/NWS/RTMA&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">annual_max</span> <span class="o">=</span> <span class="n">collection_hourly</span><span class="o">.</span><span class="n">resample_annually</span><span class="p">(</span><span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection.climatology_mean_month">
-<span class="sig-name descname"><span class="pre">climatology_mean_month</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">wxee.climatology.ClimatologyImageCollection</span></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeriesCollection.climatology_mean_month"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.TimeSeriesCollection.climatology_mean_month" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate monthly mean climatology from a time series of data. This method works by aggregating raw data to
-monthly using a given reducer and then calculating per-month means over multiple years. The output will have
-one image for each month.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply when aggregating over time, e.g. aggregating daily data to monthly. If the data
-is already monthly, the reducer will have no effect. If none is provided, ee.Reducer.mean() will be used.</p></li>
-<li><p><strong>start</strong> (<em>int</em><em>, </em><em>default 1</em>) – The number of the start month to include in the climatology.</p></li>
-<li><p><strong>end</strong> (<em>int</em><em>, </em><em>default 12</em>) – The number of the end month to include in the climatology.</p></li>
-<li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
-reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The image collection reduced to the number of months between start and end.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ClimatologyImageCollection</p>
+<dd class="field-odd"><p><a class="reference internal" href="#wxee.climatology.ClimatologyMean" title="wxee.climatology.ClimatologyMean">wxee.climatology.ClimatologyMean</a></p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;1980&quot;</span><span class="p">,</span> <span class="s2">&quot;2000&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">monthly_max</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">climatology_month</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">monthly_max</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
-<span class="go">12</span>
-</pre></div>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#wxee.TimeSeriesCollection.climatology_mean_dayofyear" title="wxee.TimeSeriesCollection.climatology_mean_dayofyear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.climatology_mean_dayofyear</span></code></a></p>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection.climatology_mean_dayofyear">
-<span class="sig-name descname"><span class="pre">climatology_mean_dayofyear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">366</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">wxee.climatology.ClimatologyImageCollection</span></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeriesCollection.climatology_mean_dayofyear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.TimeSeriesCollection.climatology_mean_dayofyear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate day-of-year mean climatology from a time series of data. This method works by aggregating raw data to
-daily using a given reducer and then calculating per-day-of-year means over multiple years. The output will have
-one image for each day.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Julian dates are used to calculate day-of-year means, so days after February 29 will be offset by one in leap years.
-For example, day-of-year 365 will represent December 31 in non-leap years and December 30 in leap years. Day 366
-will always represent December 31, but will be aggregated from 1/4 as many days as other days of the year.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily. If the data
-is already daily, the reducer will have no effect. If none is provided, ee.Reducer.mean() will be used.</p></li>
-<li><p><strong>start</strong> (<em>int</em><em>, </em><em>default 1</em>) – The number of the start day to include in the climatology.</p></li>
-<li><p><strong>end</strong> (<em>int</em><em>, </em><em>default 366</em>) – The number of the end day to include in the climatology.</p></li>
-<li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
-reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The image collection reduced to the number of days between start and end.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ClimatologyImageCollection</p>
-</dd>
-</dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;1980&quot;</span><span class="p">,</span> <span class="s2">&quot;2000&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">daily_max</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">climatology_dayofyear</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">daily_max</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">climatology_mean</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">daily_max</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 <span class="go">366</span>
 </pre></div>
 </div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#wxee.TimeSeriesCollection.climatology_mean_month" title="wxee.TimeSeriesCollection.climatology_mean_month"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeSeriesCollection.climatology_mean_month</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection.get_image">
-<span class="sig-name descname"><span class="pre">get_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.Image</span></span></span><a class="headerlink" href="#wxee.TimeSeriesCollection.get_image" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the image at the specified index in the collection. A negative index counts backwards from the end of
-the collection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index of the image in the collection.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The image at the given index.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ee.Image</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection.last">
-<span class="sig-name descname"><span class="pre">last</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.Image</span></span></span><a class="headerlink" href="#wxee.TimeSeriesCollection.last" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the last image in the collection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The last image in the collection.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>ee.Image</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection.to_tif">
-<span class="sig-name descname"><span class="pre">to_tif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_per_band</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#wxee.TimeSeriesCollection.to_tif" title="Permalink to this definition">¶</a></dt>
-<dd><p>Download all images in the collection to geoTIFF. Image file names will be the <code class="code docutils literal notranslate"><span class="pre">system:id</span></code> of each image
-after replacing invalid characters with underscores, with an optional user-defined prefix.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>out_dir</strong> (<em>str</em><em>, </em><em>default &quot;.&quot;</em>) – The directory to save the images to.</p></li>
-<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – A description to prefix to all image file names. If none is provided, no prefix will be added.</p></li>
-<li><p><strong>region</strong> (<em>ee.Geometry</em><em>, </em><em>optional</em>) – The region to download the image within. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">geometry</span></code> of each image will be used.</p></li>
-<li><p><strong>scale</strong> (<em>int</em><em>, </em><em>optional</em>) – The scale to download each image at in the CRS units. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">projection.nominalScale</span></code>
-of each image will be used.</p></li>
-<li><p><strong>crs</strong> (<em>str</em><em>, </em><em>default &quot;EPSG:4326&quot;</em>) – The coordinate reference system to download each image in.</p></li>
-<li><p><strong>file_per_band</strong> (<em>bool</em><em>, </em><em>default False</em>) – If true, one file will be downloaded per band per image. If false, one multiband file will be downloaded per
-image instead.</p></li>
-<li><p><strong>masked</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the nodata value of each image will be set in the image metadata.</p></li>
-<li><p><strong>nodata</strong> (<em>int</em><em>, </em><em>default -32</em><em>,</em><em>768</em>) – The value to set as nodata in each image. Any masked pixels in the images will be filled with this value.</p></li>
-<li><p><strong>num_cores</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be
-used.</p></li>
-<li><p><strong>progress</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, a progress bar will be displayed to track download progress.</p></li>
-<li><p><strong>max_attempts</strong> (<em>int</em><em>, </em><em>default 10</em>) – Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
-max_attempts. Must be between 1 and 99.</p></li>
-<li><p><strong>clean_filename</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true the <code class="code docutils literal notranslate"><span class="pre">system:id</span></code> of all images will be cleaned by replacing invalid path characters with underscores.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Paths to downloaded images.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list[str]</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>DownloadError</strong> – Raised if the image cannot be successfully downloaded after the maximum number of attempts.</p>
-</dd>
-</dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">wxee</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-15&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">40000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">,</span> <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wxee.TimeSeriesCollection.to_xarray">
-<span class="sig-name descname"><span class="pre">to_xarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.Dataset</span></span></span><a class="headerlink" href="#wxee.TimeSeriesCollection.to_xarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert an image collection to an xarray.Dataset. The <code class="code docutils literal notranslate"><span class="pre">system:time_start</span></code> property of each image in the
-collection is used to arrange the time dimension, and each image variable is loaded as a separate array in
-the dataset.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to save the dataset to as a NetCDF. If none is given, the dataset will be stored in memory.</p></li>
-<li><p><strong>region</strong> (<em>ee.Geometry</em><em>, </em><em>optional</em>) – The region to download the images within. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">geometry</span></code> of the image collection
-will be used. If geometry varies between images in the collection, the region will encompass all images
-which may lead to very large arrays and download limits.</p></li>
-<li><p><strong>scale</strong> (<em>int</em><em>, </em><em>optional</em>) – The scale to download the array at in the CRS units. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">projection.nominalScale</span></code>
-of the images will be used.</p></li>
-<li><p><strong>crs</strong> (<em>str</em><em>, </em><em>default &quot;EPSG:4326&quot;</em>) – The coordinate reference system to download the array in.</p></li>
-<li><p><strong>masked</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, nodata pixels in the array will be masked by replacing them with numpy.nan. This will silently
-cast integer datatypes to float.</p></li>
-<li><p><strong>nodata</strong> (<em>int</em><em>, </em><em>default -32</em><em>,</em><em>768</em>) – The value to set as nodata in the array. Any masked pixels will be filled with this value.</p></li>
-<li><p><strong>num_cores</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be
-used.</p></li>
-<li><p><strong>progress</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, a progress bar will be displayed to track download progress.</p></li>
-<li><p><strong>max_attempts</strong> (<em>int</em><em>, </em><em>default 10</em>) – Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
-max_attempts. Must be between 1 and 99.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A dataset containing all images in the collection with an assigned time dimension and variables set from
-each image.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xarray.Dataset</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>DownloadError</strong> – Raised if the image cannot be successfully downloaded after the maximum number of attempts.</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">wxee</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-15&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">40000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">,</span> <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 <div class="section" id="climatology">
-<h3>Climatology<a class="headerlink" href="#climatology" title="Permalink to this headline">¶</a></h3>
-<p>A climatology is a collection of images where each image represents multi-year means over a general unit of time,
-such as mean total monthly precipitation over 30 years. Unlike a time series, an image in a climatology collection does
-not have a specific time (e.g. October 20, 1989) but instead represents a generalized time (e.g. October).</p>
+<h2>Climatology<a class="headerlink" href="#climatology" title="Permalink to this headline">¶</a></h2>
+<p>A climatology describes long-term trends in weather over multiple years. The frequency of the climatology defines the time unit
+of the climatology (e.g. months or days). For example, a monthly mean climatology of daily rainfall data over 30 years would
+have 12 images, with each image describing the mean total rainfall in each month over those 30 years.</p>
+<div class="section" id="creating-a-climatology">
+<h3>Creating a Climatology<a class="headerlink" href="#creating-a-climatology" title="Permalink to this headline">¶</a></h3>
+<p>Climatologies are created from a <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> using the <code class="code docutils literal notranslate"><span class="pre">climatology_mean</span></code> method.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code class="code docutils literal notranslate"><span class="pre">ClimatologyMean</span></code> class should never be instantiated directly.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span>
+<span class="kn">import</span> <span class="nn">wxee</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;pr&quot;</span><span class="p">)</span>
+<span class="n">monthly_mean_rainfall</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">climatology_mean</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="code docutils literal notranslate"><span class="pre">reducer</span></code> argument defines how the raw data will be aggregated before calculating the climatological mean.
+In this case, we use <code class="code docutils literal notranslate"><span class="pre">ee.Reducer.sum()</span></code> to aggregate the daily rainfall measurements into monthly totals. If the
+data were already monthly, the reducer would have no effect.</p>
+</div>
+</div>
+<div class="section" id="id1">
+<h3>Methods and Properties<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Once instantiated, a <code class="code docutils literal notranslate"><span class="pre">ClimatologyMean</span></code> has all of the methods of <code class="code docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> (including those extended by the
+<code class="code docutils literal notranslate"><span class="pre">wx</span></code> accessor) plus additional properties describing the climatology.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="wxee.ClimatologyCollection">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">wxee.</span></span><span class="sig-name descname"><span class="pre">ClimatologyCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">ee.imagecollection.ImageCollection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wxee/climatology.html#ClimatologyCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.ClimatologyCollection" title="Permalink to this definition">¶</a></dt>
-<dd><p>An image collection of climatological images.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="wxee.ClimatologyCollection.get_image">
-<span class="sig-name descname"><span class="pre">get_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.Image</span></span></span><a class="headerlink" href="#wxee.ClimatologyCollection.get_image" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the image at the specified index in the collection. A negative index counts backwards from the end of
-the collection.</p>
+<dt class="sig sig-object py" id="wxee.climatology.ClimatologyMean">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">wxee.climatology.</span></span><span class="sig-name descname"><span class="pre">ClimatologyMean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wxee/climatology.html#ClimatologyMean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.climatology.ClimatologyMean" title="Permalink to this definition">¶</a></dt>
+<dd><p>An image collection of climatological means.</p>
+<p>Must be instantiated through <code class="code docutils literal notranslate"><span class="pre">wxee.time_series.TimeSeries.mean_climatology</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wxee.climatology.ClimatologyMean.frequency">
+<span class="sig-name descname"><span class="pre">frequency</span></span><a class="headerlink" href="#wxee.climatology.ClimatologyMean.frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time frequency of the climatology. One of “day”, “month”.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index of the image in the collection.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The image at the given index.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ee.Image</p>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="wxee.ClimatologyCollection.last">
-<span class="sig-name descname"><span class="pre">last</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.Image</span></span></span><a class="headerlink" href="#wxee.ClimatologyCollection.last" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the last image in the collection.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wxee.climatology.ClimatologyMean.reducer">
+<span class="sig-name descname"><span class="pre">reducer</span></span><a class="headerlink" href="#wxee.climatology.ClimatologyMean.reducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The reducer used to aggregate the climatology.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The last image in the collection.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>ee.Image</p>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ee.Reducer</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="wxee.ClimatologyCollection.to_tif">
-<span class="sig-name descname"><span class="pre">to_tif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_per_band</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#wxee.ClimatologyCollection.to_tif" title="Permalink to this definition">¶</a></dt>
-<dd><p>Download all images in the collection to geoTIFF. Image file names will be the <code class="code docutils literal notranslate"><span class="pre">system:id</span></code> of each image
-after replacing invalid characters with underscores, with an optional user-defined prefix.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wxee.climatology.ClimatologyMean.start">
+<span class="sig-name descname"><span class="pre">start</span></span><a class="headerlink" href="#wxee.climatology.ClimatologyMean.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>The start coordinate in the time frequency included in the climatology, e.g. 1 for January if the
+frequency is “month”.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>out_dir</strong> (<em>str</em><em>, </em><em>default &quot;.&quot;</em>) – The directory to save the images to.</p></li>
-<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – A description to prefix to all image file names. If none is provided, no prefix will be added.</p></li>
-<li><p><strong>region</strong> (<em>ee.Geometry</em><em>, </em><em>optional</em>) – The region to download the image within. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">geometry</span></code> of each image will be used.</p></li>
-<li><p><strong>scale</strong> (<em>int</em><em>, </em><em>optional</em>) – The scale to download each image at in the CRS units. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">projection.nominalScale</span></code>
-of each image will be used.</p></li>
-<li><p><strong>crs</strong> (<em>str</em><em>, </em><em>default &quot;EPSG:4326&quot;</em>) – The coordinate reference system to download each image in.</p></li>
-<li><p><strong>file_per_band</strong> (<em>bool</em><em>, </em><em>default False</em>) – If true, one file will be downloaded per band per image. If false, one multiband file will be downloaded per
-image instead.</p></li>
-<li><p><strong>masked</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the nodata value of each image will be set in the image metadata.</p></li>
-<li><p><strong>nodata</strong> (<em>int</em><em>, </em><em>default -32</em><em>,</em><em>768</em>) – The value to set as nodata in each image. Any masked pixels in the images will be filled with this value.</p></li>
-<li><p><strong>num_cores</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be
-used.</p></li>
-<li><p><strong>progress</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, a progress bar will be displayed to track download progress.</p></li>
-<li><p><strong>max_attempts</strong> (<em>int</em><em>, </em><em>default 10</em>) – Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
-max_attempts. Must be between 1 and 99.</p></li>
-<li><p><strong>clean_filename</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true the <code class="code docutils literal notranslate"><span class="pre">system:id</span></code> of all images will be cleaned by replacing invalid path characters with underscores.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Paths to downloaded images.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list[str]</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>DownloadError</strong> – Raised if the image cannot be successfully downloaded after the maximum number of attempts.</p>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">wxee</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-15&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">40000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">,</span> <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="wxee.ClimatologyCollection.to_xarray">
-<span class="sig-name descname"><span class="pre">to_xarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ee.Geometry</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'EPSG:4326'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masked</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">-</span> <span class="pre">32768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cores</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xarray.Dataset</span></span></span><a class="headerlink" href="#wxee.ClimatologyCollection.to_xarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert an image collection to an xarray.Dataset. The <code class="code docutils literal notranslate"><span class="pre">system:time_start</span></code> property of each image in the
-collection is used to arrange the time dimension, and each image variable is loaded as a separate array in
-the dataset.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wxee.climatology.ClimatologyMean.end">
+<span class="sig-name descname"><span class="pre">end</span></span><a class="headerlink" href="#wxee.climatology.ClimatologyMean.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>The end coordinate in the time frequency included in the climatology, e.g. 8 for August if the
+frequency is “month”.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to save the dataset to as a NetCDF. If none is given, the dataset will be stored in memory.</p></li>
-<li><p><strong>region</strong> (<em>ee.Geometry</em><em>, </em><em>optional</em>) – The region to download the images within. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">geometry</span></code> of the image collection
-will be used. If geometry varies between images in the collection, the region will encompass all images
-which may lead to very large arrays and download limits.</p></li>
-<li><p><strong>scale</strong> (<em>int</em><em>, </em><em>optional</em>) – The scale to download the array at in the CRS units. If none is provided, the <code class="code docutils literal notranslate"><span class="pre">projection.nominalScale</span></code>
-of the images will be used.</p></li>
-<li><p><strong>crs</strong> (<em>str</em><em>, </em><em>default &quot;EPSG:4326&quot;</em>) – The coordinate reference system to download the array in.</p></li>
-<li><p><strong>masked</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, nodata pixels in the array will be masked by replacing them with numpy.nan. This will silently
-cast integer datatypes to float.</p></li>
-<li><p><strong>nodata</strong> (<em>int</em><em>, </em><em>default -32</em><em>,</em><em>768</em>) – The value to set as nodata in the array. Any masked pixels will be filled with this value.</p></li>
-<li><p><strong>num_cores</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be
-used.</p></li>
-<li><p><strong>progress</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, a progress bar will be displayed to track download progress.</p></li>
-<li><p><strong>max_attempts</strong> (<em>int</em><em>, </em><em>default 10</em>) – Download requests to Earth Engine may intermittently fail. Failed attempts will be retried up to
-max_attempts. Must be between 1 and 99.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A dataset containing all images in the collection with an assigned time dimension and variables set from
-each image.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xarray.Dataset</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>DownloadError</strong> – Raised if the image cannot be successfully downloaded after the maximum number of attempts.</p>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ee</span><span class="o">,</span> <span class="nn">wxee</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-15&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">40000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">,</span> <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </dd></dl>

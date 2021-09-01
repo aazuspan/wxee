@@ -507,6 +507,57 @@ properties for processing in the time dimension.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="wxee.time_series.TimeSeries.interval">
+<span class="sig-name descname"><span class="pre">interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'day'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.Number</span></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeries.interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.time_series.TimeSeries.interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute and reduce time intervals between images in the collection. By default, the mean interval will be returned,
+but you could also calculate the minimum or maximum time between images, for example.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<em>str</em><em>, </em><em>default &quot;day&quot;</em>) – The unit to return the time interval in. One of “second”, “minute”, “hour”, “day”, “week”, “month”, “year”.</p></li>
+<li><p><strong>reducer</strong> (<em>ee.Reducer</em><em>, </em><em>optional</em>) – The reducer to apply to the list of image intervals. If none is provided, ee.Reducer.mean() will be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The reduced time interval between images.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ee.Number</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Calculating the interval of very large collections may exceed memory limits. If this happens, try selecting only
+a portion of the collection dates.</p>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;COPERNICUS/S2_SR&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">imgs</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">filterBounds</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="o">.</span><span class="n">Point</span><span class="p">([</span><span class="o">-</span><span class="mf">105.787</span><span class="p">,</span> <span class="mf">38.753</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">imgs</span><span class="o">.</span><span class="n">interval</span><span class="p">(</span><span class="s2">&quot;day&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+<span class="go">5.03</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wxee.time_series.TimeSeries.describe">
+<span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'day'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeries.describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.time_series.TimeSeries.describe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print descriptive statistics about the Time Series such as the ID, start and end dates, and time between images.
+This requires pulling data from the server, so it may run slowly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>unit</strong> (<em>str</em><em>, </em><em>default &quot;day&quot;</em>) – The unit to return the time interval in. One of “second”, “minute”, “hour”, “day”, “week”, “month”, “year”.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="wxee.time_series.TimeSeries.aggregate_time">
 <span class="sig-name descname"><span class="pre">aggregate_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#wxee.time_series.TimeSeries" title="wxee.time_series.TimeSeries"><span class="pre">wxee.time_series.TimeSeries</span></a></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeries.aggregate_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.time_series.TimeSeries.aggregate_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Aggregate the collection over the time dimension to a specified frequency. This method can only be used to go from

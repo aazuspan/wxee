@@ -506,50 +506,63 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Aggregate-Hourly-to-Daily">
 <h2>Aggregate Hourly to Daily<a class="headerlink" href="#Aggregate-Hourly-to-Daily" title="Permalink to this headline">¶</a></h2>
 <p>Now that we have out time series, let’s get two days of wind velocity grids. The collection should contain 48 images–one per hour.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-10&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;WIND&quot;</span><span class="p">)</span>
-
-<span class="n">ts</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-48
-</pre></div></div>
-</div>
-<p>Now we’ll aggregate hourly data to daily data. By default, <code class="docutils literal notranslate"><span class="pre">aggregate_time</span></code> uses <code class="docutils literal notranslate"><span class="pre">ee.Reducer.mean()</span></code> to aggregate data, so the output will represent average daily wind speeds. The 48 hourly input images have been aggregated into 2 daily images.</p>
+<p>This is a good time to introduce the <code class="docutils literal notranslate"><span class="pre">wxee.TimeSeries.describe()</span></code> method, which simply prints out some helpful information about our time series. As expected, we have 48 images and the mean interval between images is 1 hour.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">daily</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">aggregate_time</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">)</span>
-
-<span class="n">daily</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+<span></span><span class="n">ts</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s2">&quot;hour&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2
+<span class="ansi-bold">NOAA/NWS/RTMA</span>
+        Images: 48
+        Start date: 2020-09-08 00:00:00 UTC
+        End date: 2020-09-09 23:00:00 UTC
+        Mean interval: 1.00 hours
+</pre></div></div>
+</div>
+<p>Now we’ll aggregate hourly data to daily data. By default, <code class="docutils literal notranslate"><span class="pre">aggregate_time</span></code> uses <code class="docutils literal notranslate"><span class="pre">ee.Reducer.mean()</span></code> to aggregate data, so the output will represent average daily wind speeds. The 48 hourly input images have been aggregated into 2 daily images.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">daily</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">aggregate_time</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">)</span>
+<span class="n">daily</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">NOAA/NWS/RTMA</span>
+        Images: 2
+        Start date: 2020-09-08 00:00:00 UTC
+        End date: 2020-09-09 00:00:00 UTC
+        Mean interval: 1.00 days
 </pre></div></div>
 </div>
 <p>Now we can download and visualize the daily data.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -562,22 +575,22 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "825bc33bd62146b9942b7717a3944c00", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "3e6c497c721f42ce8cfeef8bb997f753", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f1dd578cac0&gt;
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7faf0c37a8e0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_temporal_aggregation_15_2.png" src="../_images/examples_temporal_aggregation_15_2.png" />
+<img alt="../_images/examples_temporal_aggregation_17_2.png" src="../_images/examples_temporal_aggregation_17_2.png" />
 </div>
 </div>
 </div>
@@ -585,29 +598,31 @@ div.rendered_html tbody tr:hover {
 <h2>Aggregate Daily to Monthly<a class="headerlink" href="#Aggregate-Daily-to-Monthly" title="Permalink to this headline">¶</a></h2>
 <p>gridMET contains daily temperature data. We’ll load a time series with one year of data from 2020, giving us 366 images (2020 was a leap year).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">gridmet</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;tmmx&quot;</span><span class="p">)</span>
 <span class="n">gridmet</span> <span class="o">=</span> <span class="n">gridmet</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-01&quot;</span><span class="p">,</span> <span class="s2">&quot;2021-01&quot;</span><span class="p">)</span>
-
-<span class="n">gridmet</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+<span class="n">gridmet</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-366
+<span class="ansi-bold">IDAHO_EPSCOR/GRIDMET</span>
+        Images: 366
+        Start date: 2020-01-01 06:00:00 UTC
+        End date: 2020-12-31 06:00:00 UTC
+        Mean interval: 1.00 days
 </pre></div></div>
 </div>
 <p>Now, we’ll calculate the monthly maximum temperatures, download them an xarray dataset, and plot them by month.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -622,22 +637,22 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f437f0236ee94b1aba4da8b3440d1083", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "01a35c662696443dba313e54b13a947b", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f1dcebe3dc0&gt;
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7fae785f2280&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_temporal_aggregation_20_2.png" src="../_images/examples_temporal_aggregation_20_2.png" />
+<img alt="../_images/examples_temporal_aggregation_22_2.png" src="../_images/examples_temporal_aggregation_22_2.png" />
 </div>
 </div>
 </div>
@@ -645,7 +660,7 @@ div.rendered_html tbody tr:hover {
 <h2>Warning<a class="headerlink" href="#Warning" title="Permalink to this headline">¶</a></h2>
 <p>wxee’s temporal resampling methods can only be used to aggregate fine time steps into coarse time steps (e.g. hours to days, days to months). Resampling a temporally coarse dataset into a finer time unit may lead to invalid results. Below, you can see that attempting to resample daily data into hourly caused one of the images to be lost.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -657,7 +672,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -666,7 +681,7 @@ div.rendered_html tbody tr:hover {
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -675,7 +690,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="output_area docutils container">

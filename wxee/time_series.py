@@ -40,6 +40,79 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         times = self._get_times()
         return ee.Date(times.reduce(ee.Reducer.max()))
 
+    def interval(self, unit: str = "day", reducer: Optional[Any] = None) -> ee.Number:
+        """Compute and reduce time intervals between images in the collection. By default, the mean interval will be returned,
+        but you could also calculate the minimum or maximum time between images, for example.
+
+        Parameters
+        ----------
+        unit : str, default "day"
+            The unit to return the time interval in. One of "second", "minute", "hour", "day", "week", "month", "year".
+
+        reducer : ee.Reducer, optional
+            The reducer to apply to the list of image intervals. If none is provided, ee.Reducer.mean() will be used.
+
+        Returns
+        -------
+        ee.Number
+            The reduced time interval between images.
+
+        Warning
+        -------
+        Calculating the interval of very large collections may exceed memory limits. If this happens, try selecting only
+        a portion of the collection dates.
+
+        Example
+        -------
+        >>> ts = wxee.TimeSeries("COPERNICUS/S2_SR")
+        >>> imgs = ts.filterBounds(ee.Geometry.Point([-105.787, 38.753]))
+        >>> imgs.interval("day").getInfo()
+        5.03
+        """
+
+        def iterate_diffs(time: ee.Date, old_diffs: ee.List) -> ee.List:
+            """Iterate through one step, calculating the time interval between two images and adding it to the working list."""
+            old_diffs = ee.List(old_diffs)
+            last_idx = old_diffs.size().subtract(1)
+            last_time = times.get(last_idx)
+            diff = ee.Date(time).difference(last_time, unit=unit)
+            return old_diffs.add(diff)
+
+        reducer = ee.Reducer.mean() if not reducer else reducer
+
+        times = self._get_times()
+        diffs = ee.List(times.iterate(iterate_diffs, ee.List([]))).slice(1)
+
+        return diffs.reduce(reducer)
+
+    def describe(self, unit: str = "day") -> None:
+        """Print descriptive statistics about the Time Series such as the ID, start and end dates, and time between images.
+        This requires pulling data from the server, so it may run slowly.
+
+        Parameters
+        ----------
+        unit : str, default "day"
+            The unit to return the time interval in. One of "second", "minute", "hour", "day", "week", "month", "year".
+
+        Returns
+        -------
+        None
+        """
+
+        start = self.start_time.format("yyyy-MM-dd HH:mm:ss z").getInfo()
+        end = self.end_time.format("yyyy-MM-dd HH:mm:ss z").getInfo()
+        mean_interval = self.interval(unit).getInfo()
+        size = self.size().getInfo()
+        id = self.get("system:id").getInfo()
+
+        print(
+            f"\033[1m{id}\033[0m"
+            f"\n\tImages: {size}"
+            f"\n\tStart date: {start}"
+            f"\n\tEnd date: {end}"
+            f"\n\tMean interval: {mean_interval:.2f} {unit}s"
+        )
+
     def aggregate_time(
         self, frequency: str, reducer: Optional[Any] = None, keep_bandnames: bool = True
     ) -> "TimeSeries":
@@ -75,6 +148,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         # ee.Reducer can't be used without initializing ee (see https://github.com/google/earthengine-api/issues/164),
         # so set the default reducer explicitly. This is also why the type hint above is set to Any.
         reducer = ee.Reducer.mean() if not reducer else reducer
+        original_id = self.get("system:id")
 
         frequencies = ["year", "month", "week", "day", "hour"]
         if frequency.lower() not in frequencies:
@@ -108,7 +182,9 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         steps = ee.List.sequence(0, n_steps.subtract(1))
         start_times = steps.map(lambda x: self.start_time.advance(x, frequency))
 
-        return TimeSeries(start_times.map(resample_step, dropNulls=True))
+        return TimeSeries(start_times.map(resample_step, dropNulls=True)).set(
+            "system:id", original_id
+        )
 
     def climatology_mean(
         self,

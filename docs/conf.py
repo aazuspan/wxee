@@ -35,8 +35,6 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "nbsphinx",
-    "sphinxcontrib.contentui",
-    "sphinxemoji.sphinxemoji",
 ]
 
 autosummary_generate = True

@@ -25,36 +25,34 @@ convenient methods for data processing, aggregation, downloading, and ingestion.
 
 Features
 --------
-* |:floppy_disk:| Time series image collections to xarray, NetCDF, or GeoTIFF in one line of code
-* |:date:| Climatological means and temporal aggregation
-* |:zap:| Parallel processing for fast downloads
+* Time series image collections to xarray, NetCDF, or GeoTIFF in one line of code
+* Climatological means and temporal aggregation
+* Parallel processing for fast downloads
 
 
 Install
--------
+------------
 
-.. content-tabs::
+Pip
+~~~
 
-    .. tab-container:: tab1
-      :title: Pip
+.. code-block:: bash
 
-      .. code-block:: bash
+   pip install wxee
 
-         pip install wxee
+Conda
+~~~~~
 
-    .. tab-container:: tab2
-      :title: Conda
+:code:`wxee` is coming soon to conda-forge!
 
-      Coming soon to `conda-forge <https://conda-forge.org/>`_!
+From Source
+~~~~~~~~~~~
 
-    .. tab-container:: tab3
-      :title: Source
+.. code-block:: bash
 
-      .. code-block:: bash
-
-         git clone https://github.com/aazuspan/wxee
-         cd wxee
-         make install
+   git clone https://github.com/aazuspan/wxee
+   cd wxee
+   make install
 
 
 Quickstart
@@ -71,67 +69,55 @@ Once you have access to Google Earth Engine, just import and initialize :code:`e
 
    ee.Initialize()
 
+
 Download Images
 ~~~~~~~~~~~~~~~
 
 Download and conversion methods are extended to :code:`ee.Image` and :code:`ee.ImageCollection` using the 
 :code:`wx` accessor. Just :code:`import wxee` and use the :code:`wx` accessor.
 
-.. content-tabs::
+xarray
+^^^^^^
 
-    .. tab-container:: tab1
-      :title: xarray
+.. code-block:: python
 
-      .. code-block:: python
+   ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").wx.to_xarray()
 
-         ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").wx.to_xarray()
+NetCDF
+^^^^^^
 
-    .. tab-container:: tab2
-      :title: NetCDF
+.. code-block:: python
 
-      .. code-block:: python
+   ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").wx.to_xarray(path="data/gridmet.nc")
 
-         ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").wx.to_xarray(path="data/gridmet.nc")
+GeoTIFF
+^^^^^^^
 
-    .. tab-container:: tab3
-      :title: GeoTIFF
+.. code-block:: python
 
-      .. code-block:: python
-
-         ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").wx.to_tif()
+   ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").wx.to_tif()
 
 
 Create a Time Series
 ~~~~~~~~~~~~~~~~~~~~
 
 Additional methods for processing image collections in the time dimension are available through the :code:`TimeSeries` subclass.
-A :code:`TimeSeries` can be created in two ways...
+A :code:`TimeSeries` can be created from an existing :code:`ee.ImageCollection`...
+
+.. code-block:: python
+
+   col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET")
+   ts = col.wx.to_time_series()
+
+Or instantiated directly just like you would an :code:`ee.ImageCollection`!
+
+.. code-block:: python
+
+   ts = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET")
 
 
-.. content-tabs::
-
-    .. tab-container:: tab1
-      :title: 1. Existing ImageCollection
-
-      An existing :code:`ee.ImageCollection` can be converted into a :code:`wxee.TimeSeries` using the :code:`wx.to_time_series` method.
-
-      .. code-block:: python
-
-         col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET")
-         ts = col.wx.to_time_series()
-
-    .. tab-container:: tab2
-      :title: 2. From Scratch!
-
-      A :code:`wxee.TimeSeries` can be instantiated from an ID or list of :code:`ee.Images` just like an :code:`ee.ImageCollection`. 
-
-      .. code-block:: python
-
-         ts = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET")
-
-
-Aggregate Daily to Monthly
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Aggregate Daily Data
+~~~~~~~~~~~~~~~~~~~~
 
 Many weather datasets are in daily or hourly resolution. These can be aggregated to coarser resolutions using the :code:`aggregate_time`
 method of the :code:`TimeSeries` class.

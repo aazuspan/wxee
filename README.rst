@@ -1,6 +1,8 @@
 wxee
 ====================================
 
+.. image:: https://img.shields.io/pypi/v/wxee
+    :target: https://pypi.org/project/wxee/
 .. image:: https://readthedocs.org/projects/wxee/badge/?version=latest&style=flat
    :target: https://wxee.readthedocs.io/en/latest/?badge=latest
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
@@ -31,7 +33,20 @@ Features
 Installation
 ------------
 
-:code:`wxee` is coming soon to PyPI and conda-forge. Until then, it can be installed from source.
+Pip
+~~~
+
+.. code-block:: bash
+
+   pip install wxee
+
+Conda
+~~~~~
+
+:code:`wxee` is coming soon to conda-forge!
+
+From Source
+~~~~~~~~~~~
 
 .. code-block:: bash
 

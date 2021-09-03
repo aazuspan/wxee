@@ -2,7 +2,7 @@ from setuptools import setup  # type: ignore
 
 version = "0.0.1"
 
-with open("README.md") as readme_file:
+with open("README.rst") as readme_file:
     readme = readme_file.read()
 
 requirements = ["rasterio", "xarray", "earthengine-api", "tqdm", "requests", "netcdf4"]

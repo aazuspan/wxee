@@ -3,12 +3,15 @@ wxee
 
 .. image:: https://img.shields.io/pypi/v/wxee
     :target: https://pypi.org/project/wxee/
+.. image:: https://img.shields.io/conda/vn/conda-forge/wxee.svg
+   :target: https://anaconda.org/conda-forge/wxee
 .. image:: https://readthedocs.org/projects/wxee/badge/?version=latest&style=flat
    :target: https://wxee.readthedocs.io/en/latest/?badge=latest
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
    :target: https://www.gnu.org/licenses/gpl-3.0
+
 
 
 .. image:: https://raw.githubusercontent.com/aazuspan/wxee/main/docs/_static/demo_001.gif
@@ -43,7 +46,9 @@ Pip
 Conda
 ~~~~~
 
-:code:`wxee` is coming soon to conda-forge!
+.. code-block:: bash
+
+    conda install -c conda-forge wxee
 
 From Source
 ~~~~~~~~~~~

@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Downloading Images and Collections &mdash; wxee  documentation</title>
@@ -15,6 +16,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/contentui.css" type="text/css" />
 
   
   
@@ -35,6 +37,7 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/contentui.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
@@ -448,11 +451,11 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="Downloading-Images-and-Collections">
+<section id="Downloading-Images-and-Collections">
 <h1>Downloading Images and Collections<a class="headerlink" href="#Downloading-Images-and-Collections" title="Permalink to this headline">¶</a></h1>
 <p>In this tutorial, we’ll look at how we can use <code class="docutils literal notranslate"><span class="pre">wxee</span></code> and the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accesor to quickly and easily download images and image collections from Earth Engine to a local drive.</p>
 <p><code class="docutils literal notranslate"><span class="pre">wxee</span></code> isn’t designed to replace Earth Engine’s native downloading functionality–if you need high resolution images or large areas, downloading to a Drive using ee is probably the best option. What <code class="docutils literal notranslate"><span class="pre">wxee</span></code>’s downloading system is great for is quickly pulling small regions or mesoscale images for further processing in Python without the hassle of intermediate steps.</p>
-<div class="section" id="Setup">
+<section id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -466,8 +469,8 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="Downloading-an-Image">
+</section>
+<section id="Downloading-an-Image">
 <h2>Downloading an Image<a class="headerlink" href="#Downloading-an-Image" title="Permalink to this headline">¶</a></h2>
 <p>Load an image from MODIS. For convenience, we’ll select just the red, green, and blue bands.</p>
 <div class="nbinput nblast docutils container">
@@ -564,8 +567,8 @@ div.rendered_html tbody tr:hover {
  &#39;data/modis_img.time.20210601T000000.sur_refl_b03.tif&#39;]
 </pre></div></div>
 </div>
-</div>
-<div class="section" id="Downloading-an-Image-Collection">
+</section>
+<section id="Downloading-an-Image-Collection">
 <h2>Downloading an Image Collection<a class="headerlink" href="#Downloading-an-Image-Collection" title="Permalink to this headline">¶</a></h2>
 <p>Load the MODIS collection, choose a date range with 4 images, and select the red, green, and blue bands.</p>
 <div class="nbinput nblast docutils container">
@@ -616,8 +619,8 @@ div.rendered_html tbody tr:hover {
  &#39;data/wx_MODIS_006_MOD09GA_2021_06_03.time.20210603T000000.tif&#39;]
 </pre></div></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

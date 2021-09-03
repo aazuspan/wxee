@@ -1,3 +1,5 @@
 sphinx==4.0.2
 nbsphinx
 ipython
+sphinxemoji
+sphinxcontrib-contentui

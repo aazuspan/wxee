@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Image Collection to xarray &mdash; wxee  documentation</title>
@@ -15,6 +16,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/contentui.css" type="text/css" />
 
   
   
@@ -35,6 +37,7 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/contentui.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
@@ -448,10 +451,10 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="Image-Collection-to-xarray">
+<section id="Image-Collection-to-xarray">
 <h1>Image Collection to xarray<a class="headerlink" href="#Image-Collection-to-xarray" title="Permalink to this headline">¶</a></h1>
 <p>In this tutorial, we’ll look at how we can use <code class="docutils literal notranslate"><span class="pre">wxee</span></code> and the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accessor to convert an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> of gridMET weather data to an <code class="docutils literal notranslate"><span class="pre">xarray.Dataset</span></code> for visualization and further processing.</p>
-<div class="section" id="Setup">
+<section id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -465,8 +468,8 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="Converting-to-xarray">
+</section>
+<section id="Converting-to-xarray">
 <h2>Converting to xarray<a class="headerlink" href="#Converting-to-xarray" title="Permalink to this headline">¶</a></h2>
 <p>Load the gridMET image collection.</p>
 <div class="nbinput nblast docutils container">
@@ -1599,8 +1602,8 @@ Attributes:
         [nan, nan, nan, ..., nan, nan, nan],
         [nan, nan, nan, ..., nan, nan, nan]]], dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-ee57ccc8-c10d-4f67-829b-1d8792eb4701' class='xr-section-summary-in' type='checkbox'  ><label for='section-ee57ccc8-c10d-4f67-829b-1d8792eb4701' class='xr-section-summary' >Attributes: <span>(11)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>transform :</span></dt><dd>(20000.0, 0.0, -2920000.0, 0.0, -20000.0, 3280000.0)</dd><dt><span>crs :</span></dt><dd>+init=epsg:5070</dd><dt><span>res :</span></dt><dd>(20000.0, 20000.0)</dd><dt><span>is_tiled :</span></dt><dd>1</dd><dt><span>nodatavals :</span></dt><dd>(-32768.0,)</dd><dt><span>scales :</span></dt><dd>(1.0,)</dd><dt><span>offsets :</span></dt><dd>(0.0,)</dd><dt><span>AREA_OR_POINT :</span></dt><dd>Area</dd><dt><span>TIFFTAG_RESOLUTIONUNIT :</span></dt><dd>1 (unitless)</dd><dt><span>TIFFTAG_XRESOLUTION :</span></dt><dd>1</dd><dt><span>TIFFTAG_YRESOLUTION :</span></dt><dd>1</dd></dl></div></li></ul></div></div></div>
 </div>
-</div>
-<div class="section" id="Visualizing">
+</section>
+<section id="Visualizing">
 <h2>Visualizing<a class="headerlink" href="#Visualizing" title="Permalink to this headline">¶</a></h2>
 <p>Let’s calculate the max wind velocity over the time dimension and plot it.</p>
 <div class="nbinput docutils container">
@@ -1656,8 +1659,8 @@ Attributes:
 <img alt="../_images/examples_image_collection_to_xarray_21_1.png" src="../_images/examples_image_collection_to_xarray_21_1.png" />
 </div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

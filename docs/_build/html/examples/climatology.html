@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Climatology &mdash; wxee  documentation</title>
@@ -15,6 +16,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/contentui.css" type="text/css" />
 
   
   
@@ -35,6 +37,7 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/contentui.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
@@ -453,10 +456,10 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="Climatology">
+<section id="Climatology">
 <h1>Climatology<a class="headerlink" href="#Climatology" title="Permalink to this headline">¶</a></h1>
 <p>In this tutorial, we’ll look at how to use wxee to calculate long-term climatological means of gridded weather data. Currently, monthly and daily mean climatologies are supported.</p>
-<div class="section" id="Setup">
+<section id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -470,11 +473,11 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="Create-a-Time-Series">
+</section>
+<section id="Create-a-Time-Series">
 <h2>Create a Time Series<a class="headerlink" href="#Create-a-Time-Series" title="Permalink to this headline">¶</a></h2>
 <p>Time-based methods in wxee, like temporal aggregation and climatology, work with the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> subclass of <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code>. To use them, we’ll need to create a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>. There are two ways to do this.</p>
-<div class="section" id="From-an-Image-Collection">
+<section id="From-an-Image-Collection">
 <h3>From an Image Collection<a class="headerlink" href="#From-an-Image-Collection" title="Permalink to this headline">¶</a></h3>
 <p>Create an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> and use the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accessor and the <code class="docutils literal notranslate"><span class="pre">to_time_series</span></code> method to convert the Image Collection to a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.</p>
 <div class="nbinput nblast docutils container">
@@ -487,8 +490,8 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="From-Scratch">
+</section>
+<section id="From-Scratch">
 <h3>From Scratch<a class="headerlink" href="#From-Scratch" title="Permalink to this headline">¶</a></h3>
 <p>As a shortcut, you can create a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> just like you would create an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code>. Just pass a collection ID or list of Images.</p>
 <div class="nbinput nblast docutils container">
@@ -500,9 +503,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-</div>
-</div>
-<div class="section" id="Monthly-Total-Rainfall">
+</section>
+</section>
+<section id="Monthly-Total-Rainfall">
 <h2>Monthly Total Rainfall<a class="headerlink" href="#Monthly-Total-Rainfall" title="Permalink to this headline">¶</a></h2>
 <p>gridMET contains daily weather data including precipitation. First, we’ll load 10 years of data from 2000 - 2010 into a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, giving us several thousand daily images.</p>
 <div class="nbinput docutils container">
@@ -580,8 +583,8 @@ div.rendered_html tbody tr:hover {
 <img alt="../_images/examples_climatology_16_2.png" src="../_images/examples_climatology_16_2.png" />
 </div>
 </div>
-</div>
-<div class="section" id="Daily-Mean-Burning-Index">
+</section>
+<section id="Daily-Mean-Burning-Index">
 <h2>Daily Mean Burning Index<a class="headerlink" href="#Daily-Mean-Burning-Index" title="Permalink to this headline">¶</a></h2>
 <p>Once again we’ll look at gridMET daily weather data, but this time we’ll calculate the climatological mean burning index (a measure of wildfire potential) by day-of-year. Day-of-year climatologies require processing a lot more data, so we’ll just use 4 years for this example.</p>
 <div class="nbinput nblast docutils container">
@@ -679,8 +682,8 @@ div.rendered_html tbody tr:hover {
 <img alt="../_images/examples_climatology_29_1.png" src="../_images/examples_climatology_29_1.png" />
 </div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

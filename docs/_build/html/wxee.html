@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>API &mdash; wxee  documentation</title>
@@ -15,6 +16,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/contentui.css" type="text/css" />
 
   
   
@@ -35,6 +37,7 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/contentui.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
@@ -205,9 +208,9 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="api">
+<section id="api">
 <h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="wx-accessor">
+<section id="wx-accessor">
 <h2>wx accessor<a class="headerlink" href="#wx-accessor" title="Permalink to this headline">¶</a></h2>
 <p>wxee adds functionality such as <code class="code docutils literal notranslate"><span class="pre">xarray</span></code> and <code class="code docutils literal notranslate"><span class="pre">tif</span></code> conversion to base Earth Engine objects using the <code class="code docutils literal notranslate"><span class="pre">wx</span></code> accessor.
 Just <code class="code docutils literal notranslate"><span class="pre">import</span> <span class="pre">wxee</span></code> and use the <code class="code docutils literal notranslate"><span class="pre">wx</span></code> accessor to access those methods.</p>
@@ -217,7 +220,7 @@ Just <code class="code docutils literal notranslate"><span class="pre">import</s
 <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span> <span class="o">...</span> <span class="p">)</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_tif</span><span class="p">(</span> <span class="o">...</span> <span class="p">)</span>
 </pre></div>
 </div>
-<div class="section" id="ee-image-wx">
+<section id="ee-image-wx">
 <h3>ee.Image.wx<a class="headerlink" href="#ee-image-wx" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="wxee.Image">
@@ -305,8 +308,8 @@ max_attempts. Must be between 1 and 99.</p></li>
 
 </dd></dl>
 
-</div>
-<div class="section" id="ee-imagecollection-wx">
+</section>
+<section id="ee-imagecollection-wx">
 <h3>ee.ImageCollection.wx<a class="headerlink" href="#ee-imagecollection-wx" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="wxee.ImageCollection">
@@ -441,12 +444,12 @@ max_attempts. Must be between 1 and 99.</p></li>
 
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="time-series">
+</section>
+</section>
+<section id="time-series">
 <h2>Time Series<a class="headerlink" href="#time-series" title="Permalink to this headline">¶</a></h2>
 <p>Time series are image collections with added functionality for processing in the time dimension. They can be instantiated in two ways:</p>
-<div class="section" id="from-a-collection-id">
+<section id="from-a-collection-id">
 <h3>From a Collection ID<a class="headerlink" href="#from-a-collection-id" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span>
 <span class="kn">import</span> <span class="nn">wxee</span>
@@ -454,8 +457,8 @@ max_attempts. Must be between 1 and 99.</p></li>
 <span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="from-an-existing-collection">
+</section>
+<section id="from-an-existing-collection">
 <h3>From an Existing Collection<a class="headerlink" href="#from-an-existing-collection" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span>
 <span class="kn">import</span> <span class="nn">wxee</span>
@@ -464,8 +467,8 @@ max_attempts. Must be between 1 and 99.</p></li>
 <span class="n">ts</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_time_series</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="methods-and-properties">
+</section>
+<section id="methods-and-properties">
 <h3>Methods and Properties<a class="headerlink" href="#methods-and-properties" title="Permalink to this headline">¶</a></h3>
 <p>Once instantiated, a <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> has all of the methods of <code class="code docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> plus additional methods and
 properties for processing in the time dimension.</p>
@@ -628,14 +631,14 @@ reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</
 
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="climatology">
+</section>
+</section>
+<section id="climatology">
 <h2>Climatology<a class="headerlink" href="#climatology" title="Permalink to this headline">¶</a></h2>
 <p>A climatology describes long-term trends in weather over multiple years. The frequency of the climatology defines the time unit
 of the climatology (e.g. months or days). For example, a monthly mean climatology of daily rainfall data over 30 years would
 have 12 images, with each image describing the mean total rainfall in each month over those 30 years.</p>
-<div class="section" id="creating-a-climatology">
+<section id="creating-a-climatology">
 <h3>Creating a Climatology<a class="headerlink" href="#creating-a-climatology" title="Permalink to this headline">¶</a></h3>
 <p>Climatologies are created from a <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> using the <code class="code docutils literal notranslate"><span class="pre">climatology_mean</span></code> method.</p>
 <div class="admonition warning">
@@ -655,8 +658,8 @@ have 12 images, with each image describing the mean total rainfall in each month
 In this case, we use <code class="code docutils literal notranslate"><span class="pre">ee.Reducer.sum()</span></code> to aggregate the daily rainfall measurements into monthly totals. If the
 data were already monthly, the reducer would have no effect.</p>
 </div>
-</div>
-<div class="section" id="id1">
+</section>
+<section id="id1">
 <h3>Methods and Properties<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Once instantiated, a <code class="code docutils literal notranslate"><span class="pre">ClimatologyMean</span></code> has all of the methods of <code class="code docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> (including those extended by the
 <code class="code docutils literal notranslate"><span class="pre">wx</span></code> accessor) plus additional properties describing the climatology.</p>
@@ -713,9 +716,9 @@ frequency is “month”.</p>
 
 </dd></dl>
 
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>

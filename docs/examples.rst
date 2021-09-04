@@ -8,3 +8,4 @@ Examples
     examples/downloading_images_and_collections.ipynb
     examples/temporal_aggregation.ipynb
     examples/climatology.ipynb
+    examples/modis.ipynb

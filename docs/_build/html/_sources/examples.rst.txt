@@ -9,3 +9,4 @@ Examples
     examples/temporal_aggregation.ipynb
     examples/climatology.ipynb
     examples/modis.ipynb
+    examples/fire_progressions.ipynb

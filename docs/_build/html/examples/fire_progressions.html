@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Climatology &mdash; wxee  documentation</title>
+  <title>Fire Progression &mdash; wxee  documentation</title>
   
 
   
@@ -45,8 +45,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="MODIS" href="modis.html" />
-    <link rel="prev" title="Temporal Aggregation" href="temporal_aggregation.html" /> 
+    <link rel="next" title="Developer Setup" href="../contributing.html" />
+    <link rel="prev" title="MODIS" href="modis.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -101,19 +101,14 @@
 <li class="toctree-l2"><a class="reference internal" href="image_collection_to_xarray.html">Image Collection to xarray</a></li>
 <li class="toctree-l2"><a class="reference internal" href="downloading_images_and_collections.html">Downloading Images and Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="temporal_aggregation.html">Temporal Aggregation</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Climatology</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Setup">Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Create-a-Time-Series">Create a Time Series</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#From-an-Image-Collection">From an Image Collection</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#From-Scratch">From Scratch</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#Monthly-Total-Rainfall">Monthly Total Rainfall</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Daily-Mean-Burning-Index">Daily Mean Burning Index</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="climatology.html">Climatology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modis.html">MODIS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fire_progressions.html">Fire Progression</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Fire Progression</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Setup">Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Downloading-Data-to-xarray">Downloading Data to xarray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Progression-Over-Time">Progression Over Time</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Developer Setup</a></li>
@@ -167,13 +162,13 @@
         
           <li><a href="../examples.html">Examples</a> &raquo;</li>
         
-      <li>Climatology</li>
+      <li>Fire Progression</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/examples/climatology.ipynb.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/examples/fire_progressions.ipynb.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -456,9 +451,9 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<section id="Climatology">
-<h1>Climatology<a class="headerlink" href="#Climatology" title="Permalink to this headline">¶</a></h1>
-<p>In this tutorial, we’ll look at how to use wxee to calculate long-term climatological means of gridded weather data. Currently, monthly and daily mean climatologies are supported.</p>
+<section id="Fire-Progression">
+<h1>Fire Progression<a class="headerlink" href="#Fire-Progression" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">wxee</span></code> is designed for processing weather data, but it can also be useful for remote sensing data. In this example, we’ll look at how <code class="docutils literal notranslate"><span class="pre">wxee</span></code> can work with data from the GOES-R sensors to visualize fire progressions over time.</p>
 <section id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -474,195 +469,176 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 </section>
-<section id="Create-a-Time-Series">
-<h2>Create a Time Series<a class="headerlink" href="#Create-a-Time-Series" title="Permalink to this headline">¶</a></h2>
-<p>Time-based methods in wxee, like temporal aggregation and climatology, work with the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> subclass of <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code>. To use them, we’ll need to create a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>. There are two ways to do this.</p>
-<section id="From-an-Image-Collection">
-<h3>From an Image Collection<a class="headerlink" href="#From-an-Image-Collection" title="Permalink to this headline">¶</a></h3>
-<p>Create an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> and use the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accessor and the <code class="docutils literal notranslate"><span class="pre">to_time_series</span></code> method to convert the Image Collection to a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.</p>
-<div class="nbinput nblast docutils container">
+<section id="Downloading-Data-to-xarray">
+<h2>Downloading Data to xarray<a class="headerlink" href="#Downloading-Data-to-xarray" title="Permalink to this headline">¶</a></h2>
+<p>GOES-16 captures 5-minute interval data including a mask with codes identifying fire hotspot detections. We’ll select a time window that experienced explosive fire growth in the Western Cascades of Oregon, USA.</p>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">rtma</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span>
-<span class="n">ts</span> <span class="o">=</span> <span class="n">rtma</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_time_series</span><span class="p">()</span>
+<span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;NOAA/GOES/16/FDCC&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;Mask&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2020-09-08&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-09-09&quot;</span><span class="p">)</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="s2">&quot;minute&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-</section>
-<section id="From-Scratch">
-<h3>From Scratch<a class="headerlink" href="#From-Scratch" title="Permalink to this headline">¶</a></h3>
-<p>As a shortcut, you can create a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> just like you would create an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code>. Just pass a collection ID or list of Images.</p>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">NOAA/GOES/16/FDCC</span>
+        Images: 288
+        Start date: 2020-09-08 00:01:16 UTC
+        End date: 2020-09-08 23:56:16 UTC
+        Mean interval: 5.00 minutes
+</pre></div></div>
+</div>
+<p>Before we go any further, we need to convert the mask codes to a binary mask of fire presence. Values 10, 11, 30, and 31 represent maximum confidence fire detections, so we’ll set those pixels to 1 and all other pixels to 0 in all images.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</section>
-</section>
-<section id="Monthly-Total-Rainfall">
-<h2>Monthly Total Rainfall<a class="headerlink" href="#Monthly-Total-Rainfall" title="Permalink to this headline">¶</a></h2>
-<p>gridMET contains daily weather data including precipitation. First, we’ll load 10 years of data from 2000 - 2010 into a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, giving us several thousand daily images.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;pr&quot;</span><span class="p">)</span>
-<span class="n">ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2000&quot;</span><span class="p">,</span> <span class="s2">&quot;2010&quot;</span><span class="p">)</span>
+<span></span><span class="k">def</span> <span class="nf">fire_mask</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;fire&quot;</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">mask</span>
+        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="mi">11</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="mi">30</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="mi">31</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="c1"># Copy the properties from the original images to avoid losing time data.</span>
+    <span class="k">return</span> <span class="n">mask</span><span class="o">.</span><span class="n">copyProperties</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">propertyNames</span><span class="p">())</span>
 
-<span class="n">ts</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+<span class="c1"># Convert each mask class image into a binary fire presence mask</span>
+<span class="n">fire_masks</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">fire_mask</span><span class="p">(</span><span class="n">img</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<p>Now we can aggregate the 288 5-minute masks to 24 hourly masks. We’ll use a max reducer, meaning that an hourly hotspot was detected at least once within the hour.</p>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-3653
-</pre></div></div>
-</div>
-<p>Now, we’ll calculate the monthly mean total rainfall over the 10 years, giving us just 12 images (one per month).</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">climatology_mean</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-<span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+<span></span><span class="n">hourly_fire</span> <span class="o">=</span> <span class="n">fire_masks</span><span class="o">.</span><span class="n">aggregate_time</span><span class="p">(</span><span class="s2">&quot;hour&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="n">hourly_fire</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="s2">&quot;minute&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-12
-</pre></div></div>
-</div>
-<div class="alert alert-block alert-info"><p>Tip: The reducer argument defines how data will be aggregated before the mean climatology is calculated. In this case, we’ll sum the daily precipitation to get monthly totals. The mean monthly climatology will be calculated from those totals.</p>
-</div><p>Finally, we’ll download the monthly mean totals as an xarray dataset and plot them.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">x</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
-<span class="n">x</span><span class="o">.</span><span class="n">pr</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Blues&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ebb56ce0797c4d0c99ebe6749ccc6ead", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f2ae7dbe100&gt;
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_climatology_16_2.png" src="../_images/examples_climatology_16_2.png" />
+<div class="highlight"><pre>
+<span class="ansi-bold">NOAA/GOES/16/FDCC</span>
+        Images: 24
+        Start date: 2020-09-08 00:01:16 UTC
+        End date: 2020-09-08 23:01:16 UTC
+        Mean interval: 60.00 minutes
+</pre></div></div>
 </div>
+<p>Select a region around the largest fire, Beachie Creek.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">geom</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="o">.</span><span class="n">Polygon</span><span class="p">(</span>
+    <span class="p">[[[</span><span class="o">-</span><span class="mf">122.77807114256022</span><span class="p">,</span> <span class="mf">45.370803623985665</span><span class="p">],</span>
+      <span class="p">[</span><span class="o">-</span><span class="mf">122.77807114256022</span><span class="p">,</span> <span class="mf">44.519360582318896</span><span class="p">],</span>
+      <span class="p">[</span><span class="o">-</span><span class="mf">121.46520493162272</span><span class="p">,</span> <span class="mf">44.519360582318896</span><span class="p">],</span>
+      <span class="p">[</span><span class="o">-</span><span class="mf">121.46520493162272</span><span class="p">,</span> <span class="mf">45.370803623985665</span><span class="p">]]]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>And download the data to an <code class="docutils literal notranslate"><span class="pre">xarray.Dataset</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">hourly_fire</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="n">geom</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">2_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:26910&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "47ed6d6c08bc4d358ee731b58f228c7f", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </section>
-<section id="Daily-Mean-Burning-Index">
-<h2>Daily Mean Burning Index<a class="headerlink" href="#Daily-Mean-Burning-Index" title="Permalink to this headline">¶</a></h2>
-<p>Once again we’ll look at gridMET daily weather data, but this time we’ll calculate the climatological mean burning index (a measure of wildfire potential) by day-of-year. Day-of-year climatologies require processing a lot more data, so we’ll just use 4 years for this example.</p>
-<div class="nbinput nblast docutils container">
+<section id="Progression-Over-Time">
+<h2>Progression Over Time<a class="headerlink" href="#Progression-Over-Time" title="Permalink to this headline">¶</a></h2>
+<p>Now we have 35 2D arrays representing hotspot detections in each hour. First, let’s ee what those look like as a time series.</p>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;bi&quot;</span><span class="p">)</span>
-<span class="n">ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2000&quot;</span><span class="p">,</span> <span class="s2">&quot;2004&quot;</span><span class="p">)</span>
+<span></span><span class="n">ds</span><span class="o">.</span><span class="n">fire</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>A day-of-year climatology will give 366 images, one for each day through the 4 years (including leap days).</p>
-<div class="alert alert-block alert-warning"><p>Note: Julian dates are used to calculate day-of-year means in wxee, so days after February 29 will be offset by one in leap years. For example, day-of-year 365 will represent December 31 in non-leap years and December 30 in leap years. Day 366 will always represent December 31, but will be aggregated from 1/4 as many days as other days of the year.</p>
-</div><div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">climatology_mean</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">)</span>
-<span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-366
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7f4932a936d0&gt;
 </pre></div></div>
-</div>
-<p>We could download all 366 images, but maybe we’re only interested in burning index for the month of August. We can use the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> args to set the climatological window of days to look at.</p>
-<p>Here we’ll set the <code class="docutils literal notranslate"><span class="pre">start</span></code> to 213 and the <code class="docutils literal notranslate"><span class="pre">end</span></code> to 243 (Aug. 1 and Aug. 31 in non-leap years). Now we only have 31 images.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">climatology_mean</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">213</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">243</span><span class="p">)</span>
-<span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-31
-</pre></div></div>
-</div>
-<div class="alert alert-block alert-info"><p>Tip: Downloading is the slowest part of dealing with Earth Engine data in wxee, so it’s always best to aggregate and filter your data before downloading.</p>
-</div><p>Let’s download them.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aug_bi</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "c16ccfab3a7d4dc3a3b30fff7ee1c24b", "version_major": 2, "version_minor": 0}</script></div>
+<img alt="../_images/examples_fire_progressions_16_1.png" src="../_images/examples_fire_progressions_16_1.png" />
 </div>
-<p>And finally, we’ll plot a timeline of 95th percentile burning index values over the CONUS.</p>
+</div>
+<p>That shows us how the fire grew over time, but maybe we want a single summary image describing that progression. Let’s calculate the first hour that a given pixel burned. Rather than storing specific times, we’ll represent them as time elapsed since the beginning of the time series.</p>
+<p>First, get the start time of the time series and calculate the number of hours elapsed between each time step and the start time.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">start</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+<span class="c1"># Convert milliseconds to hours</span>
+<span class="n">delta_hours</span> <span class="o">=</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3_600_000_000_000</span>
+</pre></div>
+</div>
+</div>
+<p>Now, we’ll multiply the delta hours by the fire mask. Because non-fire pixels have a value of 0, this will give us a 3D array with elapsed hours since start for each hotspot pixel and values of 0 for all other pixels. We cast from a <code class="docutils literal notranslate"><span class="pre">timedelta</span></code> to an <code class="docutils literal notranslate"><span class="pre">int</span></code> to allow plotting.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">delta_hours_fire</span> <span class="o">=</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">fire</span> <span class="o">*</span> <span class="n">delta_hours</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Finally, we can mask non-hotspot pixels (values of 0) and take the minimum over time to get the first time, in hours elapsed, that each pixel burned.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">first_burned</span> <span class="o">=</span> <span class="n">delta_hours_fire</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">delta_hours_fire</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>And of course, plot it!</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aug_bi</span><span class="o">.</span><span class="n">bi</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.95</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span></span><span class="n">first_burned</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -672,14 +648,14 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[&lt;matplotlib.lines.Line2D at 0x7f2ae4f877c0&gt;]
+&lt;matplotlib.collections.QuadMesh at 0x7f4923f2e9a0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_climatology_29_1.png" src="../_images/examples_climatology_29_1.png" />
+<img alt="../_images/examples_fire_progressions_25_1.png" src="../_images/examples_fire_progressions_25_1.png" />
 </div>
 </div>
 </section>
@@ -691,8 +667,8 @@ div.rendered_html tbody tr:hover {
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="modis.html" class="btn btn-neutral float-right" title="MODIS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="temporal_aggregation.html" class="btn btn-neutral float-left" title="Temporal Aggregation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../contributing.html" class="btn btn-neutral float-right" title="Developer Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="modis.html" class="btn btn-neutral float-left" title="MODIS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

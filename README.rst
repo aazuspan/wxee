@@ -48,9 +48,7 @@ Conda
 
 .. code-block:: bash
 
-    conda install -c conda-forge wxee httplib2shim
-
-Due to a `bug <https://github.com/aazuspan/wxee/issues/12>`_ with Earth Engine, you need to manually install `httplib2shim` when installing `wxee` from conda-forge or downloads will fail. I'm working on a more permanent solution.
+    conda install -c conda-forge wxee
 
 From Source
 ~~~~~~~~~~~

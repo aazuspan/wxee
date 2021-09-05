@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Fire Progression &mdash; wxee  documentation</title>
+  <title>Fire Progressions &mdash; wxee  documentation</title>
   
 
   
@@ -103,10 +103,18 @@
 <li class="toctree-l2"><a class="reference internal" href="temporal_aggregation.html">Temporal Aggregation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="climatology.html">Climatology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modis.html">MODIS</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Fire Progression</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Fire Progressions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Setup">Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Downloading-Data-to-xarray">Downloading Data to xarray</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Progression-Over-Time">Progression Over Time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Daily-Progressions-from-MODIS">Daily Progressions from MODIS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Downloading-MODIS-Data-to-xarray">Downloading MODIS Data to xarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Visualizing-the-Progression">Visualizing the Progression</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Hourly-Progressions-from-GOES-16">Hourly Progressions from GOES-16</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Downloading-GOES-16-data-to-xarray">Downloading GOES-16 data to xarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Visualizing the Progression</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -162,7 +170,7 @@
         
           <li><a href="../examples.html">Examples</a> &raquo;</li>
         
-      <li>Fire Progression</li>
+      <li>Fire Progressions</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -451,9 +459,9 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<section id="Fire-Progression">
-<h1>Fire Progression<a class="headerlink" href="#Fire-Progression" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">wxee</span></code> is designed for processing weather data, but it can also be useful for remote sensing data. In this example, we’ll look at how <code class="docutils literal notranslate"><span class="pre">wxee</span></code> can work with data from the GOES-R sensors to visualize fire progressions over time.</p>
+<section id="Fire-Progressions">
+<h1>Fire Progressions<a class="headerlink" href="#Fire-Progressions" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">wxee</span></code> is designed for processing weather data, but it can also be useful for remote sensing data. In this example, we’ll look at how <code class="docutils literal notranslate"><span class="pre">wxee</span></code> can work with data from the GOES-16 and MODIS to visualize fire progressions over time.</p>
 <section id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -469,11 +477,165 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 </section>
-<section id="Downloading-Data-to-xarray">
-<h2>Downloading Data to xarray<a class="headerlink" href="#Downloading-Data-to-xarray" title="Permalink to this headline">¶</a></h2>
-<p>GOES-16 captures 5-minute interval data including a mask with codes identifying fire hotspot detections. We’ll select a time window that experienced explosive fire growth in the Western Cascades of Oregon, USA.</p>
+<section id="Daily-Progressions-from-MODIS">
+<h2>Daily Progressions from MODIS<a class="headerlink" href="#Daily-Progressions-from-MODIS" title="Permalink to this headline">¶</a></h2>
+<p>One of the products captured by the MODIS sensor is fire hotspot detections. We’ll use <code class="docutils literal notranslate"><span class="pre">wxee</span></code> to load daily hotspots for the 2021 Caldor fire in California and visualize them by the time of burning.</p>
+<section id="Downloading-MODIS-Data-to-xarray">
+<h3>Downloading MODIS Data to xarray<a class="headerlink" href="#Downloading-MODIS-Data-to-xarray" title="Permalink to this headline">¶</a></h3>
+<p>To start with, we’ll load 14 days of MODIS data as a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">modis</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;MODIS/006/MOD14A1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2021-08-15&quot;</span><span class="p">,</span> <span class="s2">&quot;2021-08-29&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;FireMask&quot;</span><span class="p">)</span>
+
+<span class="n">modis</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">MODIS/006/MOD14A1</span>
+        Images: 14
+        Start date: 2021-08-15 00:00:00 UTC
+        End date: 2021-08-28 00:00:00 UTC
+        Mean interval: 1.00 days
+</pre></div></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">FireMask</span></code> band contains codes indicating the confidence of fire detections. First, we’ll use <code class="docutils literal notranslate"><span class="pre">map</span></code> to turn those codes into binary images of fire presence, copying properties over so we don’t lose any time information.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">fire_masks</span> <span class="o">=</span> <span class="n">modis</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">img</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">copyProperties</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">propertyNames</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<p>Now we’ll specify a bounding box around the Caldor fire and download the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> to an <code class="docutils literal notranslate"><span class="pre">xarray.Dataset</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">region</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="o">.</span><span class="n">Polygon</span><span class="p">(</span>
+        <span class="p">[[[</span><span class="o">-</span><span class="mf">120.70580745719522</span><span class="p">,</span> <span class="mf">38.90798203224902</span><span class="p">],</span>
+          <span class="p">[</span><span class="o">-</span><span class="mf">120.70580745719522</span><span class="p">,</span> <span class="mf">38.51793451346024</span><span class="p">],</span>
+          <span class="p">[</span><span class="o">-</span><span class="mf">120.03014827750772</span><span class="p">,</span> <span class="mf">38.51793451346024</span><span class="p">],</span>
+          <span class="p">[</span><span class="o">-</span><span class="mf">120.03014827750772</span><span class="p">,</span> <span class="mf">38.90798203224902</span><span class="p">]]]</span>
+<span class="p">)</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">fire_masks</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:26910&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ccf40686c60c4b3e9154f6fc6fa68746", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="Visualizing-the-Progression">
+<h3>Visualizing the Progression<a class="headerlink" href="#Visualizing-the-Progression" title="Permalink to this headline">¶</a></h3>
+<p>The result will be 14 binary fire masks. Let’s take a look.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ds</span><span class="o">.</span><span class="n">FireMask</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7f6f50080490&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_fire_progressions_14_1.png" src="../_images/examples_fire_progressions_14_1.png" />
+</div>
+</div>
+<p>That shows us how the fire grew over time, but maybe we want a single summary image describing that progression. Let’s calculate the first day that a given pixel burned. Rather than storing specific times, we’ll represent them as time elapsed since the beginning of the time series.</p>
+<p>First, get the start time of the time series and calculate the number of hours elapsed between each time step and the start time.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">start</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+<span class="n">delta_days</span> <span class="o">=</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">days</span>
+</pre></div>
+</div>
+</div>
+<p>Now, we’ll multiply the time delta by the fire mask. Because non-fire pixels have a value of 0, this will give us a 3D array with elapsed days since start for each hotspot pixel and values of 0 for all other pixels. We cast from a <code class="docutils literal notranslate"><span class="pre">timedelta</span></code> to an <code class="docutils literal notranslate"><span class="pre">int</span></code> to allow plotting.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">delta_days_fire</span> <span class="o">=</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">FireMask</span> <span class="o">*</span> <span class="n">delta_days</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Finally, we can mask non-hotspot pixels (values of 0) and take the minimum over time to get the first time, in days elapsed since start, that each pixel burned.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">first_burned</span> <span class="o">=</span> <span class="n">delta_days_fire</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">delta_days_fire</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>And of course, plot it!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">first_burned</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;inferno_r&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.collections.QuadMesh at 0x7f6ef421e670&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_fire_progressions_23_1.png" src="../_images/examples_fire_progressions_23_1.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="Hourly-Progressions-from-GOES-16">
+<h2>Hourly Progressions from GOES-16<a class="headerlink" href="#Hourly-Progressions-from-GOES-16" title="Permalink to this headline">¶</a></h2>
+<p>Unlike MODIS which captures daily hotspots, GOES-16 captures hotspots every 5 minutes! This is great for tracking fast-moving fires, but it also means we have to deal with a lot more data. We can use <code class="docutils literal notranslate"><span class="pre">wxee</span></code> and the <code class="docutils literal notranslate"><span class="pre">aggregate_time</span></code> method to aggregate those 5-minute hotspots to hourly hotspots.</p>
+<section id="Downloading-GOES-16-data-to-xarray">
+<h3>Downloading GOES-16 data to xarray<a class="headerlink" href="#Downloading-GOES-16-data-to-xarray" title="Permalink to this headline">¶</a></h3>
+<p>First, we’ll load GOES-16 data over a time window that experienced explosive fire growth in the Western Cascades of Oregon in 2020.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -494,9 +656,9 @@ div.rendered_html tbody tr:hover {
         Mean interval: 5.00 minutes
 </pre></div></div>
 </div>
-<p>Before we go any further, we need to convert the mask codes to a binary mask of fire presence. Values 10, 11, 30, and 31 represent maximum confidence fire detections, so we’ll set those pixels to 1 and all other pixels to 0 in all images.</p>
+<p>Like with MODIS, we’ll have to convert mask codes to a binary fire mask. For GOES, we’ll use the codes 10, 11, 30, and 31.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -518,7 +680,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Now we can aggregate the 288 5-minute masks to 24 hourly masks. We’ll use a max reducer, meaning that an hourly hotspot was detected at least once within the hour.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -539,9 +701,9 @@ div.rendered_html tbody tr:hover {
         Mean interval: 60.00 minutes
 </pre></div></div>
 </div>
-<p>Select a region around the largest fire, Beachie Creek.</p>
+<p>Select a region around the largest 2020 fire, Beachie Creek.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -556,7 +718,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>And download the data to an <code class="docutils literal notranslate"><span class="pre">xarray.Dataset</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -568,96 +730,54 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "47ed6d6c08bc4d358ee731b58f228c7f", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "0f258966b370450db48ab77f5e551c2e", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </section>
-<section id="Progression-Over-Time">
-<h2>Progression Over Time<a class="headerlink" href="#Progression-Over-Time" title="Permalink to this headline">¶</a></h2>
-<p>Now we have 35 2D arrays representing hotspot detections in each hour. First, let’s ee what those look like as a time series.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ds</span><span class="o">.</span><span class="n">fire</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f4932a936d0&gt;
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/examples_fire_progressions_16_1.png" src="../_images/examples_fire_progressions_16_1.png" />
-</div>
-</div>
-<p>That shows us how the fire grew over time, but maybe we want a single summary image describing that progression. Let’s calculate the first hour that a given pixel burned. Rather than storing specific times, we’ll represent them as time elapsed since the beginning of the time series.</p>
-<p>First, get the start time of the time series and calculate the number of hours elapsed between each time step and the start time.</p>
+<section id="id1">
+<h3>Visualizing the Progression<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Like before, we’ll convert our time series of fire masks into a single image showing when each area burned in time elapsed.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">start</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
 <span class="c1"># Convert milliseconds to hours</span>
 <span class="n">delta_hours</span> <span class="o">=</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3_600_000_000_000</span>
+
+<span class="n">delta_hours_fire</span> <span class="o">=</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">fire</span> <span class="o">*</span> <span class="n">delta_hours</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="n">first_burned</span> <span class="o">=</span> <span class="n">delta_hours_fire</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">delta_hours_fire</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>Now, we’ll multiply the delta hours by the fire mask. Because non-fire pixels have a value of 0, this will give us a 3D array with elapsed hours since start for each hotspot pixel and values of 0 for all other pixels. We cast from a <code class="docutils literal notranslate"><span class="pre">timedelta</span></code> to an <code class="docutils literal notranslate"><span class="pre">int</span></code> to allow plotting.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">delta_hours_fire</span> <span class="o">=</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">fire</span> <span class="o">*</span> <span class="n">delta_hours</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>Finally, we can mask non-hotspot pixels (values of 0) and take the minimum over time to get the first time, in hours elapsed, that each pixel burned.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">first_burned</span> <span class="o">=</span> <span class="n">delta_hours_fire</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">delta_hours_fire</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>And of course, plot it!</p>
+<p>And plot it!</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">first_burned</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span></span><span class="n">first_burned</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;inferno_r&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.collections.QuadMesh at 0x7f4923f2e9a0&gt;
+&lt;matplotlib.collections.QuadMesh at 0x7f6ef514b5e0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_fire_progressions_25_1.png" src="../_images/examples_fire_progressions_25_1.png" />
+<img alt="../_images/examples_fire_progressions_41_1.png" src="../_images/examples_fire_progressions_41_1.png" />
 </div>
 </div>
+</section>
 </section>
 </section>
 

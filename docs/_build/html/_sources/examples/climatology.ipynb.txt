@@ -2,6 +2,14 @@
  "cells": [
   {
    "cell_type": "markdown",
+   "id": "3d04f71d",
+   "metadata": {},
+   "source": [
+    "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/climatology.ipynb)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
    "id": "196d6919",
    "metadata": {},
    "source": [
@@ -20,6 +28,16 @@
   },
   {
    "cell_type": "code",
+   "execution_count": null,
+   "id": "bb2858a2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "!pip install wxee"
+   ]
+  },
+  {
+   "cell_type": "code",
    "execution_count": 1,
    "id": "739f74b7",
    "metadata": {
@@ -33,6 +51,7 @@
     "import ee\n",
     "import wxee\n",
     "\n",
+    "ee.Authenticate()\n",
     "ee.Initialize()"
    ]
   },
@@ -421,9 +440,9 @@
  ],
  "metadata": {
   "kernelspec": {
-   "display_name": "Python [conda env:wxee] *",
+   "display_name": "Python 3 (ipykernel)",
    "language": "python",
-   "name": "conda-env-wxee-py"
+   "name": "python3"
   },
   "language_info": {
    "codemirror_mode": {

@@ -451,12 +451,22 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
+<p><a class="reference external" href="https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/downloading_images_and_collections.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <section id="Downloading-Images-and-Collections">
 <h1>Downloading Images and Collections<a class="headerlink" href="#Downloading-Images-and-Collections" title="Permalink to this headline">¶</a></h1>
 <p>In this tutorial, we’ll look at how we can use <code class="docutils literal notranslate"><span class="pre">wxee</span></code> and the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accesor to quickly and easily download images and image collections from Earth Engine to a local drive.</p>
 <p><code class="docutils literal notranslate"><span class="pre">wxee</span></code> isn’t designed to replace Earth Engine’s native downloading functionality–if you need high resolution images or large areas, downloading to a Drive using ee is probably the best option. What <code class="docutils literal notranslate"><span class="pre">wxee</span></code>’s downloading system is great for is quickly pulling small regions or mesoscale images for further processing in Python without the hassle of intermediate steps.</p>
 <section id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">!</span>pip install wxee
+</pre></div>
+</div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -465,6 +475,7 @@ div.rendered_html tbody tr:hover {
 <span></span><span class="kn">import</span> <span class="nn">ee</span>
 <span class="kn">import</span> <span class="nn">wxee</span>
 
+<span class="n">ee</span><span class="o">.</span><span class="n">Authenticate</span><span class="p">()</span>
 <span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 </pre></div>
 </div>

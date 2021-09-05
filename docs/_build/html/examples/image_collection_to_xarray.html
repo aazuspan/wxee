@@ -451,11 +451,21 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
+<p><a class="reference external" href="https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/image_collection_to_xarray.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <section id="Image-Collection-to-xarray">
 <h1>Image Collection to xarray<a class="headerlink" href="#Image-Collection-to-xarray" title="Permalink to this headline">¶</a></h1>
 <p>In this tutorial, we’ll look at how we can use <code class="docutils literal notranslate"><span class="pre">wxee</span></code> and the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accessor to convert an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> of gridMET weather data to an <code class="docutils literal notranslate"><span class="pre">xarray.Dataset</span></code> for visualization and further processing.</p>
 <section id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">!</span>pip install wxee
+</pre></div>
+</div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -464,6 +474,7 @@ div.rendered_html tbody tr:hover {
 <span></span><span class="kn">import</span> <span class="nn">ee</span>
 <span class="kn">import</span> <span class="nn">wxee</span>
 
+<span class="n">ee</span><span class="o">.</span><span class="n">Authenticate</span><span class="p">()</span>
 <span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1628,7 +1639,7 @@ Attributes:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_image_collection_to_xarray_19_1.png" src="../_images/examples_image_collection_to_xarray_19_1.png" />
+<img alt="../_images/examples_image_collection_to_xarray_21_1.png" src="../_images/examples_image_collection_to_xarray_21_1.png" />
 </div>
 </div>
 <p>Going a little further, let’s calculate the Hot-Dry-Windy (HDW) index and see how it changed over the 6 days.</p>
@@ -1656,7 +1667,7 @@ Attributes:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_image_collection_to_xarray_21_1.png" src="../_images/examples_image_collection_to_xarray_21_1.png" />
+<img alt="../_images/examples_image_collection_to_xarray_23_1.png" src="../_images/examples_image_collection_to_xarray_23_1.png" />
 </div>
 </div>
 </section>

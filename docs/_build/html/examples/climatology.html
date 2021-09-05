@@ -456,11 +456,21 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
+<p><a class="reference external" href="https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/climatology.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <section id="Climatology">
 <h1>Climatology<a class="headerlink" href="#Climatology" title="Permalink to this headline">¶</a></h1>
 <p>In this tutorial, we’ll look at how to use wxee to calculate long-term climatological means of gridded weather data. Currently, monthly and daily mean climatologies are supported.</p>
 <section id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">!</span>pip install wxee
+</pre></div>
+</div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -469,6 +479,7 @@ div.rendered_html tbody tr:hover {
 <span></span><span class="kn">import</span> <span class="nn">ee</span>
 <span class="kn">import</span> <span class="nn">wxee</span>
 
+<span class="n">ee</span><span class="o">.</span><span class="n">Authenticate</span><span class="p">()</span>
 <span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -580,7 +591,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_climatology_16_2.png" src="../_images/examples_climatology_16_2.png" />
+<img alt="../_images/examples_climatology_18_2.png" src="../_images/examples_climatology_18_2.png" />
 </div>
 </div>
 </section>
@@ -679,7 +690,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_climatology_29_1.png" src="../_images/examples_climatology_29_1.png" />
+<img alt="../_images/examples_climatology_31_1.png" src="../_images/examples_climatology_31_1.png" />
 </div>
 </div>
 </section>

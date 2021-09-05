@@ -2,16 +2,23 @@ wxee
 ====================================
 
 .. image:: https://img.shields.io/pypi/v/wxee
-    :target: https://pypi.org/project/wxee/
+   :alt: PyPI
+   :target: https://pypi.org/project/wxee/
 .. image:: https://img.shields.io/conda/vn/conda-forge/wxee.svg
+   :alt: conda-forge
    :target: https://anaconda.org/conda-forge/wxee
 .. image:: https://readthedocs.org/projects/wxee/badge/?version=latest&style=flat
+   :alt: Read the Docs
    :target: https://wxee.readthedocs.io/en/latest/?badge=latest
+.. image:: https://colab.research.google.com/assets/colab-badge.svg
+   :alt: Open in Colab
+   :target: https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/image_collection_to_xarray.ipynb
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :alt: Black code style
    :target: https://github.com/psf/black
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
+   :alt: GLP3 License
    :target: https://www.gnu.org/licenses/gpl-3.0
-
 
 
 .. image:: https://raw.githubusercontent.com/aazuspan/wxee/main/docs/_static/demo_001.gif

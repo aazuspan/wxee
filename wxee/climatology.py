@@ -24,3 +24,23 @@ class ClimatologyMean(ee.imagecollection.ImageCollection):
 
     def __init__(self, *args: Any) -> None:
         super().__init__(*args)
+
+    def describe(self) -> None:
+        """Generate and print descriptive statistics about the Climatology such as the ID, number of images, and frequency.
+        This requires pulling data from the server, so it may run slowly.
+
+        Returns
+        -------
+        None
+        """
+
+        size = self.size().getInfo()
+        id = self.get("system:id").getInfo()
+
+        print(
+            f"\033[1m{id}\033[0m"
+            f"\n\tImages: {size}"
+            f"\n\tFrequency: {self.frequency}"
+            f"\n\tStart {self.frequency}: {self.start}"
+            f"\n\tEnd {self.frequency}: {self.end}"
+        )

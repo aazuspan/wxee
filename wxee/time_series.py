@@ -87,7 +87,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         return diffs.reduce(reducer)
 
     def describe(self, unit: str = "day") -> None:
-        """Print descriptive statistics about the Time Series such as the ID, start and end dates, and time between images.
+        """Generate and print descriptive statistics about the Time Series such as the ID, start and end dates, and time between images.
         This requires pulling data from the server, so it may run slowly.
 
         Parameters
@@ -273,6 +273,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
             coord_list.map(lambda x: reduce_frequency(x), dropNulls=True)
         )
 
+        clim = clim.set("system:id", self.get("system:id"))
         clim.frequency = freq.name
         clim.start = start
         clim.end = end

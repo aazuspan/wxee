@@ -164,7 +164,8 @@
 
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 
-<span class="kn">from</span> <span class="nn">wxee.climatology</span> <span class="kn">import</span> <span class="n">ClimatologyMean</span><span class="p">,</span> <span class="n">_ClimatologyFrequency</span>
+<span class="kn">from</span> <span class="nn">wxee.climatology</span> <span class="kn">import</span> <span class="n">ClimatologyMean</span>
+<span class="kn">from</span> <span class="nn">wxee.constants</span> <span class="kn">import</span> <span class="n">get_climatology_frequency</span><span class="p">,</span> <span class="n">get_time_frequency</span>
 
 
 <div class="viewcode-block" id="TimeSeries"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries">[docs]</a><span class="k">class</span> <span class="nc">TimeSeries</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">imagecollection</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">):</span>
@@ -209,7 +210,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        unit : str, default &quot;day&quot;</span>
-<span class="sd">            The unit to return the time interval in. One of &quot;second&quot;, &quot;minute&quot;, &quot;hour&quot;, &quot;day&quot;, &quot;week&quot;, &quot;month&quot;, &quot;year&quot;.</span>
+<span class="sd">            The unit to return the time interval in. One of &quot;minute&quot;, &quot;hour&quot;, &quot;day&quot;, &quot;week&quot;, &quot;month&quot;, &quot;year&quot;.</span>
 
 <span class="sd">        reducer : ee.Reducer, optional</span>
 <span class="sd">            The reducer to apply to the list of image intervals. If none is provided, ee.Reducer.mean() will be used.</span>
@@ -248,7 +249,7 @@
         <span class="k">return</span> <span class="n">diffs</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">reducer</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TimeSeries.describe"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.describe">[docs]</a>    <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;day&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Print descriptive statistics about the Time Series such as the ID, start and end dates, and time between images.</span>
+        <span class="sd">&quot;&quot;&quot;Generate and print descriptive statistics about the Time Series such as the ID, start and end dates, and time between images.</span>
 <span class="sd">        This requires pulling data from the server, so it may run slowly.</span>
 
 <span class="sd">        Parameters</span>
@@ -312,11 +313,7 @@
         <span class="n">reducer</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">reducer</span> <span class="k">else</span> <span class="n">reducer</span>
         <span class="n">original_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">)</span>
 
-        <span class="n">frequencies</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="s2">&quot;week&quot;</span><span class="p">,</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="s2">&quot;hour&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">frequency</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">frequencies</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Frequency must be one of </span><span class="si">{</span><span class="n">frequencies</span><span class="si">}</span><span class="s2">, not &#39;</span><span class="si">{</span><span class="n">frequency</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&#39;.&quot;</span>
-            <span class="p">)</span>
+        <span class="n">get_time_frequency</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">resample_step</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
             <span class="sd">&quot;&quot;&quot;Resample one time step in the given unit from a specified start time.&quot;&quot;&quot;</span>
@@ -392,7 +389,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">reducer</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">reducer</span> <span class="k">else</span> <span class="n">reducer</span>
 
-        <span class="n">freq</span> <span class="o">=</span> <span class="n">_ClimatologyFrequency</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
+        <span class="n">freq</span> <span class="o">=</span> <span class="n">get_climatology_frequency</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
         <span class="n">start</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">start</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">start</span> <span class="k">else</span> <span class="n">start</span>
         <span class="n">end</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">end</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">end</span> <span class="k">else</span> <span class="n">end</span>
         <span class="n">prop</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;wx:</span><span class="si">{</span><span class="n">frequency</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -438,6 +435,7 @@
             <span class="n">coord_list</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">reduce_frequency</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">dropNulls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="p">)</span>
 
+        <span class="n">clim</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">))</span>
         <span class="n">clim</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">name</span>
         <span class="n">clim</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
         <span class="n">clim</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span>

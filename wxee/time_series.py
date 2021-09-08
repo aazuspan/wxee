@@ -2,7 +2,8 @@ from typing import Any, Optional, Union
 
 import ee  # type: ignore
 
-from wxee.climatology import ClimatologyMean, _ClimatologyFrequency
+from wxee.climatology import ClimatologyMean
+from wxee.constants import get_climatology_frequency, get_time_frequency
 
 
 class TimeSeries(ee.imagecollection.ImageCollection):
@@ -47,7 +48,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         Parameters
         ----------
         unit : str, default "day"
-            The unit to return the time interval in. One of "second", "minute", "hour", "day", "week", "month", "year".
+            The unit to return the time interval in. One of "minute", "hour", "day", "week", "month", "year".
 
         reducer : ee.Reducer, optional
             The reducer to apply to the list of image intervals. If none is provided, ee.Reducer.mean() will be used.
@@ -150,11 +151,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         reducer = ee.Reducer.mean() if not reducer else reducer
         original_id = self.get("system:id")
 
-        frequencies = ["year", "month", "week", "day", "hour"]
-        if frequency.lower() not in frequencies:
-            raise ValueError(
-                f"Frequency must be one of {frequencies}, not '{frequency.lower()}''."
-            )
+        get_time_frequency(frequency)
 
         def resample_step(start: ee.Date) -> ee.Image:
             """Resample one time step in the given unit from a specified start time."""
@@ -230,7 +227,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         """
         reducer = ee.Reducer.mean() if not reducer else reducer
 
-        freq = _ClimatologyFrequency.get(frequency)
+        freq = get_climatology_frequency(frequency)
         start = freq.start if not start else start
         end = freq.end if not end else end
         prop = f"wx:{frequency}"

@@ -2,14 +2,6 @@
  "cells": [
   {
    "cell_type": "markdown",
-   "id": "b7c0ef00",
-   "metadata": {},
-   "source": [
-    "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/downloading_images_and_collections.ipynb)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
    "id": "6b55717a",
    "metadata": {},
    "source": [

@@ -4,8 +4,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Fire Progressions &mdash; wxee  documentation</title>
@@ -38,7 +37,7 @@
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -459,11 +458,11 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<p><a class="reference external" href="https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/fire_progressions.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
-<section id="Fire-Progressions">
+<p><a class="reference external" href="https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/fire_progressions.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a> <a class="reference external" href="https://github.com/aazuspan/wxee/blob/main/docs/examples/fire_progressions.ipynb"><img alt="Github" src="https://img.shields.io/badge/Open%20in-Github-green.svg" /></a></p>
+<div class="section" id="Fire-Progressions">
 <h1>Fire Progressions<a class="headerlink" href="#Fire-Progressions" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">wxee</span></code> is designed for processing weather data, but it can also be useful for remote sensing data. In this example, we’ll look at how <code class="docutils literal notranslate"><span class="pre">wxee</span></code> can work with data from the GOES-16 and MODIS to visualize fire progressions over time.</p>
-<section id="Setup">
+<div class="section" id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -487,11 +486,11 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-</section>
-<section id="Daily-Progressions-from-MODIS">
+</div>
+<div class="section" id="Daily-Progressions-from-MODIS">
 <h2>Daily Progressions from MODIS<a class="headerlink" href="#Daily-Progressions-from-MODIS" title="Permalink to this headline">¶</a></h2>
 <p>One of the products captured by the MODIS sensor is fire hotspot detections. We’ll use <code class="docutils literal notranslate"><span class="pre">wxee</span></code> to load daily hotspots for the 2021 Caldor fire in California and visualize them by the time of burning.</p>
-<section id="Downloading-MODIS-Data-to-xarray">
+<div class="section" id="Downloading-MODIS-Data-to-xarray">
 <h3>Downloading MODIS Data to xarray<a class="headerlink" href="#Downloading-MODIS-Data-to-xarray" title="Permalink to this headline">¶</a></h3>
 <p>To start with, we’ll load 14 days of MODIS data as a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.</p>
 <div class="nbinput docutils container">
@@ -550,8 +549,8 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <script type="application/vnd.jupyter.widget-view+json">{"model_id": "ccf40686c60c4b3e9154f6fc6fa68746", "version_major": 2, "version_minor": 0}</script></div>
 </div>
-</section>
-<section id="Visualizing-the-Progression">
+</div>
+<div class="section" id="Visualizing-the-Progression">
 <h3>Visualizing the Progression<a class="headerlink" href="#Visualizing-the-Progression" title="Permalink to this headline">¶</a></h3>
 <p>The result will be 14 binary fire masks. Let’s take a look.</p>
 <div class="nbinput docutils container">
@@ -576,7 +575,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_fire_progressions_16_1.png" src="../_images/examples_fire_progressions_16_1.png" />
+<img alt="../_images/examples_fire_progressions_15_1.png" src="../_images/examples_fire_progressions_15_1.png" />
 </div>
 </div>
 <p>That shows us how the fire grew over time, but maybe we want a single summary image describing that progression. Let’s calculate the first day that a given pixel burned. Rather than storing specific times, we’ll represent them as time elapsed since the beginning of the time series.</p>
@@ -634,15 +633,15 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_fire_progressions_25_1.png" src="../_images/examples_fire_progressions_25_1.png" />
+<img alt="../_images/examples_fire_progressions_24_1.png" src="../_images/examples_fire_progressions_24_1.png" />
 </div>
 </div>
-</section>
-</section>
-<section id="Hourly-Progressions-from-GOES-16">
+</div>
+</div>
+<div class="section" id="Hourly-Progressions-from-GOES-16">
 <h2>Hourly Progressions from GOES-16<a class="headerlink" href="#Hourly-Progressions-from-GOES-16" title="Permalink to this headline">¶</a></h2>
 <p>Unlike MODIS which captures daily hotspots, GOES-16 captures hotspots every 5 minutes! This is great for tracking fast-moving fires, but it also means we have to deal with a lot more data. We can use <code class="docutils literal notranslate"><span class="pre">wxee</span></code> and the <code class="docutils literal notranslate"><span class="pre">aggregate_time</span></code> method to aggregate those 5-minute hotspots to hourly hotspots.</p>
-<section id="Downloading-GOES-16-data-to-xarray">
+<div class="section" id="Downloading-GOES-16-data-to-xarray">
 <h3>Downloading GOES-16 data to xarray<a class="headerlink" href="#Downloading-GOES-16-data-to-xarray" title="Permalink to this headline">¶</a></h3>
 <p>First, we’ll load GOES-16 data over a time window that experienced explosive fire growth in the Western Cascades of Oregon in 2020.</p>
 <div class="nbinput docutils container">
@@ -743,8 +742,8 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <script type="application/vnd.jupyter.widget-view+json">{"model_id": "0f258966b370450db48ab77f5e551c2e", "version_major": 2, "version_minor": 0}</script></div>
 </div>
-</section>
-<section id="id1">
+</div>
+<div class="section" id="id1">
 <h3>Visualizing the Progression<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Like before, we’ll convert our time series of fire masks into a single image showing when each area burned in time elapsed.</p>
 <div class="nbinput nblast docutils container">
@@ -785,12 +784,12 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_fire_progressions_43_1.png" src="../_images/examples_fire_progressions_43_1.png" />
+<img alt="../_images/examples_fire_progressions_42_1.png" src="../_images/examples_fire_progressions_42_1.png" />
 </div>
 </div>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
            </div>

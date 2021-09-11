@@ -4,8 +4,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>wxee &mdash; wxee  documentation</title>
@@ -187,7 +186,7 @@
     text-align: unset;
 }
 </style>
-<section id="wxee">
+<div class="section" id="wxee">
 <h1>wxee<a class="headerlink" href="#wxee" title="Permalink to this headline">¶</a></h1>
 <a class="reference external image-reference" href="https://pypi.org/project/wxee/"><img alt="PyPI" src="https://img.shields.io/pypi/v/wxee" /></a>
 <a class="reference external image-reference" href="https://anaconda.org/conda-forge/wxee"><img alt="conda-forge" src="https://img.shields.io/conda/vn/conda-forge/wxee.svg" /></a>
@@ -196,47 +195,47 @@
 <a class="reference external image-reference" href="https://github.com/psf/black"><img alt="Black code style" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a>
 <a class="reference external image-reference" href="https://www.gnu.org/licenses/gpl-3.0"><img alt="GLP3 License" src="https://img.shields.io/badge/License-GPLv3-blue.svg" /></a>
 <img alt="Demo downloading weather data to xarray using wxee." src="https://raw.githubusercontent.com/aazuspan/wxee/main/docs/_static/demo_001.gif" />
-<section id="what-is-wxee">
+<div class="section" id="what-is-wxee">
 <h2>What is wxee?<a class="headerlink" href="#what-is-wxee" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://github.com/aazuspan/wxee">wxee</a> was built to make processing gridded, mesoscale time series weather and climate data quick
 and easy by integrating the data catalog and processing power of <a class="reference external" href="https://earthengine.google.com/">Google Earth Engine</a> with the
 flexibility of <a class="reference external" href="https://github.com/pydata/xarray">xarray</a>, with no complicated setup required. To accomplish this, wxee implements
 convenient methods for data processing, aggregation, downloading, and ingestion.</p>
-</section>
-<section id="features">
+</div>
+<div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Time series image collections to xarray, NetCDF, or GeoTIFF in one line of code</p></li>
 <li><p>Climatological means and temporal aggregation</p></li>
 <li><p>Parallel processing for fast downloads</p></li>
 </ul>
-</section>
-<section id="install">
+</div>
+<div class="section" id="install">
 <h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
-<section id="pip">
+<div class="section" id="pip">
 <h3>Pip<a class="headerlink" href="#pip" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install wxee
 </pre></div>
 </div>
-</section>
-<section id="conda">
+</div>
+<div class="section" id="conda">
 <h3>Conda<a class="headerlink" href="#conda" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c conda-forge wxee
 </pre></div>
 </div>
-</section>
-<section id="from-source">
+</div>
+<div class="section" id="from-source">
 <h3>From Source<a class="headerlink" href="#from-source" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/aazuspan/wxee
 <span class="nb">cd</span> wxee
 make install
 </pre></div>
 </div>
-</section>
-</section>
-<section id="quickstart">
+</div>
+</div>
+<div class="section" id="quickstart">
 <h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
-<section id="setup">
+<div class="section" id="setup">
 <h3>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
 <p>Once you have access to Google Earth Engine, just import and initialize <code class="code docutils literal notranslate"><span class="pre">ee</span></code> and <code class="code docutils literal notranslate"><span class="pre">wxee</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span>
@@ -245,31 +244,31 @@ make install
 <span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 </pre></div>
 </div>
-</section>
-<section id="download-images">
+</div>
+<div class="section" id="download-images">
 <h3>Download Images<a class="headerlink" href="#download-images" title="Permalink to this headline">¶</a></h3>
 <p>Download and conversion methods are extended to <code class="code docutils literal notranslate"><span class="pre">ee.Image</span></code> and <code class="code docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> using the
 <code class="code docutils literal notranslate"><span class="pre">wx</span></code> accessor. Just <code class="code docutils literal notranslate"><span class="pre">import</span> <span class="pre">wxee</span></code> and use the <code class="code docutils literal notranslate"><span class="pre">wx</span></code> accessor.</p>
-<section id="id2">
+<div class="section" id="id2">
 <h4>xarray<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
 </pre></div>
 </div>
-</section>
-<section id="netcdf">
+</div>
+<div class="section" id="netcdf">
 <h4>NetCDF<a class="headerlink" href="#netcdf" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;data/gridmet.nc&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="geotiff">
+</div>
+<div class="section" id="geotiff">
 <h4>GeoTIFF<a class="headerlink" href="#geotiff" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_tif</span><span class="p">()</span>
 </pre></div>
 </div>
-</section>
-</section>
-<section id="create-a-time-series">
+</div>
+</div>
+<div class="section" id="create-a-time-series">
 <h3>Create a Time Series<a class="headerlink" href="#create-a-time-series" title="Permalink to this headline">¶</a></h3>
 <p>Additional methods for processing image collections in the time dimension are available through the <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> subclass.
 A <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> can be created from an existing <code class="code docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code>…</p>
@@ -281,8 +280,8 @@ A <code class="code docutils literal notranslate"><span class="pre">TimeSeries</
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="aggregate-daily-data">
+</div>
+<div class="section" id="aggregate-daily-data">
 <h3>Aggregate Daily Data<a class="headerlink" href="#aggregate-daily-data" title="Permalink to this headline">¶</a></h3>
 <p>Many weather datasets are in daily or hourly resolution. These can be aggregated to coarser resolutions using the <code class="code docutils literal notranslate"><span class="pre">aggregate_time</span></code>
 method of the <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> class.</p>
@@ -290,23 +289,23 @@ method of the <code class="code docutils literal notranslate"><span class="pre">
 <span class="n">monthly_max</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">aggregate_time</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
 </pre></div>
 </div>
-</section>
-<section id="calculate-climatological-means">
+</div>
+<div class="section" id="calculate-climatological-means">
 <h3>Calculate Climatological Means<a class="headerlink" href="#calculate-climatological-means" title="Permalink to this headline">¶</a></h3>
 <p>Long-term climatological means can be calculated using the <code class="code docutils literal notranslate"><span class="pre">climatology_mean</span></code> method of the <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> class.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span>
 <span class="n">mean_clim</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">climatology_mean</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-</section>
-<section id="contribute">
+</div>
+</div>
+<div class="section" id="contribute">
 <h2>Contribute<a class="headerlink" href="#contribute" title="Permalink to this headline">¶</a></h2>
 <p>Bugs or feature requests are always appreciated! They can be submitted <a class="reference external" href="https://github.com/aazuspan/wxee/issues">here</a>.</p>
 <p>Code contributions are also welcome! Please open an <a class="reference external" href="https://github.com/aazuspan/wxee/issues">issue</a> to discuss implementation,
 then follow the steps below. Developer setup instructions can be found <a class="reference external" href="https://wxee.readthedocs.io/en/latest/contributing.html">in the docs</a>.</p>
-</section>
-<section id="contents">
+</div>
+<div class="section" id="contents">
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
@@ -331,8 +330,8 @@ then follow the steps below. Developer setup instructions can be found <a class=
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 </ul>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>

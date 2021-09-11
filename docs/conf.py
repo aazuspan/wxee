@@ -40,6 +40,17 @@ extensions = [
 autosummary_generate = True
 autodoc_member_order = "bysource"
 
+# Automatically add a Binder and Github link to all notebook example pages
+nbsphinx_prolog = """
+{% set docname = env.doc2path(env.docname, base=None) %}
+|Colab| |Github|
+
+.. |Github| image:: https://img.shields.io/badge/Open%20in-Github-green.svg
+   :target: https://github.com/aazuspan/wxee/blob/main/docs/{{ docname }}
+
+.. |Colab| image:: https://colab.research.google.com/assets/colab-badge.svg
+   :target: https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/{{ docname }}
+"""
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]  # , sphinx_autosummary_accessors.templates_path]

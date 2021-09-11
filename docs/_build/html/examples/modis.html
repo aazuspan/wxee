@@ -4,8 +4,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>MODIS &mdash; wxee  documentation</title>
@@ -38,7 +37,7 @@
         <script src="../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -451,11 +450,11 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<p><a class="reference external" href="https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/modis.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
-<section id="MODIS">
+<p><a class="reference external" href="https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/modis.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a> <a class="reference external" href="https://github.com/aazuspan/wxee/blob/main/docs/examples/modis.ipynb"><img alt="Github" src="https://img.shields.io/badge/Open%20in-Github-green.svg" /></a></p>
+<div class="section" id="MODIS">
 <h1>MODIS<a class="headerlink" href="#MODIS" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">wxee</span></code> is designed for processing weather data, but it can also be useful for remote sensing data. In this example, we’ll look at how <code class="docutils literal notranslate"><span class="pre">wxee</span></code> can work with data from the MODIS sensor.</p>
-<section id="Setup">
+<div class="section" id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -479,8 +478,8 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-</section>
-<section id="Downloading-MODIS-to-xarray">
+</div>
+<div class="section" id="Downloading-MODIS-to-xarray">
 <h2>Downloading MODIS to xarray<a class="headerlink" href="#Downloading-MODIS-to-xarray" title="Permalink to this headline">¶</a></h2>
 <p>We’ll start by loading 6 months of MODIS Terra 8-day reflectance images and selecting just the RGB bands.</p>
 <div class="nbinput docutils container">
@@ -534,8 +533,8 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <script type="application/vnd.jupyter.widget-view+json">{"model_id": "892015d390544f348986f89e4f70b7ba", "version_major": 2, "version_minor": 0}</script></div>
 </div>
-</section>
-<section id="Visualizing-in-RGB">
+</div>
+<div class="section" id="Visualizing-in-RGB">
 <h2>Visualizing in RGB<a class="headerlink" href="#Visualizing-in-RGB" title="Permalink to this headline">¶</a></h2>
 <p>Visualizing single band data from the <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> is easy. Below, we’ll plot median red reflectance over the time series.</p>
 <div class="nbinput docutils container">
@@ -560,7 +559,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_modis_13_1.png" src="../_images/examples_modis_13_1.png" />
+<img alt="../_images/examples_modis_12_1.png" src="../_images/examples_modis_12_1.png" />
 </div>
 </div>
 <p>Since we have red, green, and blue reflectance data, we probably want an RGB output. That takes a little more preparation.</p>
@@ -607,11 +606,11 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_modis_20_1.png" src="../_images/examples_modis_20_1.png" />
+<img alt="../_images/examples_modis_19_1.png" src="../_images/examples_modis_19_1.png" />
 </div>
 </div>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>

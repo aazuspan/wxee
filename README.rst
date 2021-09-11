@@ -32,6 +32,8 @@ and easy by integrating the data catalog and processing power of `Google Earth E
 flexibility of `xarray <https://github.com/pydata/xarray>`_, with no complicated setup required. To accomplish this, wxee implements 
 convenient methods for data processing, aggregation, downloading, and ingestion.
 
+`wxee <https://github.com/aazuspan/wxee>`_ can be found in the `Earth Engine Developer Resources <https://developers.google.com/earth-engine/tutorials/community/developer-resources#python>`_!
+
 
 Features
 --------

@@ -170,7 +170,7 @@ def _format_date(d: ee.Date) -> ee.String:
 
 
 @contextlib.contextmanager
-def parallel_tqdm(tqdm_object: tqdm.tqdm) -> tqdm.tqdm:
+def parallel_tqdm(tqdm_object: tqdm) -> tqdm:
     """Context manager to patch joblib to report into tqdm progress bar given as argument
 
     Reference

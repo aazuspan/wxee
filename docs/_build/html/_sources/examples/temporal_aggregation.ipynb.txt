@@ -34,8 +34,8 @@
    "id": "5b574ca8",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2021-07-31T07:28:12.143014Z",
-     "start_time": "2021-07-31T07:28:09.070873Z"
+     "end_time": "2021-09-12T04:11:10.402032Z",
+     "start_time": "2021-09-12T04:11:07.560580Z"
     }
    },
    "outputs": [],
@@ -77,6 +77,10 @@
    "execution_count": 2,
    "id": "b6826d1f",
    "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-09-12T04:11:10.966936Z",
+     "start_time": "2021-09-12T04:11:10.963718Z"
+    },
     "scrolled": true
    },
    "outputs": [],
@@ -98,7 +102,12 @@
    "cell_type": "code",
    "execution_count": 3,
    "id": "a1d6066c",
-   "metadata": {},
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-09-12T04:11:13.098048Z",
+     "start_time": "2021-09-12T04:11:13.091671Z"
+    }
+   },
    "outputs": [],
    "source": [
     "ts = wxee.TimeSeries(\"NOAA/NWS/RTMA\")"
@@ -126,8 +135,8 @@
    "id": "84ef9689",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2021-07-31T07:28:12.851878Z",
-     "start_time": "2021-07-31T07:28:12.146194Z"
+     "end_time": "2021-09-12T04:11:14.743823Z",
+     "start_time": "2021-09-12T04:11:14.734775Z"
     }
    },
    "outputs": [],
@@ -147,7 +156,12 @@
    "cell_type": "code",
    "execution_count": 5,
    "id": "9845a2e3",
-   "metadata": {},
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-09-12T04:11:20.811519Z",
+     "start_time": "2021-09-12T04:11:15.707210Z"
+    }
+   },
    "outputs": [
     {
      "name": "stdout",
@@ -179,8 +193,8 @@
    "id": "dc4b506d",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2021-07-31T07:28:13.149243Z",
-     "start_time": "2021-07-31T07:28:12.853907Z"
+     "end_time": "2021-09-12T04:11:22.871682Z",
+     "start_time": "2021-09-12T04:11:20.816769Z"
     }
    },
    "outputs": [
@@ -215,20 +229,34 @@
    "id": "ec8f916c",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2021-07-31T07:28:17.748925Z",
-     "start_time": "2021-07-31T07:28:13.151892Z"
+     "end_time": "2021-09-12T04:11:26.581325Z",
+     "start_time": "2021-09-12T04:11:22.876371Z"
     }
    },
    "outputs": [
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "3e6c497c721f42ce8cfeef8bb997f753",
+       "model_id": "05bf07b7003e48d9a8c36b3f3e9e07d4",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "Downloading collection:   0%|          | 0/2 [00:00<?, ?it/s]"
+       "Requesting:   0%|          | 0/2 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "466dfb131c4c4316b196ce0ef0f38ac2",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Downloading:   0%|          | 0/2 [00:00<?, ?it/s]"
       ]
      },
      "metadata": {},
@@ -237,7 +265,7 @@
     {
      "data": {
       "text/plain": [
-       "<xarray.plot.facetgrid.FacetGrid at 0x7faf0c37a8e0>"
+       "<xarray.plot.facetgrid.FacetGrid at 0x7fb9664c7970>"
       ]
      },
      "execution_count": 7,
@@ -284,8 +312,8 @@
    "id": "1c1989f6",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2021-07-31T07:28:18.376568Z",
-     "start_time": "2021-07-31T07:28:17.751266Z"
+     "end_time": "2021-09-12T04:11:29.117791Z",
+     "start_time": "2021-09-12T04:11:26.583245Z"
     }
    },
    "outputs": [
@@ -321,20 +349,34 @@
    "id": "27073a4f",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2021-07-31T07:28:26.620358Z",
-     "start_time": "2021-07-31T07:28:18.378634Z"
+     "end_time": "2021-09-12T04:11:35.501615Z",
+     "start_time": "2021-09-12T04:11:29.121033Z"
     }
    },
    "outputs": [
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "01a35c662696443dba313e54b13a947b",
+       "model_id": "198850b89f4c4a53a5d137a7f7d0b4a3",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "Downloading collection:   0%|          | 0/12 [00:00<?, ?it/s]"
+       "Requesting:   0%|          | 0/12 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "ace52cb202bd427280137fb9d09d2270",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Downloading:   0%|          | 0/12 [00:00<?, ?it/s]"
       ]
      },
      "metadata": {},
@@ -343,7 +385,7 @@
     {
      "data": {
       "text/plain": [
-       "<xarray.plot.facetgrid.FacetGrid at 0x7fae785f2280>"
+       "<xarray.plot.facetgrid.FacetGrid at 0x7fb9640d1700>"
       ]
      },
      "execution_count": 9,
@@ -392,8 +434,8 @@
    "id": "65191447",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2021-07-31T07:28:27.588290Z",
-     "start_time": "2021-07-31T07:28:26.622597Z"
+     "end_time": "2021-09-12T04:11:35.777219Z",
+     "start_time": "2021-09-12T04:11:35.502876Z"
     }
    },
    "outputs": [
@@ -421,8 +463,8 @@
    "id": "250cb0d7",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2021-07-31T07:28:28.820695Z",
-     "start_time": "2021-07-31T07:28:27.590477Z"
+     "end_time": "2021-09-12T04:11:36.796920Z",
+     "start_time": "2021-09-12T04:11:35.782230Z"
     },
     "scrolled": true
    },

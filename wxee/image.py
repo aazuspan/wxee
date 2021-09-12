@@ -164,19 +164,38 @@ class Image:
             self._obj.set("system:id", description) if description else self._obj
         )
 
-        with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
-            zipped = self._download(
-                tmp,
-                region,
-                scale,
-                crs,
-                file_per_band,
-                nodata,
-                progress,
-                max_attempts,
-            )
-            tifs = _unpack_file(zipped, out_dir)
+        url = self._get_url(region, scale, crs, file_per_band, nodata, max_attempts)
 
+        tifs = self._url_to_tif(
+            url, out_dir, file_per_band, masked, nodata, progress, max_attempts
+        )
+
+        return tifs
+
+    def _url_to_tif(
+        self,
+        url: str,
+        out_dir: str,
+        file_per_band: bool,
+        masked: bool,
+        nodata: int,
+        progress: bool,
+        max_attempts: int,
+    ) -> List[str]:
+        """Download a ZIP from a URL and unpack and process it by setting metadata."""
+        with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
+            zipped = _download_url(url, tmp, progress, max_attempts)
+            tifs = _unpack_file(zipped, out_dir)
+        self._process_tifs(tifs, file_per_band, masked, nodata)
+
+        return tifs
+
+    def _process_tifs(
+        self, tifs: List[str], file_per_band: bool, masked: bool, nodata: int
+    ) -> None:
+        """Take downloaded images and process by setting nodata and assigning band names.
+        This is applied to files in place.
+        """
         if masked:
             for tif in tifs:
                 _set_nodata(tif, nodata)
@@ -188,20 +207,16 @@ class Image:
                     for i, band in enumerate(bandnames):
                         img.set_band_description(i + 1, band)
 
-        return tifs
-
-    def _download(
+    def _get_url(
         self,
-        out_dir: str = ".",
         region: Optional[ee.Geometry] = None,
         scale: Optional[int] = None,
         crs: str = "EPSG:4326",
         file_per_band: bool = False,
         nodata: int = -32_768,
-        progress: bool = True,
         max_attempts: int = 10,
     ) -> str:
-        """Download an image as a ZIP"""
+        """Request and return the download URL from the Earth Engine server."""
         if max_attempts < 1:
             warnings.warn("Max attempts must be at least 1. Setting to 1.")
             max_attempts = 1
@@ -239,9 +254,7 @@ class Image:
                 "Requested elements could not be downloaded from Earth Engine. Retrying may solve the issue."
             )
 
-        zip = _download_url(url, out_dir, progress, max_attempts)
-
-        return zip
+        return url
 
     def _get_download_id(self) -> ee.String:
         """Get the image's download ID by concatenating it's cleaned current ID with the time dimension and coordinate set by wxee. If

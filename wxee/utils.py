@@ -87,7 +87,7 @@ def _download_url(url: str, out_dir: str, progress: bool, max_attempts: int) -> 
         unit="iB",
         unit_scale=True,
         unit_divisor=1024,
-        desc="Downloading image",
+        desc="Downloading",
         disable=not progress,
     ) as bar:
         for data in r.iter_content(chunk_size=1024):

@@ -1,17 +1,15 @@
-import functools
-import multiprocessing as mp
 import tempfile
-from multiprocessing.pool import ThreadPool
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import ee  # type: ignore
 import xarray as xr
+from joblib import Parallel, delayed  # type: ignore
 from tqdm.auto import tqdm  # type: ignore
 
 from wxee import constants
 from wxee.accessors import wx_accessor
 from wxee.time_series import TimeSeries
-from wxee.utils import _dataset_from_files, _download_url, _flatten_list
+from wxee.utils import _dataset_from_files, _flatten_list, parallel_tqdm
 
 
 @wx_accessor(ee.imagecollection.ImageCollection)
@@ -66,7 +64,7 @@ class ImageCollection:
         crs: str = "EPSG:4326",
         masked: bool = True,
         nodata: int = -32_768,
-        num_cores: Optional[int] = None,
+        num_cores: int = -1,
         progress: bool = True,
         max_attempts: int = 10,
     ) -> xr.Dataset:
@@ -92,9 +90,8 @@ class ImageCollection:
             cast integer datatypes to float.
         nodata : int, default -32,768
             The value to set as nodata in the array. Any masked pixels will be filled with this value.
-        num_cores : int, optional
-            The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be
-            used.
+        num_cores : int, default -1
+            The number of CPU cores to use for parallel operations. Defaults to -1 which will use all available cores.
         progress : bool, default True
             If true, a progress bar will be displayed to track download progress.
         max_attempts: int, default 10
@@ -155,7 +152,7 @@ class ImageCollection:
         file_per_band: bool = False,
         masked: bool = True,
         nodata: int = -32_768,
-        num_cores: Optional[int] = None,
+        num_cores: int = -1,
         progress: bool = True,
         max_attempts: int = 10,
     ) -> List[str]:
@@ -182,9 +179,8 @@ class ImageCollection:
             If true, the nodata value of each image will be set in the image metadata.
         nodata : int, default -32,768
             The value to set as nodata in each image. Any masked pixels in the images will be filled with this value.
-        num_cores : int, optional
-            The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be
-            used.
+        num_cores : int, default -1
+            The number of CPU cores to use for parallel operations. Defaults to -1 which will use all available cores.
         progress : bool, default True
             If true, a progress bar will be displayed to track download progress.
         max_attempts: int, default 10
@@ -208,111 +204,36 @@ class ImageCollection:
         >>> col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").filterDate("2020-09-08", "2020-09-15")
         >>> col.wx.to_tif(scale=40000, crs="EPSG:5070", nodata=-9999)
         """
-        num_cores = mp.cpu_count() if not num_cores else num_cores
-
         if prefix:
             self._obj = self._obj.map(lambda img: img.wx._prefix_id(prefix))
 
         imgs = self._to_image_list()
         n = len(imgs)
 
-        if num_cores > 1:
-            # Use ThreadPool instead of Pool to avoid issues with pickling local functions
-            # https://stackoverflow.com/questions/8804830/python-multiprocessing-picklingerror-cant-pickle-type-function
-            with ThreadPool(num_cores) as p:
-                kwargs = dict(
-                    region=region,
-                    scale=scale,
-                    crs=crs,
-                    file_per_band=file_per_band,
-                    nodata=nodata,
-                    max_attempts=max_attempts,
-                )
-                params = functools.partial(_image_get_url_alias, **kwargs)
-                urls = list(
-                    tqdm(
-                        p.imap_unordered(params, imgs),
-                        total=n,
-                        disable=not progress,
-                        desc="Requesting",
-                        leave=True,
+        with Parallel(n_jobs=num_cores, backend="threading") as p:
+            with parallel_tqdm(
+                tqdm(desc="Requesting data", total=n, disable=not progress)
+            ):
+                urls = p(
+                    delayed(img.wx._get_url)(
+                        region, scale, crs, file_per_band, nodata, max_attempts
                     )
+                    for img in imgs
                 )
 
-                # Images and URLS both need to be passed to url_to_tif. To do that
-                # in parallel, we need to zip them and pass each as one argument.
-                img_urls = list(zip(imgs, urls))
-
-                kwargs = dict(
-                    out_dir=out_dir,
-                    file_per_band=file_per_band,
-                    masked=masked,
-                    nodata=nodata,
-                    progress=False,
-                    max_attempts=max_attempts,
-                )
-                params = functools.partial(_image_url_to_tif_alias, **kwargs)
-                tifs = list(
-                    tqdm(
-                        p.imap_unordered(params, img_urls),
-                        total=n,
-                        disable=not progress,
-                        desc="Downloading",
+            with parallel_tqdm(
+                tqdm(desc="Downloading data", total=n, disable=not progress)
+            ):
+                img_urls = zip(imgs, urls)
+                tifs = p(
+                    delayed(img.wx._url_to_tif)(
+                        url, out_dir, file_per_band, masked, nodata, False, max_attempts
                     )
+                    for img, url in img_urls
                 )
-
-        # Non-parallel implementaion
-        else:
-            urls = [
-                img.wx._get_url(region, scale, crs, file_per_band, nodata, max_attempts)
-                for img in tqdm(imgs, disable=not progress, desc="Retrieving data")
-            ]
-            tifs = [
-                img.wx._url_to_tif(
-                    url, out_dir, file_per_band, masked, nodata, False, max_attempts
-                )
-                for img, url in tqdm(
-                    list(zip(imgs, urls)), disable=not progress, desc="Downloading data"
-                )
-            ]
 
         return _flatten_list(tifs)
 
     def to_time_series(self) -> TimeSeries:
         """Convert to a :code:`wxee.TimeSeries` collection with associated methods."""
         return TimeSeries(self._obj)
-
-
-def _image_get_url_alias(
-    img: ee.Image,
-    region: Optional[ee.Geometry] = None,
-    scale: Optional[int] = None,
-    crs: str = "EPSG:4326",
-    file_per_band: bool = False,
-    nodata: int = -32_768,
-    max_attempts: int = 10,
-) -> List[str]:
-    """A pickleable wrapper around the ee.Image.wx._get_url instance method, allowing it to be used in multiprocessing.
-    See https://stackoverflow.com/questions/27318290/why-can-i-pass-an-instance-method-to-multiprocessing-process-but-not-a-multipro
-    """
-    return img.wx._get_url(region, scale, crs, file_per_band, nodata, max_attempts)
-
-
-def _image_url_to_tif_alias(
-    img_url: Tuple[ee.Image, str],
-    out_dir: str,
-    masked: bool,
-    file_per_band: bool = False,
-    nodata: int = -32_768,
-    progress: bool = True,
-    max_attempts: int = 10,
-) -> List[str]:
-    """A pickleable wrapper around the ee.Image.wx._url_to_tif instance method, allowing it to be used in multiprocessing.
-    See https://stackoverflow.com/questions/27318290/why-can-i-pass-an-instance-method-to-multiprocessing-process-but-not-a-multipro
-    """
-    # We had to zip these together to pass them as a single argument
-    img, url = img_url
-
-    return img.wx._url_to_tif(
-        url, out_dir, file_per_band, masked, nodata, progress, max_attempts
-    )

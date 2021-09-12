@@ -1,13 +1,14 @@
+import contextlib
 import datetime
 import itertools
 import os
-import re
 import tempfile
 import warnings
 from typing import Any, List, Tuple, Union
 from zipfile import ZipFile
 
 import ee  # type: ignore
+import joblib  # type: ignore
 import rasterio  # type: ignore
 import requests
 import xarray as xr
@@ -166,3 +167,35 @@ def _replace_if_null(val: Union[ee.String, ee.Number], replacement: Any) -> Any:
 def _format_date(d: ee.Date) -> ee.String:
     """Format a date using a consistent pattern."""
     return ee.Date(d).format("yyyyMMdd'T'HHmmss")
+
+
+@contextlib.contextmanager
+def parallel_tqdm(tqdm_object: tqdm.tqdm) -> tqdm.tqdm:
+    """Context manager to patch joblib to report into tqdm progress bar given as argument
+
+    Reference
+    ---------
+    https://stackoverflow.com/questions/24983493/tracking-progress-of-joblib-parallel-execution
+
+    Example
+    -------
+    >>> with Parallel(n_jobs=-1) as p:
+    >>>     with parallel_tqdm(tqdm(desc="Progress", total=10)):
+    >>>         urls = p(delayed(f)(x) for x in range(10))
+    """
+
+    class TqdmBatchCompletionCallback(joblib.parallel.BatchCompletionCallBack):
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            super().__init__(*args, **kwargs)
+
+        def __call__(self, *args: Any, **kwargs: Any) -> None:
+            tqdm_object.update(n=self.batch_size)
+            return super().__call__(*args, **kwargs)
+
+    old_batch_callback = joblib.parallel.BatchCompletionCallBack
+    joblib.parallel.BatchCompletionCallBack = TqdmBatchCompletionCallback
+    try:
+        yield tqdm_object
+    finally:
+        joblib.parallel.BatchCompletionCallBack = old_batch_callback
+        tqdm_object.close()

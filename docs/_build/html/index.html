@@ -201,6 +201,7 @@
 and easy by integrating the data catalog and processing power of <a class="reference external" href="https://earthengine.google.com/">Google Earth Engine</a> with the
 flexibility of <a class="reference external" href="https://github.com/pydata/xarray">xarray</a>, with no complicated setup required. To accomplish this, wxee implements
 convenient methods for data processing, aggregation, downloading, and ingestion.</p>
+<p><a class="reference external" href="https://github.com/aazuspan/wxee">wxee</a> can be found in the <a class="reference external" href="https://developers.google.com/earth-engine/tutorials/community/developer-resources#python">Earth Engine Developer Resources</a>!</p>
 </div>
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
@@ -249,8 +250,8 @@ make install
 <h3>Download Images<a class="headerlink" href="#download-images" title="Permalink to this headline">¶</a></h3>
 <p>Download and conversion methods are extended to <code class="code docutils literal notranslate"><span class="pre">ee.Image</span></code> and <code class="code docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> using the
 <code class="code docutils literal notranslate"><span class="pre">wx</span></code> accessor. Just <code class="code docutils literal notranslate"><span class="pre">import</span> <span class="pre">wxee</span></code> and use the <code class="code docutils literal notranslate"><span class="pre">wx</span></code> accessor.</p>
-<div class="section" id="id2">
-<h4>xarray<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id3">
+<h4>xarray<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
 </pre></div>
 </div>

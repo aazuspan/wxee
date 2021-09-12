@@ -498,7 +498,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">modis</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;MODIS/006/MOD14A1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2021-08-15&quot;</span><span class="p">,</span> <span class="s2">&quot;2021-08-29&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;FireMask&quot;</span><span class="p">)</span>
+<span></span><span class="n">modis</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;MODIS/006/MOD14A1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2021-08-15&quot;</span><span class="p">,</span> <span class="s2">&quot;2021-09-05&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;FireMask&quot;</span><span class="p">)</span>
 
 <span class="n">modis</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
 </pre></div>
@@ -510,9 +510,9 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 <span class="ansi-bold">MODIS/006/MOD14A1</span>
-        Images: 14
+        Images: 21
         Start date: 2021-08-15 00:00:00 UTC
-        End date: 2021-08-28 00:00:00 UTC
+        End date: 2021-09-04 00:00:00 UTC
         Mean interval: 1.00 days
 </pre></div></div>
 </div>
@@ -535,19 +535,25 @@ div.rendered_html tbody tr:hover {
 <span></span><span class="n">region</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="o">.</span><span class="n">Polygon</span><span class="p">(</span>
         <span class="p">[[[</span><span class="o">-</span><span class="mf">120.70580745719522</span><span class="p">,</span> <span class="mf">38.90798203224902</span><span class="p">],</span>
           <span class="p">[</span><span class="o">-</span><span class="mf">120.70580745719522</span><span class="p">,</span> <span class="mf">38.51793451346024</span><span class="p">],</span>
-          <span class="p">[</span><span class="o">-</span><span class="mf">120.03014827750772</span><span class="p">,</span> <span class="mf">38.51793451346024</span><span class="p">],</span>
-          <span class="p">[</span><span class="o">-</span><span class="mf">120.03014827750772</span><span class="p">,</span> <span class="mf">38.90798203224902</span><span class="p">]]]</span>
+          <span class="p">[</span><span class="o">-</span><span class="mf">119.90014827750772</span><span class="p">,</span> <span class="mf">38.51793451346024</span><span class="p">],</span>
+          <span class="p">[</span><span class="o">-</span><span class="mf">119.90014827750772</span><span class="p">,</span> <span class="mf">38.90798203224902</span><span class="p">]]]</span>
 <span class="p">)</span>
 
 <span class="n">ds</span> <span class="o">=</span> <span class="n">fire_masks</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:26910&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8b4ad73c2b5f4777a2634273b2d60837", "version_major": 2, "version_minor": 0}</script></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ccf40686c60c4b3e9154f6fc6fa68746", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "bc06f53b8c7042ff85f21a1c4d03b197", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </div>
 <div class="section" id="Visualizing-the-Progression">
@@ -568,7 +574,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f6f50080490&gt;
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7f85bec59130&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -626,7 +632,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.collections.QuadMesh at 0x7f6ef421e670&gt;
+&lt;matplotlib.collections.QuadMesh at 0x7f85ada61af0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -736,11 +742,17 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "720876dc5e784c33ac7d1b26c439ce18", "version_major": 2, "version_minor": 0}</script></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "0f258966b370450db48ab77f5e551c2e", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8956afc1b0d846a19b3ab9ccab16d3ea", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </div>
 <div class="section" id="id1">
@@ -763,7 +775,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>And plot it!</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -772,12 +784,12 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.collections.QuadMesh at 0x7f6ef514b5e0&gt;
+&lt;matplotlib.collections.QuadMesh at 0x7f85bc3f40a0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">

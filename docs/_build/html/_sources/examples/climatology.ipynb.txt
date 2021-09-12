@@ -34,8 +34,8 @@
    "id": "739f74b7",
    "metadata": {
     "ExecuteTime": {
-     "end_time": "2021-07-26T06:10:31.130957Z",
-     "start_time": "2021-07-26T06:10:28.664693Z"
+     "end_time": "2021-09-12T04:10:26.651800Z",
+     "start_time": "2021-09-12T04:10:23.250427Z"
     }
    },
    "outputs": [],
@@ -77,6 +77,10 @@
    "execution_count": 2,
    "id": "7a46bdfa",
    "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-09-12T04:10:27.684886Z",
+     "start_time": "2021-09-12T04:10:27.677169Z"
+    },
     "scrolled": true
    },
    "outputs": [],
@@ -98,7 +102,12 @@
    "cell_type": "code",
    "execution_count": 3,
    "id": "4ec3cc84",
-   "metadata": {},
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-09-12T04:10:28.505760Z",
+     "start_time": "2021-09-12T04:10:28.498234Z"
+    }
+   },
    "outputs": [],
    "source": [
     "ts = wxee.TimeSeries(\"IDAHO_EPSCOR/GRIDMET\")"
@@ -124,7 +133,12 @@
    "cell_type": "code",
    "execution_count": 4,
    "id": "7e88f86f",
-   "metadata": {},
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-09-12T04:10:30.663549Z",
+     "start_time": "2021-09-12T04:10:30.325626Z"
+    }
+   },
    "outputs": [
     {
      "data": {
@@ -156,7 +170,12 @@
    "cell_type": "code",
    "execution_count": 5,
    "id": "344e2dde",
-   "metadata": {},
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-09-12T04:10:36.786299Z",
+     "start_time": "2021-09-12T04:10:31.880623Z"
+    }
+   },
    "outputs": [
     {
      "data": {
@@ -197,18 +216,36 @@
    "execution_count": 6,
    "id": "a41c350d",
    "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-09-12T04:10:59.791167Z",
+     "start_time": "2021-09-12T04:10:36.788783Z"
+    },
     "scrolled": false
    },
    "outputs": [
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "ebb56ce0797c4d0c99ebe6749ccc6ead",
+       "model_id": "f6528f1a684f449db9826c08ea8a7afc",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "Downloading collection:   0%|          | 0/12 [00:00<?, ?it/s]"
+       "Requesting:   0%|          | 0/12 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "a9028f79d35d42d69d000c4d45301785",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Downloading:   0%|          | 0/12 [00:00<?, ?it/s]"
       ]
      },
      "metadata": {},
@@ -217,7 +254,7 @@
     {
      "data": {
       "text/plain": [
-       "<xarray.plot.facetgrid.FacetGrid at 0x7f2ae7dbe100>"
+       "<xarray.plot.facetgrid.FacetGrid at 0x7f7945fc6dc0>"
       ]
      },
      "execution_count": 6,
@@ -262,7 +299,12 @@
    "cell_type": "code",
    "execution_count": 7,
    "id": "bf33616e",
-   "metadata": {},
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-09-12T04:10:59.796401Z",
+     "start_time": "2021-09-12T04:10:59.792860Z"
+    }
+   },
    "outputs": [],
    "source": [
     "ts = wxee.TimeSeries(\"IDAHO_EPSCOR/GRIDMET\").select(\"bi\")\n",
@@ -291,7 +333,12 @@
    "cell_type": "code",
    "execution_count": 8,
    "id": "635a947d",
-   "metadata": {},
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-09-12T04:14:36.378693Z",
+     "start_time": "2021-09-12T04:10:59.798136Z"
+    }
+   },
    "outputs": [
     {
      "data": {
@@ -324,6 +371,10 @@
    "execution_count": 9,
    "id": "2c42751f",
    "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-09-12T04:14:58.297344Z",
+     "start_time": "2021-09-12T04:14:36.380314Z"
+    },
     "scrolled": true
    },
    "outputs": [
@@ -366,18 +417,36 @@
    "execution_count": 10,
    "id": "bf512593",
    "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-09-12T04:18:23.161616Z",
+     "start_time": "2021-09-12T04:14:58.299124Z"
+    },
     "scrolled": false
    },
    "outputs": [
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "c16ccfab3a7d4dc3a3b30fff7ee1c24b",
+       "model_id": "882e30efa6c14410a33e66165302035c",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "Downloading collection:   0%|          | 0/31 [00:00<?, ?it/s]"
+       "Requesting:   0%|          | 0/31 [00:00<?, ?it/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "ff70ba7d142d4f7b95ddbb18594a80ab",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "Downloading:   0%|          | 0/31 [00:00<?, ?it/s]"
       ]
      },
      "metadata": {},
@@ -400,12 +469,17 @@
    "cell_type": "code",
    "execution_count": 11,
    "id": "97ec8729",
-   "metadata": {},
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2021-09-12T04:18:23.331405Z",
+     "start_time": "2021-09-12T04:18:23.163045Z"
+    }
+   },
    "outputs": [
     {
      "data": {
       "text/plain": [
-       "[<matplotlib.lines.Line2D at 0x7f2ae4f877c0>]"
+       "[<matplotlib.lines.Line2D at 0x7f7944057430>]"
       ]
      },
      "execution_count": 11,

@@ -326,19 +326,26 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span>
         <span class="p">)</span>
 
-        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">TMP_PREFIX</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
-            <span class="n">zipped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_download</span><span class="p">(</span>
-                <span class="n">tmp</span><span class="p">,</span>
-                <span class="n">region</span><span class="p">,</span>
-                <span class="n">scale</span><span class="p">,</span>
-                <span class="n">crs</span><span class="p">,</span>
-                <span class="n">file_per_band</span><span class="p">,</span>
-                <span class="n">nodata</span><span class="p">,</span>
-                <span class="n">progress</span><span class="p">,</span>
-                <span class="n">max_attempts</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">tifs</span> <span class="o">=</span> <span class="n">_unpack_file</span><span class="p">(</span><span class="n">zipped</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">)</span>
 
+        <span class="n">tifs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url_to_tif</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">masked</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tifs</span></div>
+
+    <span class="k">def</span> <span class="nf">_url_to_tif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">masked</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download a ZIP from a URL and unpack and process it by setting metadata.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">TMP_PREFIX</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+            <span class="n">zipped</span> <span class="o">=</span> <span class="n">_download_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">tmp</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">)</span>
+            <span class="n">tifs</span> <span class="o">=</span> <span class="n">_unpack_file</span><span class="p">(</span><span class="n">zipped</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_tifs</span><span class="p">(</span><span class="n">tifs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">masked</span><span class="p">,</span> <span class="n">nodata</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tifs</span>
+
+    <span class="k">def</span> <span class="nf">_process_tifs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tifs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">masked</span><span class="p">,</span> <span class="n">nodata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Take downloaded images and process by setting nodata and assigning band names.</span>
+<span class="sd">        This is applied to files in place.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">masked</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">tif</span> <span class="ow">in</span> <span class="n">tifs</span><span class="p">:</span>
                 <span class="n">_set_nodata</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span> <span class="n">nodata</span><span class="p">)</span>
@@ -350,20 +357,16 @@
                     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bandnames</span><span class="p">):</span>
                         <span class="n">img</span><span class="o">.</span><span class="n">set_band_description</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">band</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">tifs</span></div>
-
-    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">_get_url</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
         <span class="n">region</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">crs</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span>
         <span class="n">file_per_band</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
-        <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Download an image as a ZIP&quot;&quot;&quot;</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Request and return the download URL from the Earth Engine server.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">max_attempts</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Max attempts must be at least 1. Setting to 1.&quot;</span><span class="p">)</span>
             <span class="n">max_attempts</span> <span class="o">=</span> <span class="mi">1</span>
@@ -401,9 +404,7 @@
                 <span class="s2">&quot;Requested elements could not be downloaded from Earth Engine. Retrying may solve the issue.&quot;</span>
             <span class="p">)</span>
 
-        <span class="nb">zip</span> <span class="o">=</span> <span class="n">_download_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="nb">zip</span>
+        <span class="k">return</span> <span class="n">url</span>
 
     <span class="k">def</span> <span class="nf">_get_download_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">String</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Get the image&#39;s download ID by concatenating it&#39;s cleaned current ID with the time dimension and coordinate set by wxee. If</span>

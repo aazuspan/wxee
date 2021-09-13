@@ -129,9 +129,9 @@ def _dataarray_from_file(file: str) -> xr.DataArray:
     The file name must follow the format "{dimension}.{coordinate}.{variable}.{extension}".
     """
     da = xr.open_rasterio(file)
-    dim, coord, variable = _parse_filename(file)
+    dim, coord, var = _parse_filename(file)
 
-    da = da.expand_dims({dim: [coord]}).rename(variable).squeeze("band").drop("band")
+    da = da.expand_dims({dim: [coord]}).rename(var).squeeze("band").drop_vars("band")
 
     return da
 

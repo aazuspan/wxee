@@ -1,8 +1,12 @@
 import datetime
+import os
+import shutil
+import tempfile
 import warnings
 
 import ee
 import pytest
+import rasterio
 
 import wxee.utils
 
@@ -111,3 +115,89 @@ def test_parse_invalid_time_warns():
 
     with pytest.warns(UserWarning):
         wxee.utils._parse_time(invalid_time_str)
+
+
+def test_dataarray_from_file():
+    """Test that an xarray.DataArray can be created from a valid GeoTIFF."""
+    file_path = os.path.join(
+        "test", "test_data", "IDAHO_EPSCOR_GRIDMET_20180201.time.20180201T060000.pr.tif"
+    )
+    da = wxee.utils._dataarray_from_file(file_path)
+
+    assert da.name == "pr"
+
+
+def test_dataset_from_files():
+    """Test than an xarray.Dataset can be created from a list of valid GeoTIFFs."""
+    file_paths = [
+        os.path.join(
+            "test",
+            "test_data",
+            "IDAHO_EPSCOR_GRIDMET_20180203.time.20180203T060000.pr.tif",
+        ),
+        os.path.join(
+            "test",
+            "test_data",
+            "IDAHO_EPSCOR_GRIDMET_20180201.time.20180201T060000.pr.tif",
+        ),
+        os.path.join(
+            "test",
+            "test_data",
+            "IDAHO_EPSCOR_GRIDMET_20180202.time.20180202T060000.rmax.tif",
+        ),
+        os.path.join(
+            "test",
+            "test_data",
+            "IDAHO_EPSCOR_GRIDMET_20180202.time.20180202T060000.pr.tif",
+        ),
+        os.path.join(
+            "test",
+            "test_data",
+            "IDAHO_EPSCOR_GRIDMET_20180203.time.20180203T060000.rmax.tif",
+        ),
+        os.path.join(
+            "test",
+            "test_data",
+            "IDAHO_EPSCOR_GRIDMET_20180201.time.20180201T060000.rmax.tif",
+        ),
+    ]
+
+    ds = wxee.utils._dataset_from_files(file_paths)
+
+    assert ds.time.size == 3
+    assert all([var in ds.variables for var in ["pr", "rmax"]])
+
+
+def test_flatten_list():
+    """Test that a nested list is correctly flattened"""
+    nested = [[1, 2], [3], [4, 5, 6], [7, 8]]
+    flat = [1, 2, 3, 4, 5, 6, 7, 8]
+
+    result = wxee.utils._flatten_list(nested)
+
+    assert result == flat
+
+
+def test_set_nodata():
+    """Test that nodata is correctly set in an image file. To do this, a temporary copy test image
+    is created, the nodata value is read from the copy, incremented to ensure a new nodata value, set,
+    and tested. The copy is automatically deleted after the test has run.
+    """
+    file_path = os.path.join(
+        "test", "test_data", "IDAHO_EPSCOR_GRIDMET_20180201.time.20180201T060000.pr.tif"
+    )
+
+    tmp_copy = tempfile.NamedTemporaryFile(delete=True).name
+    shutil.copy2(file_path, tmp_copy)
+
+    with rasterio.open(tmp_copy) as r:
+        old_nodata = r.nodata
+
+    test_nodata = old_nodata + 1
+
+    wxee.utils._set_nodata(tmp_copy, test_nodata)
+
+    with rasterio.open(tmp_copy) as r:
+        new_nodata = r.nodata
+
+    assert new_nodata == test_nodata

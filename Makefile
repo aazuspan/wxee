@@ -52,3 +52,6 @@ release: ## Package and upload
 
 tests: ## Run unit tests
 	pytest .
+
+tests-local: ## Run unit tests that don't require connecting to Earth Engine servers.
+	pytest . -m "not ee"

@@ -5,7 +5,15 @@ version = "0.0.1"
 with open("README.rst") as readme_file:
     readme = readme_file.read()
 
-requirements = ["rasterio", "xarray", "earthengine-api", "tqdm", "requests", "netcdf4"]
+requirements = [
+    "rasterio",
+    "xarray",
+    "earthengine-api",
+    "tqdm",
+    "requests",
+    "netcdf4",
+    "joblib",
+]
 doc_requirements = ["nbsphinx", "sphinx", "sphinx_rtd_theme"]
 test_requirements = ["pytest"]
 dev_requirements = [

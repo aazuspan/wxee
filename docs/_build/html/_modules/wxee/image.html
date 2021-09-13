@@ -328,13 +328,23 @@
 
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">)</span>
 
-        <span class="n">tifs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url_to_tif</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">masked</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">)</span>
+        <span class="n">tifs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url_to_tif</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">masked</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="n">max_attempts</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">tifs</span></div>
 
-    <span class="k">def</span> <span class="nf">_url_to_tif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">masked</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Download a ZIP from a URL and unpack and process it by setting metadata.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_url_to_tif</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">file_per_band</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">masked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Download a ZIP from a URL and unpack and process it by setting metadata.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">TMP_PREFIX</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
             <span class="n">zipped</span> <span class="o">=</span> <span class="n">_download_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">tmp</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">)</span>
             <span class="n">tifs</span> <span class="o">=</span> <span class="n">_unpack_file</span><span class="p">(</span><span class="n">zipped</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">)</span>
@@ -342,7 +352,9 @@
 
         <span class="k">return</span> <span class="n">tifs</span>
 
-    <span class="k">def</span> <span class="nf">_process_tifs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tifs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">masked</span><span class="p">,</span> <span class="n">nodata</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_process_tifs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">tifs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">file_per_band</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">masked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Take downloaded images and process by setting nodata and assigning band names.</span>
 <span class="sd">        This is applied to files in place.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -365,7 +377,7 @@
         <span class="n">file_per_band</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Request and return the download URL from the Earth Engine server.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">max_attempts</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Max attempts must be at least 1. Setting to 1.&quot;</span><span class="p">)</span>

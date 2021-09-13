@@ -160,20 +160,18 @@
            <div itemprop="articleBody">
             
   <h1>Source code for wxee.collection</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">ThreadPool</span>
+<span></span><span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 <span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">wxee</span> <span class="kn">import</span> <span class="n">constants</span>
 <span class="kn">from</span> <span class="nn">wxee.accessors</span> <span class="kn">import</span> <span class="n">wx_accessor</span>
 <span class="kn">from</span> <span class="nn">wxee.time_series</span> <span class="kn">import</span> <span class="n">TimeSeries</span>
-<span class="kn">from</span> <span class="nn">wxee.utils</span> <span class="kn">import</span> <span class="n">_dataset_from_files</span><span class="p">,</span> <span class="n">_flatten_list</span><span class="p">,</span> <span class="n">_download_url</span>
+<span class="kn">from</span> <span class="nn">wxee.utils</span> <span class="kn">import</span> <span class="n">_dataset_from_files</span><span class="p">,</span> <span class="n">_flatten_list</span><span class="p">,</span> <span class="n">parallel_tqdm</span>
 
 
 <div class="viewcode-block" id="ImageCollection"><a class="viewcode-back" href="../../wxee.html#wxee.ImageCollection">[docs]</a><span class="nd">@wx_accessor</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">imagecollection</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">)</span>
@@ -228,7 +226,7 @@
         <span class="n">crs</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span>
         <span class="n">masked</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
-        <span class="n">num_cores</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">num_cores</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
@@ -254,9 +252,8 @@
 <span class="sd">            cast integer datatypes to float.</span>
 <span class="sd">        nodata : int, default -32,768</span>
 <span class="sd">            The value to set as nodata in the array. Any masked pixels will be filled with this value.</span>
-<span class="sd">        num_cores : int, optional</span>
-<span class="sd">            The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be</span>
-<span class="sd">            used.</span>
+<span class="sd">        num_cores : int, default -1</span>
+<span class="sd">            The number of CPU cores to use for parallel operations. Defaults to -1 which will use all available cores.</span>
 <span class="sd">        progress : bool, default True</span>
 <span class="sd">            If true, a progress bar will be displayed to track download progress.</span>
 <span class="sd">        max_attempts: int, default 10</span>
@@ -317,7 +314,7 @@
         <span class="n">file_per_band</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">masked</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
-        <span class="n">num_cores</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">num_cores</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -344,9 +341,8 @@
 <span class="sd">            If true, the nodata value of each image will be set in the image metadata.</span>
 <span class="sd">        nodata : int, default -32,768</span>
 <span class="sd">            The value to set as nodata in each image. Any masked pixels in the images will be filled with this value.</span>
-<span class="sd">        num_cores : int, optional</span>
-<span class="sd">            The number of CPU cores to use for parallel operations. If none is provided, all detected CPU cores will be</span>
-<span class="sd">            used.</span>
+<span class="sd">        num_cores : int, default -1</span>
+<span class="sd">            The number of CPU cores to use for parallel operations. Defaults to -1 which will use all available cores.</span>
 <span class="sd">        progress : bool, default True</span>
 <span class="sd">            If true, a progress bar will be displayed to track download progress.</span>
 <span class="sd">        max_attempts: int, default 10</span>
@@ -370,102 +366,39 @@
 <span class="sd">        &gt;&gt;&gt; col = ee.ImageCollection(&quot;IDAHO_EPSCOR/GRIDMET&quot;).filterDate(&quot;2020-09-08&quot;, &quot;2020-09-15&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; col.wx.to_tif(scale=40000, crs=&quot;EPSG:5070&quot;, nodata=-9999)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">num_cores</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">num_cores</span> <span class="k">else</span> <span class="n">num_cores</span>
-
         <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">img</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">_prefix_id</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
 
         <span class="n">imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_image_list</span><span class="p">()</span>
         <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">num_cores</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="c1"># Use ThreadPool instead of Pool to avoid issues with pickling local functions</span>
-            <span class="c1"># https://stackoverflow.com/questions/8804830/python-multiprocessing-picklingerror-cant-pickle-type-function</span>
-            <span class="k">with</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="n">num_cores</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
-                <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-                    <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
-                    <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
-                    <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">,</span>
-                    <span class="n">file_per_band</span><span class="o">=</span><span class="n">file_per_band</span><span class="p">,</span>
-                    <span class="n">nodata</span><span class="o">=</span><span class="n">nodata</span><span class="p">,</span>
-                    <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">params</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_image_get_url_alias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                <span class="n">urls</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                    <span class="n">tqdm</span><span class="p">(</span>
-                        <span class="n">p</span><span class="o">.</span><span class="n">imap_unordered</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">imgs</span><span class="p">),</span>
-                        <span class="n">total</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
-                        <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress</span><span class="p">,</span>
-                        <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Requesting&quot;</span><span class="p">,</span>
-                        <span class="n">leave</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="k">with</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">num_cores</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;threading&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">parallel_tqdm</span><span class="p">(</span>
+                <span class="n">tqdm</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Requesting data&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">urls</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span>
+                    <span class="n">delayed</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">_get_url</span><span class="p">)(</span>
+                        <span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="n">max_attempts</span>
                     <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">imgs</span>
                 <span class="p">)</span>
 
-                <span class="c1"># Images and URLS both need to be passed to url_to_tif. To do that </span>
-                <span class="c1"># in parallel, we need to zip them and pass each as one argument.</span>
-                <span class="n">img_urls</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">imgs</span><span class="p">,</span> <span class="n">urls</span><span class="p">))</span>
-
-                <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-                    <span class="n">out_dir</span><span class="o">=</span><span class="n">out_dir</span><span class="p">,</span>
-                    <span class="n">file_per_band</span><span class="o">=</span><span class="n">file_per_band</span><span class="p">,</span>
-                    <span class="n">masked</span><span class="o">=</span><span class="n">masked</span><span class="p">,</span>
-                    <span class="n">nodata</span><span class="o">=</span><span class="n">nodata</span><span class="p">,</span>
-                    <span class="n">progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">params</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">_image_url_to_tif_alias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                <span class="n">tifs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                    <span class="n">tqdm</span><span class="p">(</span>
-                        <span class="n">p</span><span class="o">.</span><span class="n">imap_unordered</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">img_urls</span><span class="p">),</span>
-                        <span class="n">total</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
-                        <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress</span><span class="p">,</span>
-                        <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Downloading&quot;</span><span class="p">,</span>
+            <span class="k">with</span> <span class="n">parallel_tqdm</span><span class="p">(</span>
+                <span class="n">tqdm</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Downloading data&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">img_urls</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">imgs</span><span class="p">,</span> <span class="n">urls</span><span class="p">)</span>
+                <span class="n">tifs</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span>
+                    <span class="n">delayed</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">_url_to_tif</span><span class="p">)(</span>
+                        <span class="n">url</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">masked</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">max_attempts</span>
                     <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">img</span><span class="p">,</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">img_urls</span>
                 <span class="p">)</span>
-        
-        <span class="c1"># Non-parallel implementaion</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="n">img</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">_get_url</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">)</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">imgs</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Retrieving data&quot;</span><span class="p">)]</span>
-            <span class="n">tifs</span> <span class="o">=</span> <span class="p">[</span><span class="n">img</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">_url_to_tif</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">masked</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">)</span> <span class="k">for</span> <span class="n">img</span><span class="p">,</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">imgs</span><span class="p">,</span> <span class="n">urls</span><span class="p">)),</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Downloading data&quot;</span><span class="p">)]</span>
 
         <span class="k">return</span> <span class="n">_flatten_list</span><span class="p">(</span><span class="n">tifs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ImageCollection.to_time_series"><a class="viewcode-back" href="../../wxee.html#wxee.ImageCollection.to_time_series">[docs]</a>    <span class="k">def</span> <span class="nf">to_time_series</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Convert to a :code:`wxee.TimeSeries` collection with associated methods.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obj</span><span class="p">)</span></div></div>
-
-
-<span class="k">def</span> <span class="nf">_image_get_url_alias</span><span class="p">(</span>
-    <span class="n">img</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">,</span>
-    <span class="n">region</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">crs</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EPSG:4326&quot;</span><span class="p">,</span>
-    <span class="n">file_per_band</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
-    <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;A pickleable wrapper around the ee.Image.wx._get_url instance method, allowing it to be used in multiprocessing.</span>
-<span class="sd">    See https://stackoverflow.com/questions/27318290/why-can-i-pass-an-instance-method-to-multiprocessing-process-but-not-a-multipro</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">img</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">_get_url</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">crs</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_image_url_to_tif_alias</span><span class="p">(</span>
-    <span class="n">img_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">out_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">masked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="n">file_per_band</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">nodata</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">32_768</span><span class="p">,</span>
-    <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;A pickleable wrapper around the ee.Image.wx._url_to_tif instance method, allowing it to be used in multiprocessing.</span>
-<span class="sd">    See https://stackoverflow.com/questions/27318290/why-can-i-pass-an-instance-method-to-multiprocessing-process-but-not-a-multipro</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># We had to zip these together to pass them as a single argument</span>
-    <span class="n">img</span><span class="p">,</span> <span class="n">url</span> <span class="o">=</span> <span class="n">img_url</span>
-
-    <span class="k">return</span> <span class="n">img</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">_url_to_tif</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">file_per_band</span><span class="p">,</span> <span class="n">masked</span><span class="p">,</span> <span class="n">nodata</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">)</span>
 </pre></div>
 
            </div>

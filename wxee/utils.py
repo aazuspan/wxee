@@ -145,17 +145,24 @@ def _parse_filename(file: str) -> Tuple[str, Union[str, int, datetime.datetime],
     basename = os.path.basename(file)
     dim, coord_name, variable = basename.split(".")[1:4]
     if dim == "time":
-        try:
-            coord = datetime.datetime.strptime(coord_name, "%Y%m%dT%H%M%S")
-        except ValueError:
-            coord = coord_name
-            warnings.warn(
-                f"The time coordinate '{coord}' could not be parsed into a valid datetime. Setting as raw value instead."
-            )
+        coord = _parse_time(coord_name)
     else:
         coord = int(coord_name)
 
     return (dim, coord, variable)
+
+
+def _parse_time(time: str) -> Union[datetime.datetime, str]:
+    """Parse a time string as it is exported from Earth Engine and return as a datetime.
+    If the time cannot be parsed, it is returned as a string.
+    """
+    try:
+        return datetime.datetime.strptime(time, "%Y%m%dT%H%M%S")
+    except ValueError:
+        warnings.warn(
+            f"The time coordinate '{time}' could not be parsed into a valid datetime. Setting as raw value instead."
+        )
+        return time
 
 
 def _replace_if_null(val: Union[ee.String, ee.Number], replacement: Any) -> Any:

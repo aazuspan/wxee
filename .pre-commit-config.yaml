@@ -9,6 +9,7 @@ repos:
     hooks:
     -   id: mypy
         args: [--disallow-untyped-defs, --no-implicit-optional, --warn-unused-ignores, --warn-redundant-casts, --warn-unreachable]
+        exclude: test
         additional_dependencies: [types-requests, xarray]
 
 -   repo: https://github.com/pycqa/isort

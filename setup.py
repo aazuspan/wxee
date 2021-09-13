@@ -23,6 +23,7 @@ dev_requirements = [
     "isort",
     "bumpversion",
     "twine",
+    "pytest",
 ] + doc_requirements
 
 extras_require = {

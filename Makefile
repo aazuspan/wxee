@@ -49,3 +49,6 @@ install-dev: ## Install development version and pre-commit hooks
 release: ## Package and upload
 	python setup.py sdist
 	twine upload dist/*
+
+tests: ## Run unit tests
+	pytest .

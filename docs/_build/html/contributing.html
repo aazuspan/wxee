@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Developer Setup &mdash; wxee  documentation</title>
+  <title>Developer Guide &mdash; wxee  documentation</title>
   
 
   
@@ -94,7 +94,15 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="wxee.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Setup</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tests">Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#writing-tests">Writing Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-tests">Running Tests</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             
@@ -143,7 +151,7 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Developer Setup</li>
+      <li>Developer Guide</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -186,8 +194,10 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="developer-setup">
-<h1>Developer Setup<a class="headerlink" href="#developer-setup" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="developer-guide">
+<h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic">
 <li><p>Create a fork of wxee.</p></li>
 <li><p>Download and install the package and developer dependencies from your fork.</p>
@@ -223,6 +233,28 @@ make view-docs
 </div></blockquote>
 </li>
 </ol>
+</div>
+<div class="section" id="tests">
+<h2>Tests<a class="headerlink" href="#tests" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="writing-tests">
+<h3>Writing Tests<a class="headerlink" href="#writing-tests" title="Permalink to this headline">¶</a></h3>
+<p>All new functionality should be tested. Tests that require Earth Engine to be initialized should use the <code class="code docutils literal notranslate"><span class="pre">&#64;pytest.mark.ee</span></code> decorator which allows them
+to be easily skipped in case of connection issues.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">ee</span>
+<span class="k">def</span> <span class="nf">test_number_is_10</span><span class="p">():</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Number</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">num</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span> <span class="o">==</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="running-tests">
+<h3>Running Tests<a class="headerlink" href="#running-tests" title="Permalink to this headline">¶</a></h3>
+<p>To run all tests, use <code class="code docutils literal notranslate"><span class="pre">make</span> <span class="pre">tests</span></code>. If you cannot connect to Earth Engine or would like to skip slower tests, use <code class="code docutils literal notranslate"><span class="pre">make</span> <span class="pre">tests-local</span></code>.</p>
+</div>
+</div>
 </div>
 
 

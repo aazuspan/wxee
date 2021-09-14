@@ -3,10 +3,13 @@ import os
 import shutil
 import tempfile
 import warnings
+import zipfile
 
 import ee
 import pytest
 import rasterio
+import requests
+import requests_mock
 
 import wxee.utils
 
@@ -14,6 +17,40 @@ try:
     ee.Initialize()
 except Exception:
     warnings.warn("Earth Engine could not be initialized!")
+
+
+TEST_IMAGE_PATHS = [
+    os.path.join(
+        "test",
+        "test_data",
+        "IDAHO_EPSCOR_GRIDMET_20180203.time.20180203T060000.pr.tif",
+    ),
+    os.path.join(
+        "test",
+        "test_data",
+        "IDAHO_EPSCOR_GRIDMET_20180201.time.20180201T060000.pr.tif",
+    ),
+    os.path.join(
+        "test",
+        "test_data",
+        "IDAHO_EPSCOR_GRIDMET_20180202.time.20180202T060000.rmax.tif",
+    ),
+    os.path.join(
+        "test",
+        "test_data",
+        "IDAHO_EPSCOR_GRIDMET_20180202.time.20180202T060000.pr.tif",
+    ),
+    os.path.join(
+        "test",
+        "test_data",
+        "IDAHO_EPSCOR_GRIDMET_20180203.time.20180203T060000.rmax.tif",
+    ),
+    os.path.join(
+        "test",
+        "test_data",
+        "IDAHO_EPSCOR_GRIDMET_20180201.time.20180201T060000.rmax.tif",
+    ),
+]
 
 
 @pytest.mark.ee
@@ -119,9 +156,7 @@ def test_parse_invalid_time_warns():
 
 def test_dataarray_from_file():
     """Test that an xarray.DataArray can be created from a valid GeoTIFF."""
-    file_path = os.path.join(
-        "test", "test_data", "IDAHO_EPSCOR_GRIDMET_20180201.time.20180201T060000.pr.tif"
-    )
+    file_path = TEST_IMAGE_PATHS[0]
     da = wxee.utils._dataarray_from_file(file_path)
 
     assert da.name == "pr"
@@ -129,40 +164,7 @@ def test_dataarray_from_file():
 
 def test_dataset_from_files():
     """Test than an xarray.Dataset can be created from a list of valid GeoTIFFs."""
-    file_paths = [
-        os.path.join(
-            "test",
-            "test_data",
-            "IDAHO_EPSCOR_GRIDMET_20180203.time.20180203T060000.pr.tif",
-        ),
-        os.path.join(
-            "test",
-            "test_data",
-            "IDAHO_EPSCOR_GRIDMET_20180201.time.20180201T060000.pr.tif",
-        ),
-        os.path.join(
-            "test",
-            "test_data",
-            "IDAHO_EPSCOR_GRIDMET_20180202.time.20180202T060000.rmax.tif",
-        ),
-        os.path.join(
-            "test",
-            "test_data",
-            "IDAHO_EPSCOR_GRIDMET_20180202.time.20180202T060000.pr.tif",
-        ),
-        os.path.join(
-            "test",
-            "test_data",
-            "IDAHO_EPSCOR_GRIDMET_20180203.time.20180203T060000.rmax.tif",
-        ),
-        os.path.join(
-            "test",
-            "test_data",
-            "IDAHO_EPSCOR_GRIDMET_20180201.time.20180201T060000.rmax.tif",
-        ),
-    ]
-
-    ds = wxee.utils._dataset_from_files(file_paths)
+    ds = wxee.utils._dataset_from_files(TEST_IMAGE_PATHS)
 
     assert ds.time.size == 3
     assert all([var in ds.variables for var in ["pr", "rmax"]])
@@ -183,11 +185,9 @@ def test_set_nodata():
     is created, the nodata value is read from the copy, incremented to ensure a new nodata value, set,
     and tested. The copy is automatically deleted after the test has run.
     """
-    file_path = os.path.join(
-        "test", "test_data", "IDAHO_EPSCOR_GRIDMET_20180201.time.20180201T060000.pr.tif"
-    )
+    file_path = TEST_IMAGE_PATHS[0]
 
-    tmp_copy = tempfile.NamedTemporaryFile(delete=True).name
+    tmp_copy = tempfile.NamedTemporaryFile().name
     shutil.copy2(file_path, tmp_copy)
 
     with rasterio.open(tmp_copy) as r:
@@ -201,3 +201,48 @@ def test_set_nodata():
         new_nodata = r.nodata
 
     assert new_nodata == test_nodata
+
+    os.remove(tmp_copy)
+
+
+def test_download_url_creates_file():
+    """Test that the download_url function downloads a mock file with correct content."""
+    test_url = "http://aurl.com"
+    content = "this is the content of the file"
+    out_dir = os.path.join("test", "test_data")
+
+    with requests_mock.Mocker() as m:
+        m.get(test_url, text=content)
+        file = wxee.utils._download_url(test_url, out_dir, False, 1)
+
+        assert os.path.isfile(file)
+
+        with open(file, "r") as result:
+            assert result.read() == content
+
+        os.remove(file)
+
+
+def test_download_url_fails_with_404():
+    """Test that the download_url function fails correctly with a 404 response."""
+    test_url = "http://aurl.com"
+
+    with requests_mock.Mocker() as m:
+        m.get(test_url, text="", status_code=404)
+
+        with pytest.raises(requests.exceptions.HTTPError):
+            wxee.utils._download_url(test_url, "", False, 1)
+
+
+def test_unpack_zip():
+    """Test that files can be correctly unpacked from a zip with matching file names."""
+    zip_path = os.path.join("test", "test_data", "test.zip")
+
+    with zipfile.ZipFile(zip_path) as z:
+        zipped_names = z.namelist()
+
+    with tempfile.TemporaryDirectory() as tmp:
+        unzipped = wxee.utils._unpack_file(zip_path, tmp)
+        unzipped_names = [os.path.basename(file) for file in unzipped]
+
+    assert all([name in zipped_names for name in unzipped_names])

@@ -81,6 +81,14 @@ def _download_url(url: str, out_dir: str, progress: bool, max_attempts: int) -> 
     """
     filename = tempfile.NamedTemporaryFile(mode="w+b", dir=out_dir, delete=False).name
     r = _create_retry_session(max_attempts).get(url, stream=True)
+
+    try:
+        r.raise_for_status()
+    except Exception as e:
+        # Delete the tempfile if it could not be downloaded
+        os.remove(filename)
+        raise e
+
     file_size = int(r.headers.get("content-length", 0))
 
     with open(filename, "w+b") as dst, tqdm(

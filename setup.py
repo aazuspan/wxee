@@ -15,20 +15,24 @@ requirements = [
     "joblib",
 ]
 doc_requirements = ["nbsphinx", "sphinx", "sphinx_rtd_theme"]
-test_requirements = ["pytest"]
-dev_requirements = [
-    "pre-commit",
-    "mypy",
-    "black",
-    "isort",
-    "bumpversion",
-    "twine",
-    "pytest",
-] + doc_requirements
+test_requirements = ["pytest", "requests_mock"]
+dev_requirements = (
+    [
+        "pre-commit",
+        "mypy",
+        "black",
+        "isort",
+        "bumpversion",
+        "twine",
+    ]
+    + doc_requirements
+    + test_requirements
+)
 
 extras_require = {
     "doc": doc_requirements,
     "dev": dev_requirements,
+    "test": test_requirements,
 }
 
 setup(

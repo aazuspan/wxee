@@ -2,7 +2,6 @@ import datetime
 import os
 import shutil
 import tempfile
-import warnings
 import zipfile
 
 import ee
@@ -12,12 +11,6 @@ import requests
 import requests_mock
 
 import wxee.utils
-
-try:
-    ee.Initialize()
-except Exception:
-    warnings.warn("Earth Engine could not be initialized!")
-
 
 TEST_IMAGE_PATHS = [
     os.path.join(

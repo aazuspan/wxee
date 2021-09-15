@@ -1,5 +1,8 @@
-wxee
-====================================
+.. image:: https://raw.githubusercontent.com/aazuspan/wxee/main/docs/_static/wxee.png
+   :alt: wxee
+   :width: 200
+   :target: https://github.com/aazuspan/wxee
+|
 
 .. image:: https://img.shields.io/pypi/v/wxee
    :alt: PyPI
@@ -19,7 +22,7 @@ wxee
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
    :alt: GLP3 License
    :target: https://www.gnu.org/licenses/gpl-3.0
-
+------------
 
 .. image:: https://raw.githubusercontent.com/aazuspan/wxee/main/docs/_static/demo_001.gif
   :alt: Demo downloading weather data to xarray using wxee.

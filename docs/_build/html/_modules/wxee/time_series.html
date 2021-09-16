@@ -337,13 +337,28 @@
             <span class="c1"># If the resampling step falls between images, just return null</span>
             <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Algorithms</span><span class="o">.</span><span class="n">If</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">resampled</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-        <span class="n">n_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="n">frequency</span><span class="p">)</span><span class="o">.</span><span class="n">ceil</span><span class="p">()</span>
-        <span class="n">steps</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="o">.</span><span class="n">sequence</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-        <span class="n">start_times</span> <span class="o">=</span> <span class="n">steps</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">frequency</span><span class="p">))</span>
+        <span class="n">start_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_steps_at_frequency</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">start_times</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">resample_step</span><span class="p">,</span> <span class="n">dropNulls</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
             <span class="s2">&quot;system:id&quot;</span><span class="p">,</span> <span class="n">original_id</span>
         <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_generate_steps_at_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frequency</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ee.List[ee.Date]&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Generate a list of start dates that would split the time series into a given frequency. For example, a time series of daily</span>
+<span class="sd">        data at monthly frequency would return the start date of monthly periods starting from the first day.</span>
+
+<span class="sd">        In the example above, this is done by calculating the number of months that cover the time series and iteratively advancing</span>
+<span class="sd">        that many steps from the start time of the time series. This means that if the time series does not start on the first day of</span>
+<span class="sd">        a month, the steps will not line up with calendar months but will instead represent month-long groups of contiguous days.</span>
+
+<span class="sd">        A minimum of 1 step will be returned even if the time series period is smaller than the frequency.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">get_time_frequency</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
+
+        <span class="n">n_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="n">frequency</span><span class="p">)</span><span class="o">.</span><span class="n">floor</span><span class="p">()</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="o">.</span><span class="n">sequence</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">steps</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">frequency</span><span class="p">))</span>
 
 <div class="viewcode-block" id="TimeSeries.climatology_mean"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.climatology_mean">[docs]</a>    <span class="k">def</span> <span class="nf">climatology_mean</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

@@ -175,13 +175,28 @@ class TimeSeries(ee.imagecollection.ImageCollection):
             # If the resampling step falls between images, just return null
             return ee.Algorithms.If(imgs.size().gt(0), resampled, None)
 
-        n_steps = self.end_time.difference(self.start_time, frequency).ceil()
-        steps = ee.List.sequence(0, n_steps.subtract(1))
-        start_times = steps.map(lambda x: self.start_time.advance(x, frequency))
+        start_times = self._generate_steps_at_frequency(frequency)
 
         return TimeSeries(start_times.map(resample_step, dropNulls=True)).set(
             "system:id", original_id
         )
+
+    def _generate_steps_at_frequency(self, frequency: str) -> "ee.List[ee.Date]":
+        """Generate a list of start dates that would split the time series into a given frequency. For example, a time series of daily
+        data at monthly frequency would return the start date of monthly periods starting from the first day.
+
+        In the example above, this is done by calculating the number of months that cover the time series and iteratively advancing
+        that many steps from the start time of the time series. This means that if the time series does not start on the first day of
+        a month, the steps will not line up with calendar months but will instead represent month-long groups of contiguous days.
+
+        A minimum of 1 step will be returned even if the time series period is smaller than the frequency.
+        """
+        get_time_frequency(frequency)
+
+        n_steps = self.end_time.difference(self.start_time, frequency).floor()
+        steps = ee.List.sequence(0, n_steps)
+
+        return steps.map(lambda x: self.start_time.advance(x, frequency))
 
     def climatology_mean(
         self,

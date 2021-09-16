@@ -263,8 +263,10 @@ class TimeSeries(ee.imagecollection.ImageCollection):
                 freq.date_format
             )
             reduced = reduced.set("wx:dimension", frequency, "wx:coordinate", coord)
-            # Reducing makes images unbounded which causes issues
-            reduced = reduced.clip(collection.geometry().bounds())
+
+            geom = collection.geometry()
+            # Reducing makes images unbounded, so re-clip bounded images
+            reduced = ee.Algorithms.If(geom.isUnbounded(), reduced, reduced.clip(geom))
 
             if keep_bandnames:
                 reduced = ee.Image(reduced).rename(imgs.first().bandNames())

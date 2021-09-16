@@ -1,6 +1,9 @@
+import os
+
 import ee
 import numpy as np
 import pytest
+import rasterio
 
 import wxee
 
@@ -106,3 +109,49 @@ def test_to_xarray_unmasked():
     )
 
     assert da.band_name.mean().values.item() == -999
+
+
+@pytest.mark.ee
+def test_to_netcdf():
+    """Test that to_xarray saves a NetCDF when a path is given"""
+    img = (
+        ee.Image.constant(42)
+        .set("system:time_start", ee.Date("2000"))
+        .rename("band_name")
+    )
+    region = ee.Geometry.Point(0, 0).buffer(10).bounds()
+    out_path = os.path.join("test", "test_data", "test.nc")
+    img.wx.to_xarray(path=out_path, region=region, scale=20, progress=False)
+
+    assert os.path.isfile(out_path)
+
+    os.remove(out_path)
+
+
+@pytest.mark.ee
+def test_to_tif():
+    """Check that file and band names are set correctly when downloading to GeoTIFF"""
+    img = (
+        ee.Image.constant(0)
+        .set("system:time_start", ee.Date("2000"))
+        .rename("band_name")
+    )
+    region = ee.Geometry.Point(0, 0).buffer(10).bounds()
+
+    out_dir = os.path.join("test", "test_data")
+
+    file = img.wx.to_tif(
+        description="desc",
+        out_dir=out_dir,
+        region=region,
+        scale=20,
+        progress=False,
+        file_per_band=False,
+    )
+
+    assert "desc.time.20000101" in file[0]
+
+    with rasterio.open(file[0]) as src:
+        assert src.descriptions == ("band_name",)
+
+    os.remove(file[0])

@@ -5,6 +5,36 @@ import wxee
 
 
 @pytest.mark.ee
+def test_climatology_mean():
+    """Test that a climatology produces the right number of images."""
+    start = ee.Date("2000-01")
+    imgs = wxee.TimeSeries(
+        [
+            ee.Image.constant(1).set("system:time_start", start.advance(i, "month"))
+            for i in range(48)
+        ]
+    )
+    clim = imgs.climatology_mean("month")
+
+    assert clim.size().getInfo() == 12
+
+
+@pytest.mark.ee
+def test_climatology_mean_limited_range():
+    """Test that a climatology with limited start and end steps produces the right number of images."""
+    start = ee.Date("2000-01")
+    imgs = wxee.TimeSeries(
+        [
+            ee.Image.constant(1).set("system:time_start", start.advance(i, "month"))
+            for i in range(48)
+        ]
+    )
+    clim = imgs.climatology_mean("month", start=3, end=8)
+
+    assert clim.size().getInfo() == 6
+
+
+@pytest.mark.ee
 def test_aggregate_hourly_to_daily():
     """Test that aggregating an hourly time series to daily produces the correct number of images"""
     start = ee.Date("2020-01-01")

@@ -637,6 +637,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">hvplot.xarray</span>
+<span class="kn">import</span> <span class="nn">holoviews</span> <span class="k">as</span> <span class="nn">hv</span>
 </pre></div>
 </div>
 </div>
@@ -2121,7 +2122,8 @@ if (window.Jupyter !== undefined) {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ds</span><span class="o">.</span><span class="n">NDVI</span><span class="o">.</span><span class="n">hvplot</span><span class="p">(</span>
+<span></span><span class="n">hv</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="s2">&quot;bokeh&quot;</span><span class="p">)</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">NDVI</span><span class="o">.</span><span class="n">hvplot</span><span class="p">(</span>
     <span class="n">groupby</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">clim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;YlGn&quot;</span><span class="p">,</span>
     <span class="n">frame_height</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
     <span class="n">widget_location</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span> <span class="n">widget_type</span><span class="o">=</span><span class="s2">&quot;scrubber&quot;</span><span class="p">,</span>

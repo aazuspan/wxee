@@ -10,3 +10,4 @@ Examples
     examples/climatology.ipynb
     examples/modis.ipynb
     examples/fire_progressions.ipynb
+    examples/eemont.ipynb

@@ -36,6 +36,7 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -425,8 +426,10 @@
                 <span class="n">freq</span><span class="o">.</span><span class="n">date_format</span>
             <span class="p">)</span>
             <span class="n">reduced</span> <span class="o">=</span> <span class="n">reduced</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;wx:dimension&quot;</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="s2">&quot;wx:coordinate&quot;</span><span class="p">,</span> <span class="n">coord</span><span class="p">)</span>
-            <span class="c1"># Reducing makes images unbounded which causes issues</span>
-            <span class="n">reduced</span> <span class="o">=</span> <span class="n">reduced</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">collection</span><span class="o">.</span><span class="n">geometry</span><span class="p">()</span><span class="o">.</span><span class="n">bounds</span><span class="p">())</span>
+
+            <span class="n">geom</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">geometry</span><span class="p">()</span>
+            <span class="c1"># Reducing makes images unbounded, so re-clip bounded images</span>
+            <span class="n">reduced</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Algorithms</span><span class="o">.</span><span class="n">If</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">isUnbounded</span><span class="p">(),</span> <span class="n">reduced</span><span class="p">,</span> <span class="n">reduced</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">geom</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="n">keep_bandnames</span><span class="p">:</span>
                 <span class="n">reduced</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">reduced</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">bandNames</span><span class="p">())</span>

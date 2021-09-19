@@ -3,13 +3,13 @@ from typing import Any
 import ee  # type: ignore
 
 
-class ClimatologyMean(ee.imagecollection.ImageCollection):
-    """An image collection of climatological means.
-
-    Must be instantiated through :code:`wxee.time_series.TimeSeries.mean_climatology`.
+class Climatology(ee.imagecollection.ImageCollection):
+    """An image collection of climatological statistics such as means or standard deviations.
 
     Attributes
     ----------
+    statistic : str
+        The statistic of the climatology, e.g. a mean climatology or standard deviation climatology.
     frequency : str
         The time frequency of the climatology. One of "day", "month".
     reducer : ee.Reducer
@@ -39,6 +39,7 @@ class ClimatologyMean(ee.imagecollection.ImageCollection):
 
         print(
             f"\033[1m{id}\033[0m"
+            f"\n\t{self.statistic.title()} Climatology"
             f"\n\tImages: {size}"
             f"\n\tFrequency: {self.frequency}"
             f"\n\tStart {self.frequency}: {self.start}"

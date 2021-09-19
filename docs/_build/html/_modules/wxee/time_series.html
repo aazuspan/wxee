@@ -165,7 +165,7 @@
 
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 
-<span class="kn">from</span> <span class="nn">wxee.climatology</span> <span class="kn">import</span> <span class="n">ClimatologyMean</span>
+<span class="kn">from</span> <span class="nn">wxee.climatology</span> <span class="kn">import</span> <span class="n">Climatology</span>
 <span class="kn">from</span> <span class="nn">wxee.constants</span> <span class="kn">import</span> <span class="n">get_climatology_frequency</span><span class="p">,</span> <span class="n">get_time_frequency</span>
 
 
@@ -361,18 +361,15 @@
 
         <span class="k">return</span> <span class="n">steps</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">frequency</span><span class="p">))</span>
 
-<div class="viewcode-block" id="TimeSeries.climatology_mean"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.climatology_mean">[docs]</a>    <span class="k">def</span> <span class="nf">climatology_mean</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">frequency</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClimatologyMean</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Calculate a mean climatology image collection with a given frequency.</span>
+
+    <span class="k">def</span> <span class="nf">_calculate_climatology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">climatology_reducer</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate a climatology image collection with a given frequency and reducer.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        climatology_reducer: Optional[ee.Reducer]</span>
+<span class="sd">            The climatological reducer to apply to aggregated images. In most cases, this will be ee.Reducer.mean</span>
+<span class="sd">            or ee.Reducer.stdDev for generating climatological means and standard deviations, respectively.</span>
 <span class="sd">        frequency : str</span>
 <span class="sd">            The name of the time frequency. One of &quot;day&quot;, &quot;month&quot;.</span>
 <span class="sd">        reducer : Optional[ee.Reducer]</span>
@@ -391,20 +388,11 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        wxee.climatology.ClimatologyMean</span>
-<span class="sd">            The climatological mean collection.</span>
-
-<span class="sd">        Example</span>
-<span class="sd">        -------</span>
-<span class="sd">        &gt;&gt;&gt; collection = ee.ImageCollection(&quot;IDAHO_EPSCOR/GRIDMET&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; collection = collection.filterDate(&quot;1980&quot;, &quot;2000&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; ts = wxee.TimeSeries(collection)</span>
-<span class="sd">        &gt;&gt;&gt; daily_max = ts.climatology_mean(frequency=&quot;day&quot;, reducer=ee.Reducer.max())</span>
-<span class="sd">        &gt;&gt;&gt; daily_max.size().getInfo()</span>
-<span class="sd">        366</span>
+<span class="sd">        wxee.climatology.Climatology</span>
+<span class="sd">            The climatological collection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">reducer</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">reducer</span> <span class="k">else</span> <span class="n">reducer</span>
-
+        
         <span class="n">freq</span> <span class="o">=</span> <span class="n">get_climatology_frequency</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
         <span class="n">start</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">start</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">start</span> <span class="k">else</span> <span class="n">start</span>
         <span class="n">end</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">end</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">end</span> <span class="k">else</span> <span class="n">end</span>
@@ -419,7 +407,7 @@
 <span class="sd">                The time coordinate to reduce, such as &quot;1&quot; for January.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">imgs</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">filterMetadata</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="s2">&quot;equals&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-            <span class="n">reduced</span> <span class="o">=</span> <span class="n">imgs</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+            <span class="n">reduced</span> <span class="o">=</span> <span class="n">imgs</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">climatology_reducer</span><span class="p">)</span>
             <span class="c1"># Retrieve the time from the image instead of using x because I need a formatted</span>
             <span class="c1"># string for concatenating into the system:id later.</span>
             <span class="n">coord</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">imgs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -449,7 +437,7 @@
         <span class="p">)</span>
         <span class="n">coord_list</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="o">.</span><span class="n">sequence</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
 
-        <span class="n">clim</span> <span class="o">=</span> <span class="n">ClimatologyMean</span><span class="p">(</span>
+        <span class="n">clim</span> <span class="o">=</span> <span class="n">Climatology</span><span class="p">(</span>
             <span class="n">coord_list</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">reduce_frequency</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">dropNulls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="p">)</span>
 
@@ -458,7 +446,103 @@
         <span class="n">clim</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
         <span class="n">clim</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span>
 
-        <span class="k">return</span> <span class="n">clim</span></div></div>
+        <span class="k">return</span> <span class="n">clim</span>
+
+
+<div class="viewcode-block" id="TimeSeries.climatology_mean"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.climatology_mean">[docs]</a>    <span class="k">def</span> <span class="nf">climatology_mean</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Climatology</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate a mean climatology image collection with a given frequency.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frequency : str</span>
+<span class="sd">            The name of the time frequency. One of &quot;day&quot;, &quot;month&quot;.</span>
+<span class="sd">        reducer : Optional[ee.Reducer]</span>
+<span class="sd">            The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily for a daily</span>
+<span class="sd">            climatology. If the data is already in the temporal scale of the climatology, e.g. creating a daily</span>
+<span class="sd">            climatology from daily data, the reducer will have no effect.</span>
+<span class="sd">        start : Optional[int]</span>
+<span class="sd">            The start coordinate in the time frequency to include in the climatology, e.g. 1 for January if the</span>
+<span class="sd">            frequency is &quot;month&quot;. If none is provided, the default will be 1 for both &quot;day&quot; and &quot;month&quot;.</span>
+<span class="sd">        end : Optional[int]</span>
+<span class="sd">            The end coordinate in the time frequency to include in the climatology, e.g. 8 for August if the</span>
+<span class="sd">            frequency is &quot;month&quot;. If none is provided, the default will be 366 for &quot;day&quot; or 12 for &quot;month&quot;</span>
+<span class="sd">        keep_bandnames : bool, default True</span>
+<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
+<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        wxee.climatology.Climatology</span>
+<span class="sd">            The climatological mean collection.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; collection = ee.ImageCollection(&quot;IDAHO_EPSCOR/GRIDMET&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; collection = collection.filterDate(&quot;1980&quot;, &quot;2000&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; ts = wxee.TimeSeries(collection)</span>
+<span class="sd">        &gt;&gt;&gt; daily_max = ts.climatology_mean(frequency=&quot;day&quot;, reducer=ee.Reducer.max())</span>
+<span class="sd">        &gt;&gt;&gt; daily_max.size().getInfo()</span>
+<span class="sd">        366</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mean_clim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_climatology</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span>
+        <span class="n">mean_clim</span><span class="o">.</span><span class="n">statistic</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span>
+
+        <span class="k">return</span> <span class="n">mean_clim</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.climatology_std"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.climatology_std">[docs]</a>    <span class="k">def</span> <span class="nf">climatology_std</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Climatology</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculate a standard deviation climatology image collection with a given frequency.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frequency : str</span>
+<span class="sd">            The name of the time frequency. One of &quot;day&quot;, &quot;month&quot;.</span>
+<span class="sd">        reducer : Optional[ee.Reducer]</span>
+<span class="sd">            The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily for a daily</span>
+<span class="sd">            climatology. If the data is already in the temporal scale of the climatology, e.g. creating a daily</span>
+<span class="sd">            climatology from daily data, the reducer will have no effect.</span>
+<span class="sd">        start : Optional[int]</span>
+<span class="sd">            The start coordinate in the time frequency to include in the climatology, e.g. 1 for January if the</span>
+<span class="sd">            frequency is &quot;month&quot;. If none is provided, the default will be 1 for both &quot;day&quot; and &quot;month&quot;.</span>
+<span class="sd">        end : Optional[int]</span>
+<span class="sd">            The end coordinate in the time frequency to include in the climatology, e.g. 8 for August if the</span>
+<span class="sd">            frequency is &quot;month&quot;. If none is provided, the default will be 366 for &quot;day&quot; or 12 for &quot;month&quot;</span>
+<span class="sd">        keep_bandnames : bool, default True</span>
+<span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
+<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_stdDev.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        wxee.climatology.Climatology</span>
+<span class="sd">            The climatological standard deviation collection.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; collection = ee.ImageCollection(&quot;IDAHO_EPSCOR/GRIDMET&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; collection = collection.filterDate(&quot;1980&quot;, &quot;2000&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; ts = wxee.TimeSeries(collection)</span>
+<span class="sd">        &gt;&gt;&gt; daily_max = ts.climatology_std(frequency=&quot;day&quot;, reducer=ee.Reducer.max())</span>
+<span class="sd">        &gt;&gt;&gt; daily_max.size().getInfo()</span>
+<span class="sd">        366</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mean_clim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_climatology</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">stdDev</span><span class="p">(),</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span>
+        <span class="n">mean_clim</span><span class="o">.</span><span class="n">statistic</span> <span class="o">=</span> <span class="s2">&quot;standard deviation&quot;</span>
+
+        <span class="k">return</span> <span class="n">mean_clim</span></div></div>
 </pre></div>
 
            </div>

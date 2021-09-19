@@ -75,11 +75,11 @@ have 12 images, with each image describing the mean total rainfall in each month
 Creating a Climatology
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Climatologies are created from a :code:`TimeSeries` using the :code:`climatology_mean` method.
+Climatologies are created from a :code:`TimeSeries` using the :code:`climatology_mean` and :code:`climatology_std` methods.
 
 .. warning::
 
-   The :code:`ClimatologyMean` class should never be instantiated directly.
+   The :code:`Climatology` class should never be instantiated directly.
 
 .. code-block:: python
 
@@ -99,8 +99,8 @@ Climatologies are created from a :code:`TimeSeries` using the :code:`climatology
 Methods and Properties
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Once instantiated, a :code:`ClimatologyMean` has all of the methods of :code:`ee.ImageCollection` (including those extended by the
+Once instantiated, a :code:`Climatology` has all of the methods of :code:`ee.ImageCollection` (including those extended by the
 :code:`wx` accessor) plus additional properties describing the climatology.
 
-.. autoclass:: wxee.climatology.ClimatologyMean
+.. autoclass:: wxee.climatology.Climatology
    :members:

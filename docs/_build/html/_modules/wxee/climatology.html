@@ -166,13 +166,13 @@
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 
 
-<div class="viewcode-block" id="ClimatologyMean"><a class="viewcode-back" href="../../wxee.html#wxee.climatology.ClimatologyMean">[docs]</a><span class="k">class</span> <span class="nc">ClimatologyMean</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">imagecollection</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;An image collection of climatological means.</span>
-
-<span class="sd">    Must be instantiated through :code:`wxee.time_series.TimeSeries.mean_climatology`.</span>
+<div class="viewcode-block" id="Climatology"><a class="viewcode-back" href="../../wxee.html#wxee.climatology.Climatology">[docs]</a><span class="k">class</span> <span class="nc">Climatology</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">imagecollection</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An image collection of climatological statistics such as means or standard deviations.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
+<span class="sd">    statistic : str</span>
+<span class="sd">        The statistic of the climatology, e.g. a mean climatology or standard deviation climatology.</span>
 <span class="sd">    frequency : str</span>
 <span class="sd">        The time frequency of the climatology. One of &quot;day&quot;, &quot;month&quot;.</span>
 <span class="sd">    reducer : ee.Reducer</span>
@@ -188,7 +188,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ClimatologyMean.describe"><a class="viewcode-back" href="../../wxee.html#wxee.climatology.ClimatologyMean.describe">[docs]</a>    <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Climatology.describe"><a class="viewcode-back" href="../../wxee.html#wxee.climatology.Climatology.describe">[docs]</a>    <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Generate and print descriptive statistics about the Climatology such as the ID, number of images, and frequency.</span>
 <span class="sd">        This requires pulling data from the server, so it may run slowly.</span>
 
@@ -202,6 +202,7 @@
 
         <span class="nb">print</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[1m</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2"> Climatology&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Images: </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Frequency: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Start </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">&quot;</span>

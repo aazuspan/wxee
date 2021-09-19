@@ -590,7 +590,7 @@ reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="wxee.time_series.TimeSeries.climatology_mean">
-<span class="sig-name descname"><span class="pre">climatology_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#wxee.climatology.ClimatologyMean" title="wxee.climatology.ClimatologyMean"><span class="pre">wxee.climatology.ClimatologyMean</span></a></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeries.climatology_mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.time_series.TimeSeries.climatology_mean" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">climatology_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#wxee.climatology.Climatology" title="wxee.climatology.Climatology"><span class="pre">wxee.climatology.Climatology</span></a></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeries.climatology_mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.time_series.TimeSeries.climatology_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate a mean climatology image collection with a given frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -611,7 +611,7 @@ reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</
 <dd class="field-even"><p>The climatological mean collection.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#wxee.climatology.ClimatologyMean" title="wxee.climatology.ClimatologyMean">wxee.climatology.ClimatologyMean</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#wxee.climatology.Climatology" title="wxee.climatology.Climatology">wxee.climatology.Climatology</a></p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -619,6 +619,43 @@ reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</
 <span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;1980&quot;</span><span class="p">,</span> <span class="s2">&quot;2000&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">daily_max</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">climatology_mean</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">daily_max</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+<span class="go">366</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wxee.time_series.TimeSeries.climatology_std">
+<span class="sig-name descname"><span class="pre">climatology_std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#wxee.climatology.Climatology" title="wxee.climatology.Climatology"><span class="pre">wxee.climatology.Climatology</span></a></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeries.climatology_std"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.time_series.TimeSeries.climatology_std" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a standard deviation climatology image collection with a given frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>str</em>) – The name of the time frequency. One of “day”, “month”.</p></li>
+<li><p><strong>reducer</strong> (<em>Optional</em><em>[</em><em>ee.Reducer</em><em>]</em>) – The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily for a daily
+climatology. If the data is already in the temporal scale of the climatology, e.g. creating a daily
+climatology from daily data, the reducer will have no effect.</p></li>
+<li><p><strong>start</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The start coordinate in the time frequency to include in the climatology, e.g. 1 for January if the
+frequency is “month”. If none is provided, the default will be 1 for both “day” and “month”.</p></li>
+<li><p><strong>end</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The end coordinate in the time frequency to include in the climatology, e.g. 8 for August if the
+frequency is “month”. If none is provided, the default will be 366 for “day” or 12 for “month”</p></li>
+<li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_stdDev.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The climatological standard deviation collection.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#wxee.climatology.Climatology" title="wxee.climatology.Climatology">wxee.climatology.Climatology</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;1980&quot;</span><span class="p">,</span> <span class="s2">&quot;2000&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">daily_max</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">climatology_std</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">daily_max</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 <span class="go">366</span>
 </pre></div>
@@ -636,10 +673,10 @@ of the climatology (e.g. months or days). For example, a monthly mean climatolog
 have 12 images, with each image describing the mean total rainfall in each month over those 30 years.</p>
 <div class="section" id="creating-a-climatology">
 <h3>Creating a Climatology<a class="headerlink" href="#creating-a-climatology" title="Permalink to this headline">¶</a></h3>
-<p>Climatologies are created from a <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> using the <code class="code docutils literal notranslate"><span class="pre">climatology_mean</span></code> method.</p>
+<p>Climatologies are created from a <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> using the <code class="code docutils literal notranslate"><span class="pre">climatology_mean</span></code> and <code class="code docutils literal notranslate"><span class="pre">climatology_std</span></code> methods.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The <code class="code docutils literal notranslate"><span class="pre">ClimatologyMean</span></code> class should never be instantiated directly.</p>
+<p>The <code class="code docutils literal notranslate"><span class="pre">Climatology</span></code> class should never be instantiated directly.</p>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ee</span>
 <span class="kn">import</span> <span class="nn">wxee</span>
@@ -657,16 +694,26 @@ data were already monthly, the reducer would have no effect.</p>
 </div>
 <div class="section" id="id1">
 <h3>Methods and Properties<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<p>Once instantiated, a <code class="code docutils literal notranslate"><span class="pre">ClimatologyMean</span></code> has all of the methods of <code class="code docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> (including those extended by the
+<p>Once instantiated, a <code class="code docutils literal notranslate"><span class="pre">Climatology</span></code> has all of the methods of <code class="code docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> (including those extended by the
 <code class="code docutils literal notranslate"><span class="pre">wx</span></code> accessor) plus additional properties describing the climatology.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="wxee.climatology.ClimatologyMean">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">wxee.climatology.</span></span><span class="sig-name descname"><span class="pre">ClimatologyMean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wxee/climatology.html#ClimatologyMean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.climatology.ClimatologyMean" title="Permalink to this definition">¶</a></dt>
-<dd><p>An image collection of climatological means.</p>
-<p>Must be instantiated through <code class="code docutils literal notranslate"><span class="pre">wxee.time_series.TimeSeries.mean_climatology</span></code>.</p>
+<dt class="sig sig-object py" id="wxee.climatology.Climatology">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">wxee.climatology.</span></span><span class="sig-name descname"><span class="pre">Climatology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wxee/climatology.html#Climatology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.climatology.Climatology" title="Permalink to this definition">¶</a></dt>
+<dd><p>An image collection of climatological statistics such as means or standard deviations.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="wxee.climatology.ClimatologyMean.frequency">
-<span class="sig-name descname"><span class="pre">frequency</span></span><a class="headerlink" href="#wxee.climatology.ClimatologyMean.frequency" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wxee.climatology.Climatology.statistic">
+<span class="sig-name descname"><span class="pre">statistic</span></span><a class="headerlink" href="#wxee.climatology.Climatology.statistic" title="Permalink to this definition">¶</a></dt>
+<dd><p>The statistic of the climatology, e.g. a mean climatology or standard deviation climatology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wxee.climatology.Climatology.frequency">
+<span class="sig-name descname"><span class="pre">frequency</span></span><a class="headerlink" href="#wxee.climatology.Climatology.frequency" title="Permalink to this definition">¶</a></dt>
 <dd><p>The time frequency of the climatology. One of “day”, “month”.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -676,8 +723,8 @@ data were already monthly, the reducer would have no effect.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="wxee.climatology.ClimatologyMean.reducer">
-<span class="sig-name descname"><span class="pre">reducer</span></span><a class="headerlink" href="#wxee.climatology.ClimatologyMean.reducer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wxee.climatology.Climatology.reducer">
+<span class="sig-name descname"><span class="pre">reducer</span></span><a class="headerlink" href="#wxee.climatology.Climatology.reducer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The reducer used to aggregate the climatology.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -687,8 +734,8 @@ data were already monthly, the reducer would have no effect.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="wxee.climatology.ClimatologyMean.start">
-<span class="sig-name descname"><span class="pre">start</span></span><a class="headerlink" href="#wxee.climatology.ClimatologyMean.start" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wxee.climatology.Climatology.start">
+<span class="sig-name descname"><span class="pre">start</span></span><a class="headerlink" href="#wxee.climatology.Climatology.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>The start coordinate in the time frequency included in the climatology, e.g. 1 for January if the
 frequency is “month”.</p>
 <dl class="field-list simple">
@@ -699,8 +746,8 @@ frequency is “month”.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="wxee.climatology.ClimatologyMean.end">
-<span class="sig-name descname"><span class="pre">end</span></span><a class="headerlink" href="#wxee.climatology.ClimatologyMean.end" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wxee.climatology.Climatology.end">
+<span class="sig-name descname"><span class="pre">end</span></span><a class="headerlink" href="#wxee.climatology.Climatology.end" title="Permalink to this definition">¶</a></dt>
 <dd><p>The end coordinate in the time frequency included in the climatology, e.g. 8 for August if the
 frequency is “month”.</p>
 <dl class="field-list simple">
@@ -711,8 +758,8 @@ frequency is “month”.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="wxee.climatology.ClimatologyMean.describe">
-<span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/wxee/climatology.html#ClimatologyMean.describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.climatology.ClimatologyMean.describe" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="wxee.climatology.Climatology.describe">
+<span class="sig-name descname"><span class="pre">describe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/wxee/climatology.html#Climatology.describe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.climatology.Climatology.describe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate and print descriptive statistics about the Climatology such as the ID, number of images, and frequency.
 This requires pulling data from the server, so it may run slowly.</p>
 <dl class="field-list simple">

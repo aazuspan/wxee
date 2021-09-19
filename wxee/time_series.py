@@ -2,7 +2,7 @@ from typing import Any, Optional, Union
 
 import ee  # type: ignore
 
-from wxee.climatology import ClimatologyMean
+from wxee.climatology import Climatology
 from wxee.constants import get_climatology_frequency, get_time_frequency
 
 
@@ -198,18 +198,22 @@ class TimeSeries(ee.imagecollection.ImageCollection):
 
         return steps.map(lambda x: self.start_time.advance(x, frequency))
 
-    def climatology_mean(
+    def _calculate_climatology(
         self,
+        climatology_reducer: Optional[Any],
         frequency: str,
         reducer: Optional[Any] = None,
         start: Optional[int] = None,
         end: Optional[int] = None,
         keep_bandnames: bool = True,
-    ) -> ClimatologyMean:
-        """Calculate a mean climatology image collection with a given frequency.
+    ) -> Climatology:
+        """Calculate a climatology image collection with a given frequency and reducer.
 
         Parameters
         ----------
+        climatology_reducer: Optional[ee.Reducer]
+            The climatological reducer to apply to aggregated images. In most cases, this will be ee.Reducer.mean
+            or ee.Reducer.stdDev for generating climatological means and standard deviations, respectively.
         frequency : str
             The name of the time frequency. One of "day", "month".
         reducer : Optional[ee.Reducer]
@@ -228,17 +232,8 @@ class TimeSeries(ee.imagecollection.ImageCollection):
 
         Returns
         -------
-        wxee.climatology.ClimatologyMean
-            The climatological mean collection.
-
-        Example
-        -------
-        >>> collection = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET")
-        >>> collection = collection.filterDate("1980", "2000")
-        >>> ts = wxee.TimeSeries(collection)
-        >>> daily_max = ts.climatology_mean(frequency="day", reducer=ee.Reducer.max())
-        >>> daily_max.size().getInfo()
-        366
+        wxee.climatology.Climatology
+            The climatological collection.
         """
         reducer = ee.Reducer.mean() if not reducer else reducer
 
@@ -256,7 +251,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
                 The time coordinate to reduce, such as "1" for January.
             """
             imgs = collection.filterMetadata(prop, "equals", x)
-            reduced = imgs.reduce(ee.Reducer.mean())
+            reduced = imgs.reduce(climatology_reducer)
             # Retrieve the time from the image instead of using x because I need a formatted
             # string for concatenating into the system:id later.
             coord = ee.Date(imgs.first().get("system:time_start")).format(
@@ -286,7 +281,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         )
         coord_list = ee.List.sequence(start, end)
 
-        clim = ClimatologyMean(
+        clim = Climatology(
             coord_list.map(lambda x: reduce_frequency(x), dropNulls=True)
         )
 
@@ -296,3 +291,101 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         clim.end = end
 
         return clim
+
+    def climatology_mean(
+        self,
+        frequency: str,
+        reducer: Optional[Any] = None,
+        start: Optional[int] = None,
+        end: Optional[int] = None,
+        keep_bandnames: bool = True,
+    ) -> Climatology:
+        """Calculate a mean climatology image collection with a given frequency.
+
+        Parameters
+        ----------
+        frequency : str
+            The name of the time frequency. One of "day", "month".
+        reducer : Optional[ee.Reducer]
+            The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily for a daily
+            climatology. If the data is already in the temporal scale of the climatology, e.g. creating a daily
+            climatology from daily data, the reducer will have no effect.
+        start : Optional[int]
+            The start coordinate in the time frequency to include in the climatology, e.g. 1 for January if the
+            frequency is "month". If none is provided, the default will be 1 for both "day" and "month".
+        end : Optional[int]
+            The end coordinate in the time frequency to include in the climatology, e.g. 8 for August if the
+            frequency is "month". If none is provided, the default will be 366 for "day" or 12 for "month"
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
+
+        Returns
+        -------
+        wxee.climatology.Climatology
+            The climatological mean collection.
+
+        Example
+        -------
+        >>> collection = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET")
+        >>> collection = collection.filterDate("1980", "2000")
+        >>> ts = wxee.TimeSeries(collection)
+        >>> daily_max = ts.climatology_mean(frequency="day", reducer=ee.Reducer.max())
+        >>> daily_max.size().getInfo()
+        366
+        """
+        mean_clim = self._calculate_climatology(
+            ee.Reducer.mean(), frequency, reducer, start, end, keep_bandnames
+        )
+        mean_clim.statistic = "mean"
+
+        return mean_clim
+
+    def climatology_std(
+        self,
+        frequency: str,
+        reducer: Optional[Any] = None,
+        start: Optional[int] = None,
+        end: Optional[int] = None,
+        keep_bandnames: bool = True,
+    ) -> Climatology:
+        """Calculate a standard deviation climatology image collection with a given frequency.
+
+        Parameters
+        ----------
+        frequency : str
+            The name of the time frequency. One of "day", "month".
+        reducer : Optional[ee.Reducer]
+            The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily for a daily
+            climatology. If the data is already in the temporal scale of the climatology, e.g. creating a daily
+            climatology from daily data, the reducer will have no effect.
+        start : Optional[int]
+            The start coordinate in the time frequency to include in the climatology, e.g. 1 for January if the
+            frequency is "month". If none is provided, the default will be 1 for both "day" and "month".
+        end : Optional[int]
+            The end coordinate in the time frequency to include in the climatology, e.g. 8 for August if the
+            frequency is "month". If none is provided, the default will be 366 for "day" or 12 for "month"
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_stdDev.
+
+        Returns
+        -------
+        wxee.climatology.Climatology
+            The climatological standard deviation collection.
+
+        Example
+        -------
+        >>> collection = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET")
+        >>> collection = collection.filterDate("1980", "2000")
+        >>> ts = wxee.TimeSeries(collection)
+        >>> daily_max = ts.climatology_std(frequency="day", reducer=ee.Reducer.max())
+        >>> daily_max.size().getInfo()
+        366
+        """
+        mean_clim = self._calculate_climatology(
+            ee.Reducer.stdDev(), frequency, reducer, start, end, keep_bandnames
+        )
+        mean_clim.statistic = "standard deviation"
+
+        return mean_clim

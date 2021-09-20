@@ -183,7 +183,9 @@ class Image:
         max_attempts: int,
     ) -> List[str]:
         """Download a ZIP from a URL and unpack and process it by setting metadata."""
-        with tempfile.TemporaryDirectory(prefix=constants.TMP_PREFIX) as tmp:
+        with tempfile.TemporaryDirectory(
+            dir=out_dir, prefix=constants.TMP_PREFIX
+        ) as tmp:
             zipped = _download_url(url, tmp, progress, max_attempts)
             tifs = _unpack_file(zipped, out_dir)
         self._process_tifs(tifs, file_per_band, masked, nodata)

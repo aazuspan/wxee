@@ -389,3 +389,114 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         mean_clim.statistic = "standard deviation"
 
         return mean_clim
+
+    def climatology_anomaly(
+        self,
+        frequency: str,
+        mean: Optional[Climatology] = None,
+        std: Optional[Climatology] = None,
+        standardize: bool = False,
+        reducer: Optional[Any] = None,
+        start: Optional[int] = None,
+        end: Optional[int] = None,
+        keep_bandnames: bool = True,
+    ) -> "TimeSeries":
+        """Calculate climatological anomalies for the time series with a given frequency. The long-term climatological
+        mean and standard deviation (if the output is standardized) can be provided or calculated automatically.
+
+        A climatological anomaly is calculated as the difference between the climatological mean and a given observation.
+        For standardized anomalies, that difference is divided by the climatological standard deviation. Standardized
+        anomalies represent unitless measurements of how many standard deviations an observation was from the climatological
+        mean, and therefore allow easy comparisons between variables.
+
+        Note
+        ----
+        Climatological anomalies are generally calculated using long-term climatological normals (e.g. 30 years). If
+        the climatological mean and standard deviation represent a shorter period, interpretation of results may vary.
+
+        Parameters
+        ----------
+        frequency : str
+            The name of the time frequency. One of "day", "month".
+        mean : Optional[Climatology]
+            The long-term climatological mean to calculate anomalies from. The climatological mean frequency must match
+            the frequency specified when calling this method. If a mean is not provided, one will be calculated from this
+            TimeSeries. In this case, the TimeSeries must be suitably long to achieve valid results.
+        std : Optional[Climatology]
+            The long-term climatological standard deviation to calculate anomalies from if :code:`standardized` is true.
+            The climatological standard deivation frequency must match the frequency specified when calling this method.
+            If a standard deivation is not provided, one will be calculated from this TimeSeries. In this case, the
+            TimeSeries must be suitably long to achieve valid results.
+        standardize : bool, default False
+            If true, standardized anomalies will be calculated.
+        reducer : Optional[ee.Reducer]
+            The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily for a daily
+            climatology. If the data is already in the temporal scale of the climatology, e.g. creating a daily
+            climatology from daily data, the reducer will have no effect.
+        start : Optional[int]
+            The start coordinate in the time frequency to include in the climatology, e.g. 1 for January if the
+            frequency is "month". If none is provided, the default will be 1 for both "day" and "month". This parameter
+            is only used if :code:`mean` or :code:`std` are not provided.
+        end : Optional[int]
+            The end coordinate in the time frequency to include in the climatology, e.g. 8 for August if the
+            frequency is "month". If none is provided, the default will be 366 for "day" or 12 for "month" This parameter
+            is only used if :code:`mean` or :code:`std` are not provided.
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
+
+        Returns
+        -------
+        wxee.time_series.TimeSeries
+            Climatological anomalies within the TimeSeries period.
+
+        Example
+        -------
+        >>> collection = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET").filterDate("1980", "2010")
+        >>> mean = collection.climatology_mean("month")
+        >>> std = collection.climatology_std("month")
+        >>> anomaly = collection.climatology_anomaly("month", mean, std, standardize=True)
+        """
+        mean_clim = (
+            mean
+            if mean
+            else self.climatology_mean(frequency, reducer, start, end, keep_bandnames)
+        )
+        std_clim = (
+            std
+            if std
+            else self.climatology_std(frequency, reducer, start, end, keep_bandnames)
+        )
+
+        reducer = ee.Reducer.mean() if not reducer else reducer
+
+        freq = get_climatology_frequency(frequency)
+        start = freq.start if not start else start
+        end = freq.end if not end else end
+
+        def image_anomaly(img: ee.Image) -> ee.Image:
+            """Identify the climatological mean and std deviation for a given image
+            and use them to calculate and return the anomaly.
+            """
+            # Get the climatological coordinate of the image
+            coord = ee.Date(ee.Image(img).get("system:time_start")).format(
+                freq.date_format
+            )
+
+            # Get the climatological mean at that coordinate
+            coord_mean = mean_clim.filterMetadata(
+                "wx:coordinate", "equals", coord
+            ).first()
+            coord_std = std_clim.filterMetadata(
+                "wx:coordinate", "equals", coord
+            ).first()
+
+            anom = img.subtract(coord_mean)
+            anom = anom.divide(coord_std) if standardize else anom
+            anom = anom.copyProperties(img, img.propertyNames())
+
+            return anom
+
+        collection = self.aggregate_time(freq.name, reducer, keep_bandnames)
+
+        return collection.map(image_anomaly)

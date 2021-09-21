@@ -5,7 +5,7 @@
    "id": "196d6919",
    "metadata": {},
    "source": [
-    "# Climatology\n",
+    "# Climatological Means\n",
     "\n",
     "In this tutorial, we'll look at how to use wxee to calculate long-term climatological means of gridded weather data. Currently, monthly and daily mean climatologies are supported."
    ]

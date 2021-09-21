@@ -7,7 +7,8 @@ Examples
     examples/image_collection_to_xarray.ipynb
     examples/downloading_images_and_collections.ipynb
     examples/temporal_aggregation.ipynb
-    examples/climatology.ipynb
+    examples/climatology_mean.ipynb
+    examples/climatology_anomaly.ipynb
     examples/modis.ipynb
     examples/fire_progressions.ipynb
     examples/eemont.ipynb

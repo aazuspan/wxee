@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Climatology &mdash; wxee  documentation</title>
+  <title>Climatological Anomalies &mdash; wxee  documentation</title>
   
 
   
@@ -46,7 +46,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="MODIS" href="modis.html" />
-    <link rel="prev" title="Temporal Aggregation" href="temporal_aggregation.html" /> 
+    <link rel="prev" title="Climatological Means" href="climatology_mean.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -101,15 +101,16 @@
 <li class="toctree-l2"><a class="reference internal" href="image_collection_to_xarray.html">Image Collection to xarray</a></li>
 <li class="toctree-l2"><a class="reference internal" href="downloading_images_and_collections.html">Downloading Images and Collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="temporal_aggregation.html">Temporal Aggregation</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Climatology</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="climatology_mean.html">Climatological Means</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Climatological Anomalies</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Setup">Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Create-a-Time-Series">Create a Time Series</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#From-an-Image-Collection">From an Image Collection</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#From-Scratch">From Scratch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#June-2021-Heat-Wave">June 2021 Heat Wave</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Reference-and-Observation-Data">Reference and Observation Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Climatological-Mean">Climatological Mean</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Climatological-Anomaly">Climatological Anomaly</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Standardized-Anomalies">Standardized Anomalies</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#Monthly-Total-Rainfall">Monthly Total Rainfall</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Daily-Mean-Burning-Index">Daily Mean Burning Index</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="modis.html">MODIS</a></li>
@@ -168,13 +169,13 @@
         
           <li><a href="../examples.html">Examples</a> &raquo;</li>
         
-      <li>Climatology</li>
+      <li>Climatological Anomalies</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/examples/climatology.ipynb.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/examples/climatology_anomaly.ipynb.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -457,10 +458,10 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<p><a class="reference external" href="https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/climatology.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a> <a class="reference external" href="https://github.com/aazuspan/wxee/blob/main/docs/examples/climatology.ipynb"><img alt="Github" src="https://img.shields.io/badge/Open%20in-Github-green.svg" /></a></p>
-<div class="section" id="Climatology">
-<h1>Climatology<a class="headerlink" href="#Climatology" title="Permalink to this headline">¶</a></h1>
-<p>In this tutorial, we’ll look at how to use wxee to calculate long-term climatological means of gridded weather data. Currently, monthly and daily mean climatologies are supported.</p>
+<p><a class="reference external" href="https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/climatology_anomaly.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a> <a class="reference external" href="https://github.com/aazuspan/wxee/blob/main/docs/examples/climatology_anomaly.ipynb"><img alt="Github" src="https://img.shields.io/badge/Open%20in-Github-green.svg" /></a></p>
+<div class="section" id="Climatological-Anomalies">
+<h1>Climatological Anomalies<a class="headerlink" href="#Climatological-Anomalies" title="Permalink to this headline">¶</a></h1>
+<p>In this tutorial, we’ll look at how to use wxee to calculate long-term climatological anomalies with gridded weather data. Anomalies represent the difference between an observation and the long-term climatological mean for a given day or month.</p>
 <div class="section" id="Setup">
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -486,185 +487,153 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 </div>
-<div class="section" id="Create-a-Time-Series">
-<h2>Create a Time Series<a class="headerlink" href="#Create-a-Time-Series" title="Permalink to this headline">¶</a></h2>
-<p>Time-based methods in wxee, like temporal aggregation and climatology, work with the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> subclass of <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code>. To use them, we’ll need to create a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>. There are two ways to do this.</p>
-<div class="section" id="From-an-Image-Collection">
-<h3>From an Image Collection<a class="headerlink" href="#From-an-Image-Collection" title="Permalink to this headline">¶</a></h3>
-<p>Create an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code> and use the <code class="docutils literal notranslate"><span class="pre">wx</span></code> accessor and the <code class="docutils literal notranslate"><span class="pre">to_time_series</span></code> method to convert the Image Collection to a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.</p>
+<div class="section" id="June-2021-Heat-Wave">
+<h2>June 2021 Heat Wave<a class="headerlink" href="#June-2021-Heat-Wave" title="Permalink to this headline">¶</a></h2>
+<p>In late June of 2021, the Pacific Northwest of North America experienced an historic heat wave that broke many temperature records. Calculating monthly max temperature anomalies for this period will highlight just how unusual the observed weather was.</p>
+<div class="section" id="Reference-and-Observation-Data">
+<h3>Reference and Observation Data<a class="headerlink" href="#Reference-and-Observation-Data" title="Permalink to this headline">¶</a></h3>
+<p>To start, we’ll load a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> of daily temperature data from <a class="reference external" href="http://www.climatologylab.org/gridmet.html">gridMET</a>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">rtma</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span>
-<span class="n">ts</span> <span class="o">=</span> <span class="n">rtma</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_time_series</span><span class="p">()</span>
+<span></span><span class="n">temp</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;tmmx&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="From-Scratch">
-<h3>From Scratch<a class="headerlink" href="#From-Scratch" title="Permalink to this headline">¶</a></h3>
-<p>As a shortcut, you can create a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> just like you would create an <code class="docutils literal notranslate"><span class="pre">ee.ImageCollection</span></code>. Just pass a collection ID or list of Images.</p>
+<p>Next, we’ll split our <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> into two periods.</p>
+<p>The first <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> will be our 30-year reference period for calculating long-term climatological normals. We’ll use this as a baseline to identify anomalies during the heat wave.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span>
+<span></span><span class="n">ref</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;1980&quot;</span><span class="p">,</span> <span class="s2">&quot;2010&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-</div>
-</div>
-<div class="section" id="Monthly-Total-Rainfall">
-<h2>Monthly Total Rainfall<a class="headerlink" href="#Monthly-Total-Rainfall" title="Permalink to this headline">¶</a></h2>
-<p>gridMET contains daily weather data including precipitation. First, we’ll load 10 years of data from 2000 - 2010 into a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, giving us several thousand daily images.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;pr&quot;</span><span class="p">)</span>
-<span class="n">ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2000&quot;</span><span class="p">,</span> <span class="s2">&quot;2010&quot;</span><span class="p">)</span>
-
-<span class="n">ts</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-3653
-</pre></div></div>
-</div>
-<p>Now, we’ll calculate the monthly mean total rainfall over the 10 years, giving us just 12 images (one per month).</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">climatology_mean</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-<span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-12
-</pre></div></div>
-</div>
-<div class="alert alert-block alert-info"><p>Tip: The reducer argument defines how data will be aggregated before the mean climatology is calculated. In this case, we’ll sum the daily precipitation to get monthly totals. The mean monthly climatology will be calculated from those totals.</p>
-</div><p>Finally, we’ll download the monthly mean totals as an xarray dataset and plot them.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">x</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
-<span class="n">x</span><span class="o">.</span><span class="n">pr</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Blues&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "f6528f1a684f449db9826c08ea8a7afc", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "a9028f79d35d42d69d000c4d45301785", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f7945fc6dc0&gt;
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/examples_climatology_17_3.png" src="../_images/examples_climatology_17_3.png" />
-</div>
-</div>
-</div>
-<div class="section" id="Daily-Mean-Burning-Index">
-<h2>Daily Mean Burning Index<a class="headerlink" href="#Daily-Mean-Burning-Index" title="Permalink to this headline">¶</a></h2>
-<p>Once again we’ll look at gridMET daily weather data, but this time we’ll calculate the climatological mean burning index (a measure of wildfire potential) by day-of-year. Day-of-year climatologies require processing a lot more data, so we’ll just use 4 years for this example.</p>
+<p>The second <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> is our observation period, spanning about five months around the June heat wave.</p>
 <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">obs</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2021-04&quot;</span><span class="p">,</span> <span class="s2">&quot;2021-09&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Climatological-Mean">
+<h3>Climatological Mean<a class="headerlink" href="#Climatological-Mean" title="Permalink to this headline">¶</a></h3>
+<p>Now we can calculate the monthly climatological mean temperature over our reference period. We’ll use <code class="docutils literal notranslate"><span class="pre">ee.Reducer.max()</span></code> to get the maximum daily temperature in each month.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">mean_clim</span> <span class="o">=</span> <span class="n">ref</span><span class="o">.</span><span class="n">climatology_mean</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Climatological-Anomaly">
+<h3>Climatological Anomaly<a class="headerlink" href="#Climatological-Anomaly" title="Permalink to this headline">¶</a></h3>
+<p>Now we’ll calculate monthly temperature anomalies within our observation period based on the climatological means from our reference period.</p>
+<p>Once again, we’ll use <code class="docutils literal notranslate"><span class="pre">ee.Reducer.max()</span></code>. It’s important the <code class="docutils literal notranslate"><span class="pre">climatology_anomaly</span></code> is calculated with the same <code class="docutils literal notranslate"><span class="pre">frequency</span></code> and <code class="docutils literal notranslate"><span class="pre">reducer</span></code> as the reference mean was.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">anom</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">climatology_anomaly</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span>
+    <span class="n">mean</span><span class="o">=</span><span class="n">mean_clim</span><span class="p">,</span>
+    <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Download the data to an <code class="docutils literal notranslate"><span class="pre">xarray.Dataset</span></code>.</p>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;bi&quot;</span><span class="p">)</span>
-<span class="n">ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;2000&quot;</span><span class="p">,</span> <span class="s2">&quot;2004&quot;</span><span class="p">)</span>
+<span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">anom</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">20_000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>A day-of-year climatology will give 366 images, one for each day through the 4 years (including leap days).</p>
-<div class="alert alert-block alert-warning"><p>Note: Julian dates are used to calculate day-of-year means in wxee, so days after February 29 will be offset by one in leap years. For example, day-of-year 365 will represent December 31 in non-leap years and December 30 in leap years. Day 366 will always represent December 31, but will be aggregated from 1/4 as many days as other days of the year.</p>
-</div><div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">climatology_mean</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">)</span>
-<span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-366
-</pre></div></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "c291519469324fd691f11f8049f65f2a", "version_major": 2, "version_minor": 0}</script></div>
 </div>
-<p>We could download all 366 images, but maybe we’re only interested in burning index for the month of August. We can use the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> args to set the climatological window of days to look at.</p>
-<p>Here we’ll set the <code class="docutils literal notranslate"><span class="pre">start</span></code> to 213 and the <code class="docutils literal notranslate"><span class="pre">end</span></code> to 243 (Aug. 1 and Aug. 31 in non-leap years). Now we only have 31 images.</p>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "56e58aab51454f3faef94881e410ac2f", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<p>Plotting the monthly data, we can see that maximum temperatures in June in the Pacific Northwest exceeded long-term climatological normals by more than <strong>15 °C</strong>!</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">clim</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">climatology_mean</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">213</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">243</span><span class="p">)</span>
-<span class="n">clim</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+<span></span><span class="n">ds</span><span class="o">.</span><span class="n">tmmx</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+    <span class="n">vmin</span><span class="o">=-</span><span class="mi">15</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu_r&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-31
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7f31b3298d60&gt;
 </pre></div></div>
 </div>
-<div class="alert alert-block alert-info"><p>Tip: Downloading is the slowest part of dealing with Earth Engine data in wxee, so it’s always best to aggregate and filter your data before downloading.</p>
-</div><p>Let’s download them.</p>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_climatology_anomaly_18_1.png" src="../_images/examples_climatology_anomaly_18_1.png" />
+</div>
+</div>
+</div>
+<div class="section" id="Standardized-Anomalies">
+<h3>Standardized Anomalies<a class="headerlink" href="#Standardized-Anomalies" title="Permalink to this headline">¶</a></h3>
+<p>Standardized anomalies, which represent the number of standard deviations that an observation differed from the long-term mean, can also be calculated with <code class="docutils literal notranslate"><span class="pre">wxee</span></code>. Just provide a long-term climatological standard deviation along with the mean and set <code class="docutils literal notranslate"><span class="pre">standardize</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>!</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">std_clim</span> <span class="o">=</span> <span class="n">ref</span><span class="o">.</span><span class="n">climatology_std</span><span class="p">(</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+
+<span class="n">std_anom</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">climatology_anomaly</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span>
+    <span class="n">mean</span><span class="o">=</span><span class="n">mean_clim</span><span class="p">,</span>
+    <span class="n">std</span><span class="o">=</span><span class="n">std_clim</span><span class="p">,</span>
+    <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+    <span class="n">standardize</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Download to an <code class="docutils literal notranslate"><span class="pre">xarray.Dataset</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aug_bi</span> <span class="o">=</span> <span class="n">clim</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">50_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
+<span></span><span class="n">std_ds</span> <span class="o">=</span> <span class="n">std_anom</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">20_000</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -672,21 +641,25 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "882e30efa6c14410a33e66165302035c", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "2ffec920f4924ec6b8c4b0cbd1107233", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ff70ba7d142d4f7b95ddbb18594a80ab", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "a1ef092ba4674deba448250cdb378d71", "version_major": 2, "version_minor": 0}</script></div>
 </div>
-<p>And finally, we’ll plot a timeline of 95th percentile burning index values over the CONUS.</p>
+<p>And plot! The data looks similar to above, but now we know that the ~15 °C anomalies that we saw above were more than <strong>4 standard deviations</strong> hotter than the long-term mean!</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">aug_bi</span><span class="o">.</span><span class="n">bi</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.95</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span></span><span class="n">std_ds</span><span class="o">.</span><span class="n">tmmx</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+    <span class="n">vmin</span><span class="o">=-</span><span class="mi">5</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdBu_r&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -696,14 +669,15 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[&lt;matplotlib.lines.Line2D at 0x7f7944057430&gt;]
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7f3204783be0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_climatology_30_1.png" src="../_images/examples_climatology_30_1.png" />
+<img alt="../_images/examples_climatology_anomaly_24_1.png" src="../_images/examples_climatology_anomaly_24_1.png" />
+</div>
 </div>
 </div>
 </div>
@@ -716,7 +690,7 @@ div.rendered_html tbody tr:hover {
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="modis.html" class="btn btn-neutral float-right" title="MODIS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="temporal_aggregation.html" class="btn btn-neutral float-left" title="Temporal Aggregation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="climatology_mean.html" class="btn btn-neutral float-left" title="Climatological Means" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

@@ -32,7 +32,7 @@
 
 What is wxee?
 -------------
-`wxee <https://github.com/aazuspan/wxee>`_ was built to make processing gridded, mesoscale time series weather and climate data quick 
+`wxee <https://github.com/aazuspan/wxee>`_ was built to make processing gridded, mesoscale time series data quick 
 and easy by integrating the data catalog and processing power of `Google Earth Engine <https://earthengine.google.com/>`_ with the 
 flexibility of `xarray <https://github.com/pydata/xarray>`_, with no complicated setup required. To accomplish this, wxee implements 
 convenient methods for data processing, aggregation, downloading, and ingestion.
@@ -42,8 +42,8 @@ convenient methods for data processing, aggregation, downloading, and ingestion.
 
 Features
 --------
-* Time series image collections to xarray, NetCDF, or GeoTIFF in one line of code
-* Climatological means and temporal aggregation
+* Time series image collections to **xarray**, **NetCDF**, or **GeoTIFF** in one line of code
+* Climatological and temporal aggregation in Earth Engine
 * Parallel processing for fast downloads
 
 

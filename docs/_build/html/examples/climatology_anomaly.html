@@ -568,13 +568,13 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "c291519469324fd691f11f8049f65f2a", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "e69a7193a4854bc48ee2923387c81b12", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "56e58aab51454f3faef94881e410ac2f", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "fc33453f3a0a4a26a57bebc0f33f0dfd", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <p>Plotting the monthly data, we can see that maximum temperatures in June in the Pacific Northwest exceeded long-term climatological normals by more than <strong>15 °C</strong>!</p>
 <div class="nbinput docutils container">
@@ -596,7 +596,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f31b3298d60&gt;
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7fb1b1c948e0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -609,9 +609,9 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="section" id="Standardized-Anomalies">
 <h3>Standardized Anomalies<a class="headerlink" href="#Standardized-Anomalies" title="Permalink to this headline">¶</a></h3>
-<p>Standardized anomalies, which represent the number of standard deviations that an observation differed from the long-term mean, can also be calculated with <code class="docutils literal notranslate"><span class="pre">wxee</span></code>. Just provide a long-term climatological standard deviation along with the mean and set <code class="docutils literal notranslate"><span class="pre">standardize</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>!</p>
+<p>Standardized anomalies, which represent the number of standard deviations that an observation differed from the long-term mean, can also be calculated with <code class="docutils literal notranslate"><span class="pre">wxee</span></code>. Just calculate a long-term climatological standard deviation using <code class="docutils literal notranslate"><span class="pre">TimeSeries.climatology_std</span></code> and pass that to the <code class="docutils literal notranslate"><span class="pre">std</span></code> argument!</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -622,14 +622,13 @@ div.rendered_html tbody tr:hover {
     <span class="n">mean</span><span class="o">=</span><span class="n">mean_clim</span><span class="p">,</span>
     <span class="n">std</span><span class="o">=</span><span class="n">std_clim</span><span class="p">,</span>
     <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
-    <span class="n">standardize</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p>Download to an <code class="docutils literal notranslate"><span class="pre">xarray.Dataset</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -641,17 +640,17 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "2ffec920f4924ec6b8c4b0cbd1107233", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "c91e89fcde1c4c18b36bf742888e355b", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "a1ef092ba4674deba448250cdb378d71", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ebbaa4f9df1142cc889c778574d88fef", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <p>And plot! The data looks similar to above, but now we know that the ~15 °C anomalies that we saw above were more than <strong>4 standard deviations</strong> hotter than the long-term mean!</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -664,12 +663,12 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;xarray.plot.facetgrid.FacetGrid at 0x7f3204783be0&gt;
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7fb2046bf6a0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">

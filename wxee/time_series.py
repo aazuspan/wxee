@@ -393,16 +393,15 @@ class TimeSeries(ee.imagecollection.ImageCollection):
     def climatology_anomaly(
         self,
         frequency: str,
-        mean: Optional[Climatology] = None,
+        mean: Climatology,
         std: Optional[Climatology] = None,
-        standardize: bool = False,
         reducer: Optional[Any] = None,
         start: Optional[int] = None,
         end: Optional[int] = None,
         keep_bandnames: bool = True,
     ) -> "TimeSeries":
-        """Calculate climatological anomalies for the time series with a given frequency. The long-term climatological
-        mean and standard deviation (if the output is standardized) can be provided or calculated automatically.
+        """Calculate climatological anomalies for the time series with a given frequency. Standardized anomalies can
+        be calculated by providing a climatological standard deviation as :code:`std`.
 
         A climatological anomaly is calculated as the difference between the climatological mean and a given observation.
         For standardized anomalies, that difference is divided by the climatological standard deviation. Standardized
@@ -418,17 +417,13 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         ----------
         frequency : str
             The name of the time frequency. One of "day", "month".
-        mean : Optional[Climatology]
+        mean : Climatology
             The long-term climatological mean to calculate anomalies from. The climatological mean frequency must match
-            the frequency specified when calling this method. If a mean is not provided, one will be calculated from this
-            TimeSeries. In this case, the TimeSeries must be suitably long to achieve valid results.
+            the frequency specified when calling this method.
         std : Optional[Climatology]
-            The long-term climatological standard deviation to calculate anomalies from if :code:`standardized` is true.
-            The climatological standard deivation frequency must match the frequency specified when calling this method.
-            If a standard deivation is not provided, one will be calculated from this TimeSeries. In this case, the
-            TimeSeries must be suitably long to achieve valid results.
-        standardize : bool, default False
-            If true, standardized anomalies will be calculated.
+            The long-term climatological standard deviation to calculate anomalies from. If provided, standardized
+            climatological anomalies will be calculated. The climatological standard deviation frequency must match
+            the frequency specified when calling this method.
         reducer : Optional[ee.Reducer]
             The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily for a daily
             climatology. If the data is already in the temporal scale of the climatology, e.g. creating a daily
@@ -455,19 +450,8 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         >>> collection = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET").filterDate("1980", "2010")
         >>> mean = collection.climatology_mean("month")
         >>> std = collection.climatology_std("month")
-        >>> anomaly = collection.climatology_anomaly("month", mean, std, standardize=True)
+        >>> anomaly = collection.climatology_anomaly("month", mean, std)
         """
-        mean_clim = (
-            mean
-            if mean
-            else self.climatology_mean(frequency, reducer, start, end, keep_bandnames)
-        )
-        std_clim = (
-            std
-            if std
-            else self.climatology_std(frequency, reducer, start, end, keep_bandnames)
-        )
-
         reducer = ee.Reducer.mean() if not reducer else reducer
 
         freq = get_climatology_frequency(frequency)
@@ -484,15 +468,15 @@ class TimeSeries(ee.imagecollection.ImageCollection):
             )
 
             # Get the climatological mean at that coordinate
-            coord_mean = mean_clim.filterMetadata(
-                "wx:coordinate", "equals", coord
-            ).first()
-            coord_std = std_clim.filterMetadata(
-                "wx:coordinate", "equals", coord
-            ).first()
+            coord_mean = mean.filterMetadata("wx:coordinate", "equals", coord).first()
 
             anom = img.subtract(coord_mean)
-            anom = anom.divide(coord_std) if standardize else anom
+
+            # If a standard deviation is provided, standardize the anomalies
+            if std:
+                coord_std = std.filterMetadata("wx:coordinate", "equals", coord).first()
+                anom = anom.divide(coord_std)
+
             anom = anom.copyProperties(img, img.propertyNames())
 
             return anom

@@ -47,6 +47,8 @@ Features
 * Parallel processing for fast downloads
 
 
+To see some of the capabilities of wxee and try it yourself, check out the interactive notebooks `here <https://wxee.readthedocs.io/en/latest/examples.html>`_!
+
 Install
 ------------
 

@@ -199,3 +199,18 @@ def test_hour_interval_min_max():
 
     assert result_max_interval == test_interval * 9
     assert result_min_interval == test_interval
+
+
+@pytest.mark.ee
+def test_climatology_anomaly():
+    """Test that a climatology anomaly returns the correct number of images with sparse input climatologies"""
+    ts = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET").select("tmmx")
+    ref = ts.filterDate("1990", "1992")
+    obs = ts.filterDate("2020", "2021")
+
+    mean = ref.climatology_mean("month", start=2, end=4)
+    std = ref.climatology_std("month", start=2, end=4)
+
+    anom = obs.climatology_anomaly(mean, std)
+
+    assert anom.size().getInfo() == 3

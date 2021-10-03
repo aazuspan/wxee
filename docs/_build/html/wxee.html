@@ -711,6 +711,53 @@ reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</
 </div>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="wxee.time_series.TimeSeries.interpolate_time">
+<span class="sig-name descname"><span class="pre">interpolate_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">ee.Date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'linear'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ee.Image</span></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeries.interpolate_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.time_series.TimeSeries.interpolate_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use interpolation to synthesize data at a given time within the time series. Based on the
+interpolation method chosen, a certain number of images must be present in the time series
+before and after the target date.</p>
+<p>Nearest and linear interpolation require 1 image before and after the selected time while
+cubic interpolation requires 2 images before and after the selected time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>date</strong> (<em>ee.Date</em>) – The target date to interpolate data at. This must be within the time series period.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>default linear</em>) – The interpolation method to use, one of “nearest”, “linear”, or “cubic”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Data interpolated to the target time from surrounding data in the time series.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ee.Image</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_date</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="s2">&quot;2020-09-08T03&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filled</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">target_date</span><span class="p">,</span> <span class="s2">&quot;cubic&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wxee.time_series.TimeSeries.insert_image">
+<span class="sig-name descname"><span class="pre">insert_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">ee.Image</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeries.insert_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.time_series.TimeSeries.insert_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert an image into the time series and sort it by <code class="code docutils literal notranslate"><span class="pre">system:time_start</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>img</strong> (<em>ee.Image</em>) – The image to insert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The time series with the image inserted in time order</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>wxee.TimeSeries</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -763,10 +810,10 @@ data were already monthly, the reducer would have no effect.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wxee.climatology.Climatology.frequency">
 <span class="sig-name descname"><span class="pre">frequency</span></span><a class="headerlink" href="#wxee.climatology.Climatology.frequency" title="Permalink to this definition">¶</a></dt>
-<dd><p>The time frequency of the climatology. One of “day”, “month”.</p>
+<dd><p>The time frequency of the climatology.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>wxee.constants._ClimatologyFrequency</p>
 </dd>
 </dl>
 </dd></dl>

@@ -1,9 +1,14 @@
-from typing import Any, Optional, Union
+from typing import Any, List, Optional, Union
 
 import ee  # type: ignore
 
 from wxee.climatology import Climatology
-from wxee.constants import get_climatology_frequency, get_time_frequency
+from wxee.constants import (
+    get_climatology_frequency,
+    get_interpolation_method,
+    get_time_frequency,
+)
+from wxee.utils import _normalize
 
 
 class TimeSeries(ee.imagecollection.ImageCollection):
@@ -398,51 +403,51 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         keep_bandnames: bool = True,
     ) -> "TimeSeries":
         """Calculate climatological anomalies for the time series. The frequency and reducer will be the same as those
-        used in the :code:`mean` climatology. Standardized anomalies can be calculated by providing a climatological standard
-        deviation as :code:`std`.
+                used in the :code:`mean` climatology. Standardized anomalies can be calculated by providing a climatological standard
+                deviation as :code:`std`.
 
-        A climatological anomaly is calculated as the difference between the climatological mean and a given observation.
-        For standardized anomalies, that difference is divided by the climatological standard deviation. Standardized
-        anomalies represent unitless measurements of how many standard deviations an observation was from the climatological
-        mean, and therefore allow easy comparisons between variables.
+                A climatological anomaly is calculated as the difference between the climatological mean and a given observation.
+                For standardized anomalies, that difference is divided by the climatological standard deviation. Standardized
+                anomalies represent unitless measurements of how many standard deviations an observation was from the climatological
+                mean, and therefore allow easy comparisons between variables.
 
-        Note
-        ----
-        Climatological anomalies are generally calculated using long-term climatological normals (e.g. 30 years). If
-        the climatological mean and standard deviation represent a shorter period, interpretation of results may vary.
+                Note
+                ----
+                Climatological anomalies are generally calculated using long-term climatological normals (e.g. 30 years). If
+                the climatological mean and standard deviation represent a shorter period, interpretation of results may vary.
+        y1 and image y2.
+                Parameters
+                ----------
+                mean : Climatology
+                    The long-term climatological mean to calculate anomalies from. The climatological frequency and reducer will
+                    be determined from this climatology.
+                std : Optional[Climatology]
+                    The long-term climatological standard deviation to calculate anomalies from. If provided, standardized
+                    climatological anomalies will be calculated. The climatological standard deviation frequency and reducer must
+                    match the frequency and reducer used by the climatological mean.
+                keep_bandnames : bool, default True
+                    If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+                    reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
 
-        Parameters
-        ----------
-        mean : Climatology
-            The long-term climatological mean to calculate anomalies from. The climatological frequency and reducer will
-            be determined from this climatology.
-        std : Optional[Climatology]
-            The long-term climatological standard deviation to calculate anomalies from. If provided, standardized
-            climatological anomalies will be calculated. The climatological standard deviation frequency and reducer must
-            match the frequency and reducer used by the climatological mean.
-        keep_bandnames : bool, default True
-            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
-            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
+                Returns
+                -------
+                wxee.time_series.TimeSeries
+                    Climatological anomalies within the TimeSeries period.
 
-        Returns
-        -------
-        wxee.time_series.TimeSeries
-            Climatological anomalies within the TimeSeries period.
+                Raises
+                ------
+                ValueError
+                    If the :code:`std` frequency or reducer do not match the :code:`mean` frequency or reducer. Only applies if
+                    a :code:`std` is provided.
 
-        Raises
-        ------
-        ValueError
-            If the :code:`std` frequency or reducer do not match the :code:`mean` frequency or reducer. Only applies if
-            a :code:`std` is provided.
-
-        Example
-        -------
-        >>> collection = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET")
-        >>> reference = collection.filterDate("1980", "2010")
-        >>> mean = reference.climatology_mean("month")
-        >>> std = reference.climatology_std("month")
-        >>> observation = collection.filterDate("2020", "2021")
-        >>> anomaly = observation.climatology_anomaly(mean, std)
+                Example
+                -------
+                >>> collection = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET")
+                >>> reference = collection.filterDate("1980", "2010")
+                >>> mean = reference.climatology_mean("month")
+                >>> std = reference.climatology_std("month")
+                >>> observation = collection.filterDate("2020", "2021")
+                >>> anomaly = observation.climatology_anomaly(mean, std)
         """
         reducer = mean.reducer
         freq = mean.frequency
@@ -483,3 +488,83 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         collection = self.aggregate_time(freq.name, reducer, keep_bandnames)
 
         return collection.map(image_anomaly, opt_dropNulls=True)
+
+    def interpolate_time(self, time: ee.Date, method: str = "linear") -> ee.Image:
+        """Use interpolation to synthesize data at a given time within the time series. Based on the
+        interpolation method chosen, a certain number of images must be present in the time series
+        before and after the target date.
+
+        Nearest and linear interpolation require 1 image before and after the selected time while
+        cubic interpolation requires 2 images before and after the selected time.
+
+        Parameters
+        ----------
+        date : ee.Date
+            The target date to interpolate data at. This must be within the time series period.
+        method : str, default linear
+            The interpolation method to use, one of "nearest", "linear", or "cubic".
+
+        Returns
+        -------
+        ee.Image
+            Data interpolated to the target time from surrounding data in the time series.
+
+        Example
+        -------
+        >>> ts = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET")
+        >>> target_date = ee.Date("2020-09-08T03")
+        >>> filled = ts.interpolate(target_date, "cubic")
+        """
+        method_func = get_interpolation_method(method)
+
+        y1, y0 = self._get_n_images_before(time, 2)
+        y2, y3 = self._get_n_images_after(time, 2)
+
+        x1, x2 = [img.get("system:time_start") for img in [y1, y2]]
+        mu = _normalize(time.millis(), ee.Date(x1).millis(), ee.Date(x2).millis())
+
+        if method in ["nearest", "linear"]:
+            interpolated = method_func(y1, y2, mu)
+        elif method == "cubic":
+            interpolated = method_func(y0, y1, y2, y3, mu)
+
+        interpolated = interpolated.set("system:time_start", time.millis())
+
+        return interpolated
+
+    def _get_n_images_before(self, date: ee.Date, n: int) -> List[ee.Image]:
+        """Get n images before a given date (inclusive) in the time series. The images will be selected
+        and returned in a list in order of their proximity to the target date."""
+        before_imgs = self.filterDate(self.start_time, date.advance(1, "second")).sort(
+            "system:time_start", opt_ascending=False
+        )
+        before_list = before_imgs.toList(n)
+
+        return [ee.Image(before_list.get(i)) for i in range(n)]
+
+    def _get_n_images_after(self, date: ee.Date, n: int) -> List[ee.Image]:
+        """Get n images after a given date (inclusive) in the time series. The images will be selected
+        and returned in order of their proximity to the target date."""
+        after_imgs = self.filterDate(date, self.end_time.advance(1, "second")).sort(
+            "system:time_start", opt_ascending=True
+        )
+        after_list = after_imgs.toList(n)
+
+        return [ee.Image(after_list.get(i)) for i in range(n)]
+
+    def insert_image(self, img: ee.Image) -> "TimeSeries":
+        """Insert an image into the time series and sort it by :code:`system:time_start`.
+
+        Parameters
+        ----------
+        img : ee.Image
+            The image to insert.
+
+        Returns
+        -------
+        wxee.TimeSeries
+            The time series with the image inserted in time order
+        """
+        merged = self.merge(ee.ImageCollection(img)).sort("system:time_start")
+        merged = ee.ImageCollection(merged.copyProperties(self, self.propertyNames()))
+        return merged.wx.to_time_series()

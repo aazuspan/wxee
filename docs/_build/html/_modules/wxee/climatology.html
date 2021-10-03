@@ -173,8 +173,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    statistic : str</span>
 <span class="sd">        The statistic of the climatology, e.g. a mean climatology or standard deviation climatology.</span>
-<span class="sd">    frequency : str</span>
-<span class="sd">        The time frequency of the climatology. One of &quot;day&quot;, &quot;month&quot;.</span>
+<span class="sd">    frequency : wxee.constants._ClimatologyFrequency</span>
+<span class="sd">        The time frequency of the climatology.</span>
 <span class="sd">    reducer : ee.Reducer</span>
 <span class="sd">        The reducer used to aggregate the climatology.</span>
 <span class="sd">    start : int</span>
@@ -204,9 +204,9 @@
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[1m</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">statistic</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2"> Climatology&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Images: </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Frequency: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Start </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">End </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Frequency: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Start </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">End </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span></div></div>
 </pre></div>
 

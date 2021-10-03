@@ -10,8 +10,8 @@ class Climatology(ee.imagecollection.ImageCollection):
     ----------
     statistic : str
         The statistic of the climatology, e.g. a mean climatology or standard deviation climatology.
-    frequency : str
-        The time frequency of the climatology. One of "day", "month".
+    frequency : wxee.constants._ClimatologyFrequency
+        The time frequency of the climatology.
     reducer : ee.Reducer
         The reducer used to aggregate the climatology.
     start : int
@@ -41,7 +41,7 @@ class Climatology(ee.imagecollection.ImageCollection):
             f"\033[1m{id}\033[0m"
             f"\n\t{self.statistic.title()} Climatology"
             f"\n\tImages: {size}"
-            f"\n\tFrequency: {self.frequency}"
-            f"\n\tStart {self.frequency}: {self.start}"
-            f"\n\tEnd {self.frequency}: {self.end}"
+            f"\n\tFrequency: {self.frequency.name}"
+            f"\n\tStart {self.frequency.name}: {self.start}"
+            f"\n\tEnd {self.frequency.name}: {self.end}"
         )

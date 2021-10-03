@@ -286,9 +286,10 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         )
 
         clim = clim.set("system:id", self.get("system:id"))
-        clim.frequency = freq.name
+        clim.frequency = freq
         clim.start = start
         clim.end = end
+        clim.reducer = reducer
 
         return clim
 
@@ -392,16 +393,13 @@ class TimeSeries(ee.imagecollection.ImageCollection):
 
     def climatology_anomaly(
         self,
-        frequency: str,
         mean: Climatology,
         std: Optional[Climatology] = None,
-        reducer: Optional[Any] = None,
-        start: Optional[int] = None,
-        end: Optional[int] = None,
         keep_bandnames: bool = True,
     ) -> "TimeSeries":
-        """Calculate climatological anomalies for the time series with a given frequency. Standardized anomalies can
-        be calculated by providing a climatological standard deviation as :code:`std`.
+        """Calculate climatological anomalies for the time series. The frequency and reducer will be the same as those
+        used in the :code:`mean` climatology. Standardized anomalies can be calculated by providing a climatological standard
+        deviation as :code:`std`.
 
         A climatological anomaly is calculated as the difference between the climatological mean and a given observation.
         For standardized anomalies, that difference is divided by the climatological standard deviation. Standardized
@@ -415,27 +413,13 @@ class TimeSeries(ee.imagecollection.ImageCollection):
 
         Parameters
         ----------
-        frequency : str
-            The name of the time frequency. One of "day", "month".
         mean : Climatology
-            The long-term climatological mean to calculate anomalies from. The climatological mean frequency must match
-            the frequency specified when calling this method.
+            The long-term climatological mean to calculate anomalies from. The climatological frequency and reducer will
+            be determined from this climatology.
         std : Optional[Climatology]
             The long-term climatological standard deviation to calculate anomalies from. If provided, standardized
-            climatological anomalies will be calculated. The climatological standard deviation frequency must match
-            the frequency specified when calling this method.
-        reducer : Optional[ee.Reducer]
-            The reducer to apply when aggregating over time, e.g. aggregating hourly data to daily for a daily
-            climatology. If the data is already in the temporal scale of the climatology, e.g. creating a daily
-            climatology from daily data, the reducer will have no effect.
-        start : Optional[int]
-            The start coordinate in the time frequency to include in the climatology, e.g. 1 for January if the
-            frequency is "month". If none is provided, the default will be 1 for both "day" and "month". This parameter
-            is only used if :code:`mean` or :code:`std` are not provided.
-        end : Optional[int]
-            The end coordinate in the time frequency to include in the climatology, e.g. 8 for August if the
-            frequency is "month". If none is provided, the default will be 366 for "day" or 12 for "month" This parameter
-            is only used if :code:`mean` or :code:`std` are not provided.
+            climatological anomalies will be calculated. The climatological standard deviation frequency and reducer must
+            match the frequency and reducer used by the climatological mean.
         keep_bandnames : bool, default True
             If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
             reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
@@ -445,18 +429,32 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         wxee.time_series.TimeSeries
             Climatological anomalies within the TimeSeries period.
 
+        Raises
+        ------
+        ValueError
+            If the :code:`std` frequency or reducer do not match the :code:`mean` frequency or reducer. Only applies if
+            a :code:`std` is provided.
+
         Example
         -------
-        >>> collection = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET").filterDate("1980", "2010")
-        >>> mean = collection.climatology_mean("month")
-        >>> std = collection.climatology_std("month")
-        >>> anomaly = collection.climatology_anomaly("month", mean, std)
+        >>> collection = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET")
+        >>> reference = collection.filterDate("1980", "2010")
+        >>> mean = reference.climatology_mean("month")
+        >>> std = reference.climatology_std("month")
+        >>> observation = collection.filterDate("2020", "2021")
+        >>> anomaly = observation.climatology_anomaly(mean, std)
         """
-        reducer = ee.Reducer.mean() if not reducer else reducer
+        reducer = mean.reducer
+        freq = mean.frequency
 
-        freq = get_climatology_frequency(frequency)
-        start = freq.start if not start else start
-        end = freq.end if not end else end
+        if std:
+            if std.frequency != freq:
+                raise ValueError(
+                    f"Mean frequency '{mean.frequency.name}' does not match std frequency '{std.frequency.name}'."
+                )
+            if std.reducer != mean.reducer:
+                # There is no way to determine the type of reducer used after the fact, or else I would list them.
+                raise ValueError(f"Mean reducer does not match std reducer.")
 
         def image_anomaly(img: ee.Image) -> ee.Image:
             """Identify the climatological mean and std deviation for a given image

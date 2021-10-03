@@ -466,19 +466,20 @@ class TimeSeries(ee.imagecollection.ImageCollection):
             )
 
             # Get the climatological mean at that coordinate
-            coord_mean = mean.filterMetadata("wx:coordinate", "equals", coord).first()
+            coord_mean = mean.filterMetadata("wx:coordinate", "equals", coord)
 
-            anom = img.subtract(coord_mean)
+            anom = img.subtract(coord_mean.first())
 
             # If a standard deviation is provided, standardize the anomalies
             if std:
-                coord_std = std.filterMetadata("wx:coordinate", "equals", coord).first()
-                anom = anom.divide(coord_std)
+                coord_std = std.filterMetadata("wx:coordinate", "equals", coord)
+                anom = anom.divide(coord_std.first())
 
             anom = anom.copyProperties(img, img.propertyNames())
 
-            return anom
+            # This permits sparse mean and std climatologies, e.g. those with a start and end set.
+            return ee.Algorithms.If(coord_mean.size().gt(0), anom, None)
 
         collection = self.aggregate_time(freq.name, reducer, keep_bandnames)
 
-        return collection.map(image_anomaly)
+        return collection.map(image_anomaly, opt_dropNulls=True)

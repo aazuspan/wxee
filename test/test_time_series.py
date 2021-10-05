@@ -214,3 +214,55 @@ def test_climatology_anomaly():
     anom = obs.climatology_anomaly(mean, std)
 
     assert anom.size().getInfo() == 3
+
+
+@pytest.mark.ee
+def test_dataset_conflicting_masked_value():
+    """If two images in a time series have conflicting values (same coordinates and band with different values) and
+    one is masked, they should be merged successfully and the unmasked value should be taken.
+    """
+    pt = ee.Geometry.Point([-118.2, 43.1]).buffer(20)
+
+    img1 = (
+        ee.Image.constant(0)
+        .set("system:time_start", ee.Date("2020").millis())
+        .set("system:id", "test2")
+        .selfMask()
+    )
+    img2 = (
+        ee.Image.constant(42)
+        .set("system:time_start", ee.Date("2020").millis())
+        .set("system:id", "test1")
+    )
+
+    imgs = wxee.TimeSeries([img1, img2])
+
+    ds = imgs.wx.to_xarray(region=pt)
+
+    assert ds.constant.values.item() == 42
+
+
+@pytest.mark.ee
+def test_dataset_conflicting_unmasked_value():
+    """If two images in a time series have conflicting values (same coordinates and band with different values) and
+    neither is masked, they should be merged successfully, the first value should be taken, and a warning should be thrown.
+    """
+    pt = ee.Geometry.Point([-118.2, 43.1]).buffer(20)
+
+    img1 = (
+        ee.Image.constant(3)
+        .set("system:time_start", ee.Date("2020").millis())
+        .set("system:id", "test2")
+    )
+    img2 = (
+        ee.Image.constant(42)
+        .set("system:time_start", ee.Date("2020").millis())
+        .set("system:id", "test1")
+    )
+
+    imgs = wxee.TimeSeries([img1, img2])
+
+    with pytest.warns(UserWarning):
+        ds = imgs.wx.to_xarray(region=pt)
+
+    assert ds.constant.values.item() == 3

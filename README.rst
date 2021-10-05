@@ -43,7 +43,7 @@ convenient methods for data processing, aggregation, downloading, and ingestion.
 Features
 --------
 * Time series image collections to **xarray**, **NetCDF**, or **GeoTIFF** in one line of code
-* Climatological and temporal aggregation in Earth Engine
+* Climatological anomalies, temporal aggregation, and temporal interpolation in Earth Engine
 * Parallel processing for fast downloads
 
 

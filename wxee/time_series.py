@@ -520,7 +520,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         y1, y0 = self._get_n_images_before(time, 2)
         y2, y3 = self._get_n_images_after(time, 2)
 
-        x1, x2 = [img.get("system:time_start") for img in [y1, y2]]
+        x1, x2 = [ee.Number(img.get("system:time_start")) for img in [y1, y2]]
         mu = _normalize(time.millis(), ee.Date(x1).millis(), ee.Date(x2).millis())
 
         if method in ["nearest", "linear"]:

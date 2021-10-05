@@ -150,14 +150,14 @@ def test_parse_invalid_time_warns():
 def test_dataarray_from_file():
     """Test that an xarray.DataArray can be created from a valid GeoTIFF."""
     file_path = TEST_IMAGE_PATHS[0]
-    da = wxee.utils._dataarray_from_file(file_path)
+    da = wxee.utils._dataarray_from_file(file_path, masked=True, nodata=0)
 
     assert da.name == "pr"
 
 
 def test_dataset_from_files():
     """Test than an xarray.Dataset can be created from a list of valid GeoTIFFs."""
-    ds = wxee.utils._dataset_from_files(TEST_IMAGE_PATHS)
+    ds = wxee.utils._dataset_from_files(TEST_IMAGE_PATHS, masked=True, nodata=0)
 
     assert ds.time.size == 3
     assert all([var in ds.variables for var in ["pr", "rmax"]])

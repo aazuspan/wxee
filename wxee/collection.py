@@ -131,11 +131,7 @@ class ImageCollection:
                 max_attempts=max_attempts,
             )
 
-            ds = _dataset_from_files(files)
-
-        # Mask the nodata values. This will convert int datasets to float.
-        if masked:
-            ds = ds.where(ds != nodata)
+            ds = _dataset_from_files(files, masked, nodata)
 
         if path:
             ds.to_netcdf(path, mode="w")

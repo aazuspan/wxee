@@ -124,14 +124,24 @@ def _create_retry_session(max_attempts: int) -> requests.Session:
     return session
 
 
-def _dataset_from_files(files: List[str]) -> xr.Dataset:
+def _dataset_from_files(files: List[str], masked: bool, nodata: int) -> xr.Dataset:
     """Create an xarray.Dataset from a list of raster files."""
-    das = [_dataarray_from_file(file) for file in files]
+    das = [_dataarray_from_file(file, masked, nodata) for file in files]
 
-    return xr.merge(das)
+    try:
+        # Allow conflicting values if one is null, take the non-null value
+        merged = xr.merge(das, compat="no_conflicts")
+    except xr.core.merge.MergeError:
+        # If non-null conflicting values occur, take the first value and warn the user
+        merged = xr.merge(das, compat="override")
+        warnings.warn(
+            "Different non-null values were encountered for the same variable at the same time coordinate. The first value was taken."
+        )
+
+    return merged
 
 
-def _dataarray_from_file(file: str) -> xr.DataArray:
+def _dataarray_from_file(file: str, masked: bool, nodata: int) -> xr.DataArray:
     """Create an xarray.DataArray from a single file by parsing datetimes and variables from the file name.
 
     The file name must follow the format "{dimension}.{coordinate}.{variable}.{extension}".
@@ -140,6 +150,10 @@ def _dataarray_from_file(file: str) -> xr.DataArray:
     dim, coord, var = _parse_filename(file)
 
     da = da.expand_dims({dim: [coord]}).rename(var).squeeze("band").drop_vars("band")
+
+    # Mask the nodata values. This will convert int datasets to float.
+    if masked:
+        da = da.where(da != nodata)
 
     return da
 

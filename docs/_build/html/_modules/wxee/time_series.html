@@ -161,12 +161,13 @@
            <div itemprop="articleBody">
             
   <h1>Source code for wxee.time_series</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">wxee.climatology</span> <span class="kn">import</span> <span class="n">Climatology</span>
-<span class="kn">from</span> <span class="nn">wxee.constants</span> <span class="kn">import</span> <span class="n">get_climatology_frequency</span><span class="p">,</span> <span class="n">get_time_frequency</span>
+<span class="kn">from</span> <span class="nn">wxee.constants</span> <span class="kn">import</span> <span class="n">get_climatology_frequency</span><span class="p">,</span> <span class="n">get_time_frequency</span><span class="p">,</span> <span class="n">get_interpolation_method</span>
+<span class="kn">from</span> <span class="nn">wxee.utils</span> <span class="kn">import</span> <span class="n">_normalize</span>
 
 
 <div class="viewcode-block" id="TimeSeries"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries">[docs]</a><span class="k">class</span> <span class="nc">TimeSeries</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">imagecollection</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">):</span>
@@ -561,7 +562,7 @@
         <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Calculate climatological anomalies for the time series. The frequency and reducer will be the same as those</span>
-<span class="sd">        used in the :code:`mean` climatology. Standardized anomalies can be calculated by providing a climatological standard </span>
+<span class="sd">        used in the :code:`mean` climatology. Standardized anomalies can be calculated by providing a climatological standard</span>
 <span class="sd">        deviation as :code:`std`.</span>
 
 <span class="sd">        A climatological anomaly is calculated as the difference between the climatological mean and a given observation.</span>
@@ -581,7 +582,7 @@
 <span class="sd">            be determined from this climatology.</span>
 <span class="sd">        std : Optional[Climatology]</span>
 <span class="sd">            The long-term climatological standard deviation to calculate anomalies from. If provided, standardized</span>
-<span class="sd">            climatological anomalies will be calculated. The climatological standard deviation frequency and reducer must </span>
+<span class="sd">            climatological anomalies will be calculated. The climatological standard deviation frequency and reducer must</span>
 <span class="sd">            match the frequency and reducer used by the climatological mean.</span>
 <span class="sd">        keep_bandnames : bool, default True</span>
 <span class="sd">            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the</span>
@@ -595,7 +596,7 @@
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
-<span class="sd">            If the :code:`std` frequency or reducer do not match the :code:`mean` frequency or reducer. Only applies if </span>
+<span class="sd">            If the :code:`std` frequency or reducer do not match the :code:`mean` frequency or reducer. Only applies if</span>
 <span class="sd">            a :code:`std` is provided.</span>
 
 <span class="sd">        Example</span>
@@ -612,7 +613,9 @@
 
         <span class="k">if</span> <span class="n">std</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">std</span><span class="o">.</span><span class="n">frequency</span> <span class="o">!=</span> <span class="n">freq</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean frequency &#39;</span><span class="si">{</span><span class="n">mean</span><span class="o">.</span><span class="n">frequency</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; does not match std frequency &#39;</span><span class="si">{</span><span class="n">std</span><span class="o">.</span><span class="n">frequency</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Mean frequency &#39;</span><span class="si">{</span><span class="n">mean</span><span class="o">.</span><span class="n">frequency</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; does not match std frequency &#39;</span><span class="si">{</span><span class="n">std</span><span class="o">.</span><span class="n">frequency</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                <span class="p">)</span>
             <span class="k">if</span> <span class="n">std</span><span class="o">.</span><span class="n">reducer</span> <span class="o">!=</span> <span class="n">mean</span><span class="o">.</span><span class="n">reducer</span><span class="p">:</span>
                 <span class="c1"># There is no way to determine the type of reducer used after the fact, or else I would list them.</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean reducer does not match std reducer.&quot;</span><span class="p">)</span>
@@ -627,22 +630,102 @@
             <span class="p">)</span>
 
             <span class="c1"># Get the climatological mean at that coordinate</span>
-            <span class="n">coord_mean</span> <span class="o">=</span> <span class="n">mean</span><span class="o">.</span><span class="n">filterMetadata</span><span class="p">(</span><span class="s2">&quot;wx:coordinate&quot;</span><span class="p">,</span> <span class="s2">&quot;equals&quot;</span><span class="p">,</span> <span class="n">coord</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="n">coord_mean</span> <span class="o">=</span> <span class="n">mean</span><span class="o">.</span><span class="n">filterMetadata</span><span class="p">(</span><span class="s2">&quot;wx:coordinate&quot;</span><span class="p">,</span> <span class="s2">&quot;equals&quot;</span><span class="p">,</span> <span class="n">coord</span><span class="p">)</span>
 
-            <span class="n">anom</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">coord_mean</span><span class="p">)</span>
+            <span class="n">anom</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">coord_mean</span><span class="o">.</span><span class="n">first</span><span class="p">())</span>
 
             <span class="c1"># If a standard deviation is provided, standardize the anomalies</span>
             <span class="k">if</span> <span class="n">std</span><span class="p">:</span>
-                <span class="n">coord_std</span> <span class="o">=</span> <span class="n">std</span><span class="o">.</span><span class="n">filterMetadata</span><span class="p">(</span><span class="s2">&quot;wx:coordinate&quot;</span><span class="p">,</span> <span class="s2">&quot;equals&quot;</span><span class="p">,</span> <span class="n">coord</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
-                <span class="n">anom</span> <span class="o">=</span> <span class="n">anom</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">coord_std</span><span class="p">)</span>
+                <span class="n">coord_std</span> <span class="o">=</span> <span class="n">std</span><span class="o">.</span><span class="n">filterMetadata</span><span class="p">(</span><span class="s2">&quot;wx:coordinate&quot;</span><span class="p">,</span> <span class="s2">&quot;equals&quot;</span><span class="p">,</span> <span class="n">coord</span><span class="p">)</span>
+                <span class="n">anom</span> <span class="o">=</span> <span class="n">anom</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">coord_std</span><span class="o">.</span><span class="n">first</span><span class="p">())</span>
 
             <span class="n">anom</span> <span class="o">=</span> <span class="n">anom</span><span class="o">.</span><span class="n">copyProperties</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">propertyNames</span><span class="p">())</span>
 
-            <span class="k">return</span> <span class="n">anom</span>
+            <span class="c1"># This permits sparse mean and std climatologies, e.g. those with a start and end set.</span>
+            <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Algorithms</span><span class="o">.</span><span class="n">If</span><span class="p">(</span><span class="n">coord_mean</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">anom</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate_time</span><span class="p">(</span><span class="n">freq</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">reducer</span><span class="p">,</span> <span class="n">keep_bandnames</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">collection</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">image_anomaly</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">collection</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">image_anomaly</span><span class="p">,</span> <span class="n">opt_dropNulls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeSeries.interpolate_time"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.interpolate_time">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Use interpolation to synthesize data at a given time within the time series. Based on the</span>
+<span class="sd">        interpolation method chosen, a certain number of images must be present in the time series</span>
+<span class="sd">        before and after the target date. </span>
+<span class="sd">        </span>
+<span class="sd">        Nearest and linear interpolation require 1 image before and after the selected time while </span>
+<span class="sd">        cubic interpolation requires 2 images before and after the selected time.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        date : ee.Date</span>
+<span class="sd">            The target date to interpolate data at. This must be within the time series period.</span>
+<span class="sd">        method : str, default linear</span>
+<span class="sd">            The interpolation method to use, one of &quot;nearest&quot;, &quot;linear&quot;, or &quot;cubic&quot;.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ee.Image</span>
+<span class="sd">            Data interpolated to the target time from surrounding data in the time series.</span>
+<span class="sd">        </span>
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; ts = wxee.TimeSeries(&quot;IDAHO_EPSCOR/GRIDMET&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; target_date = ee.Date(&quot;2020-09-08T03&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; filled = ts.interpolate(target_date, &quot;cubic&quot;) </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">method_func</span> <span class="o">=</span> <span class="n">get_interpolation_method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+
+        <span class="n">y1</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_n_images_before</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">y2</span><span class="p">,</span> <span class="n">y3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_n_images_after</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="p">[</span><span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="p">[</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">]]</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">millis</span><span class="p">(),</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="o">.</span><span class="n">millis</span><span class="p">(),</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span><span class="o">.</span><span class="n">millis</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="s2">&quot;linear&quot;</span><span class="p">]:</span>
+            <span class="n">interpolated</span> <span class="o">=</span> <span class="n">method_func</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">mu</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;cubic&quot;</span><span class="p">:</span>
+            <span class="n">interpolated</span> <span class="o">=</span> <span class="n">method_func</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">y3</span><span class="p">,</span> <span class="n">mu</span><span class="p">)</span>
+
+        <span class="n">interpolated</span> <span class="o">=</span> <span class="n">interpolated</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">millis</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">interpolated</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_get_n_images_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get n images before a given date (inclusive) in the time series. The images will be selected</span>
+<span class="sd">        and returned in a list in order of their proximity to the target date.&quot;&quot;&quot;</span>
+        <span class="n">before_imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">,</span> <span class="n">opt_ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">before_list</span> <span class="o">=</span> <span class="n">before_imgs</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">before_list</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+        
+
+    <span class="k">def</span> <span class="nf">_get_n_images_after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get n images after a given date (inclusive) in the time series. The images will be selected</span>
+<span class="sd">        and returned in order of their proximity to the target date.&quot;&quot;&quot;</span>
+        <span class="n">after_imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">,</span> <span class="n">opt_ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">after_list</span> <span class="o">=</span> <span class="n">after_imgs</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">after_list</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+
+<div class="viewcode-block" id="TimeSeries.insert_image"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.insert_image">[docs]</a>    <span class="k">def</span> <span class="nf">insert_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Insert an image into the time series and sort it by :code:`system:time_start`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        img : ee.Image</span>
+<span class="sd">            The image to insert.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        wxee.TimeSeries</span>
+<span class="sd">            The time series with the image inserted in time order</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">merged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="n">img</span><span class="p">))</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">)</span>
+        <span class="n">merged</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="n">merged</span><span class="o">.</span><span class="n">copyProperties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">propertyNames</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">merged</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_time_series</span><span class="p">()</span></div></div>
 </pre></div>
 
            </div>

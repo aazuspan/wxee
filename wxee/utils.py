@@ -228,3 +228,7 @@ def parallel_tqdm(tqdm_object: tqdm) -> tqdm:
     finally:
         joblib.parallel.BatchCompletionCallBack = old_batch_callback
         tqdm_object.close()
+
+
+def _normalize(x: ee.Number, minx: ee.Number, maxx: ee.Number) -> ee.Number:
+    return ee.Number(x).subtract(minx).divide(ee.Number(maxx).subtract(minx))

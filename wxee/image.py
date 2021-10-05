@@ -272,6 +272,5 @@ class Image:
 
     def _prefix_id(self, prefix: str) -> ee.Image:
         """Add a prefix to the image's system:id"""
-        return self._obj.set(
-            "system:id", ee.String(prefix).cat("_").cat(self._obj.get("system:id"))
-        )
+        original_id = _replace_if_null(self._obj.get("system:id"), "null")
+        return self._obj.set("system:id", ee.String(prefix).cat("_").cat(original_id))

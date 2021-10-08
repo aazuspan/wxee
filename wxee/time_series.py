@@ -403,51 +403,51 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         keep_bandnames: bool = True,
     ) -> "TimeSeries":
         """Calculate climatological anomalies for the time series. The frequency and reducer will be the same as those
-                used in the :code:`mean` climatology. Standardized anomalies can be calculated by providing a climatological standard
-                deviation as :code:`std`.
+        used in the :code:`mean` climatology. Standardized anomalies can be calculated by providing a climatological standard
+        deviation as :code:`std`.
 
-                A climatological anomaly is calculated as the difference between the climatological mean and a given observation.
-                For standardized anomalies, that difference is divided by the climatological standard deviation. Standardized
-                anomalies represent unitless measurements of how many standard deviations an observation was from the climatological
-                mean, and therefore allow easy comparisons between variables.
+        A climatological anomaly is calculated as the difference between the climatological mean and a given observation.
+        For standardized anomalies, that difference is divided by the climatological standard deviation. Standardized
+        anomalies represent unitless measurements of how many standard deviations an observation was from the climatological
+        mean, and therefore allow easy comparisons between variables.
 
-                Note
-                ----
-                Climatological anomalies are generally calculated using long-term climatological normals (e.g. 30 years). If
-                the climatological mean and standard deviation represent a shorter period, interpretation of results may vary.
-        y1 and image y2.
-                Parameters
-                ----------
-                mean : Climatology
-                    The long-term climatological mean to calculate anomalies from. The climatological frequency and reducer will
-                    be determined from this climatology.
-                std : Optional[Climatology]
-                    The long-term climatological standard deviation to calculate anomalies from. If provided, standardized
-                    climatological anomalies will be calculated. The climatological standard deviation frequency and reducer must
-                    match the frequency and reducer used by the climatological mean.
-                keep_bandnames : bool, default True
-                    If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
-                    reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
+        Note
+        ----
+        Climatological anomalies are generally calculated using long-term climatological normals (e.g. 30 years). If
+        the climatological mean and standard deviation represent a shorter period, interpretation of results may vary.
 
-                Returns
-                -------
-                wxee.time_series.TimeSeries
-                    Climatological anomalies within the TimeSeries period.
+        Parameters
+        ----------
+        mean : Climatology
+            The long-term climatological mean to calculate anomalies from. The climatological frequency and reducer will
+            be determined from this climatology.
+        std : Optional[Climatology]
+            The long-term climatological standard deviation to calculate anomalies from. If provided, standardized
+            climatological anomalies will be calculated. The climatological standard deviation frequency and reducer must
+            match the frequency and reducer used by the climatological mean.
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the aggregated images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
 
-                Raises
-                ------
-                ValueError
-                    If the :code:`std` frequency or reducer do not match the :code:`mean` frequency or reducer. Only applies if
-                    a :code:`std` is provided.
+        Returns
+        -------
+        wxee.time_series.TimeSeries
+            Climatological anomalies within the TimeSeries period.
 
-                Example
-                -------
-                >>> collection = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET")
-                >>> reference = collection.filterDate("1980", "2010")
-                >>> mean = reference.climatology_mean("month")
-                >>> std = reference.climatology_std("month")
-                >>> observation = collection.filterDate("2020", "2021")
-                >>> anomaly = observation.climatology_anomaly(mean, std)
+        Raises
+        ------
+        ValueError
+            If the :code:`std` frequency or reducer do not match the :code:`mean` frequency or reducer. Only applies if
+            a :code:`std` is provided.
+
+        Example
+        -------
+        >>> collection = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET")
+        >>> reference = collection.filterDate("1980", "2010")
+        >>> mean = reference.climatology_mean("month")
+        >>> std = reference.climatology_std("month")
+        >>> observation = collection.filterDate("2020", "2021")
+        >>> anomaly = observation.climatology_anomaly(mean, std)
         """
         reducer = mean.reducer
         freq = mean.frequency

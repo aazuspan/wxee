@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.0.1
+                0.1.0
               </div>
             
           
@@ -161,12 +161,16 @@
            <div itemprop="articleBody">
             
   <h1>Source code for wxee.time_series</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">ee</span>  <span class="c1"># type: ignore</span>
 
 <span class="kn">from</span> <span class="nn">wxee.climatology</span> <span class="kn">import</span> <span class="n">Climatology</span>
-<span class="kn">from</span> <span class="nn">wxee.constants</span> <span class="kn">import</span> <span class="n">get_climatology_frequency</span><span class="p">,</span> <span class="n">get_time_frequency</span><span class="p">,</span> <span class="n">get_interpolation_method</span>
+<span class="kn">from</span> <span class="nn">wxee.constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_climatology_frequency</span><span class="p">,</span>
+    <span class="n">get_interpolation_method</span><span class="p">,</span>
+    <span class="n">get_time_frequency</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">wxee.utils</span> <span class="kn">import</span> <span class="n">_normalize</span>
 
 
@@ -648,13 +652,12 @@
 
         <span class="k">return</span> <span class="n">collection</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">image_anomaly</span><span class="p">,</span> <span class="n">opt_dropNulls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="TimeSeries.interpolate_time"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.interpolate_time">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
+<div class="viewcode-block" id="TimeSeries.interpolate_time"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.interpolate_time">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Use interpolation to synthesize data at a given time within the time series. Based on the</span>
 <span class="sd">        interpolation method chosen, a certain number of images must be present in the time series</span>
-<span class="sd">        before and after the target date. </span>
-<span class="sd">        </span>
-<span class="sd">        Nearest and linear interpolation require 1 image before and after the selected time while </span>
+<span class="sd">        before and after the target date.</span>
+
+<span class="sd">        Nearest and linear interpolation require 1 image before and after the selected time while</span>
 <span class="sd">        cubic interpolation requires 2 images before and after the selected time.</span>
 
 <span class="sd">        Parameters</span>
@@ -663,24 +666,24 @@
 <span class="sd">            The target date to interpolate data at. This must be within the time series period.</span>
 <span class="sd">        method : str, default linear</span>
 <span class="sd">            The interpolation method to use, one of &quot;nearest&quot;, &quot;linear&quot;, or &quot;cubic&quot;.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        ee.Image</span>
 <span class="sd">            Data interpolated to the target time from surrounding data in the time series.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Example</span>
 <span class="sd">        -------</span>
 <span class="sd">        &gt;&gt;&gt; ts = wxee.TimeSeries(&quot;IDAHO_EPSCOR/GRIDMET&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; target_date = ee.Date(&quot;2020-09-08T03&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; filled = ts.interpolate(target_date, &quot;cubic&quot;) </span>
+<span class="sd">        &gt;&gt;&gt; filled = ts.interpolate(target_date, &quot;cubic&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">method_func</span> <span class="o">=</span> <span class="n">get_interpolation_method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
 
         <span class="n">y1</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_n_images_before</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
         <span class="n">y2</span><span class="p">,</span> <span class="n">y3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_n_images_after</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
-        <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="p">[</span><span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="p">[</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">]]</span>
+        <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Number</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="p">[</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">]]</span>
         <span class="n">mu</span> <span class="o">=</span> <span class="n">_normalize</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">millis</span><span class="p">(),</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="o">.</span><span class="n">millis</span><span class="p">(),</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span><span class="o">.</span><span class="n">millis</span><span class="p">())</span>
 
         <span class="k">if</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="s2">&quot;linear&quot;</span><span class="p">]:</span>
@@ -692,32 +695,34 @@
 
         <span class="k">return</span> <span class="n">interpolated</span></div>
 
-
     <span class="k">def</span> <span class="nf">_get_n_images_before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get n images before a given date (inclusive) in the time series. The images will be selected</span>
 <span class="sd">        and returned in a list in order of their proximity to the target date.&quot;&quot;&quot;</span>
-        <span class="n">before_imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">,</span> <span class="n">opt_ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">before_imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
+            <span class="s2">&quot;system:time_start&quot;</span><span class="p">,</span> <span class="n">opt_ascending</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
         <span class="n">before_list</span> <span class="o">=</span> <span class="n">before_imgs</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">before_list</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
-        
 
     <span class="k">def</span> <span class="nf">_get_n_images_after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get n images after a given date (inclusive) in the time series. The images will be selected</span>
 <span class="sd">        and returned in order of their proximity to the target date.&quot;&quot;&quot;</span>
-        <span class="n">after_imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">,</span> <span class="n">opt_ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">after_imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
+            <span class="s2">&quot;system:time_start&quot;</span><span class="p">,</span> <span class="n">opt_ascending</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
         <span class="n">after_list</span> <span class="o">=</span> <span class="n">after_imgs</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">after_list</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
 
-<div class="viewcode-block" id="TimeSeries.insert_image"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.insert_image">[docs]</a>    <span class="k">def</span> <span class="nf">insert_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeSeries.insert_image"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.insert_image">[docs]</a>    <span class="k">def</span> <span class="nf">insert_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Insert an image into the time series and sort it by :code:`system:time_start`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        img : ee.Image</span>
 <span class="sd">            The image to insert.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        wxee.TimeSeries</span>

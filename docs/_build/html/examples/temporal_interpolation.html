@@ -1,0 +1,817 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Temporal Interpolation &mdash; wxee  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Climatological Means" href="climatology_mean.html" />
+    <link rel="prev" title="Temporal Aggregation" href="temporal_aggregation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> wxee
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../wxee.html">API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="image_collection_to_xarray.html">Image Collection to xarray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="downloading_images_and_collections.html">Downloading Images and Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="temporal_aggregation.html">Temporal Aggregation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Temporal Interpolation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Setup">Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Interpolating-Data">Interpolating Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Comparing-Interpolation-Methods">Comparing Interpolation Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="climatology_mean.html">Climatological Means</a></li>
+<li class="toctree-l2"><a class="reference internal" href="climatology_anomaly.html">Climatological Anomalies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modis.html">MODIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fire_progressions.html">Fire Progressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eemont.html">Combining wxee and eemont</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Developer Guide</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">wxee</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../examples.html">Examples</a> &raquo;</li>
+        
+      <li>Temporal Interpolation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/examples/temporal_interpolation.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<p><a class="reference external" href="https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/temporal_interpolation.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a> <a class="reference external" href="https://github.com/aazuspan/wxee/blob/main/docs/examples/temporal_interpolation.ipynb"><img alt="Github" src="https://img.shields.io/badge/Open%20in-Github-green.svg" /></a></p>
+<div class="section" id="Temporal-Interpolation">
+<h1>Temporal Interpolation<a class="headerlink" href="#Temporal-Interpolation" title="Permalink to this headline">¶</a></h1>
+<p>In this tutorial, we’ll take a look at the <code class="docutils literal notranslate"><span class="pre">TimeSeries.interpolate_time</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeSeries.insert_image</span></code> methods in <code class="docutils literal notranslate"><span class="pre">wxee</span></code>to see how they can be used to fill missing data.</p>
+<div class="section" id="Setup">
+<h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">!</span>pip install wxee
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">ee</span>
+<span class="kn">import</span> <span class="nn">wxee</span>
+
+<span class="n">ee</span><span class="o">.</span><span class="n">Authenticate</span><span class="p">()</span>
+<span class="n">ee</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Interpolating-Data">
+<h2>Interpolating Data<a class="headerlink" href="#Interpolating-Data" title="Permalink to this headline">¶</a></h2>
+<p>Interpolation allows you to synthesize data between existing data points. In this case, we’ll interpolate gridded precipitation data between daily outputs from the <a class="reference external" href="https://developers.google.com/earth-engine/datasets/catalog/IDAHO_EPSCOR_GRIDMET">gridMET model</a>.</p>
+<p>To begin with, we’ll create a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object of daily precipitation data.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;IDAHO_EPSCOR/GRIDMET&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;pr&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>We could interpolate directly from this time series which contains data between 1979 and present, but it will run faster if we subset our time series around our period of interest.</p>
+<p>Let’s select 2 days of data in January of 1985.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ts_sub</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="s2">&quot;1985-01-26&quot;</span><span class="p">,</span> <span class="s2">&quot;1985-01-28&quot;</span><span class="p">)</span>
+
+<span class="n">ts_sub</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="s2">&quot;day&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">IDAHO_EPSCOR/GRIDMET</span>
+        Images: 2
+        Start date: 1985-01-26 06:00:00 UTC
+        End date: 1985-01-27 06:00:00 UTC
+        Mean interval: 1.00 days
+</pre></div></div>
+</div>
+<p>Now we’ll use linear interpolation to predict rainfall at 18:00 UTC on June 28. Because our <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> data is acquired daily at 06:00 UTC, this will be interpolated halfway between our two existing grids.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">target_time</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="s2">&quot;1985-01-26T18&quot;</span><span class="p">)</span>
+<span class="n">interp</span> <span class="o">=</span> <span class="n">ts_sub</span><span class="o">.</span><span class="n">interpolate_time</span><span class="p">(</span><span class="n">target_time</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">TimeSeries.interpolate_time</span></code> method returns the interpolated image. If we want to add the interpolated data back into our time series, we can use the <code class="docutils literal notranslate"><span class="pre">TimeSeries.insert_image</span></code> method.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ts_interp</span> <span class="o">=</span> <span class="n">ts_sub</span><span class="o">.</span><span class="n">insert_image</span><span class="p">(</span><span class="n">interp</span><span class="p">)</span>
+<span class="n">ts_interp</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="s2">&quot;day&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">IDAHO_EPSCOR/GRIDMET</span>
+        Images: 3
+        Start date: 1985-01-26 06:00:00 UTC
+        End date: 1985-01-27 06:00:00 UTC
+        Mean interval: 0.50 days
+</pre></div></div>
+</div>
+<p>Notice that we now have three images instead of two, and the mean daily interval has decreased. Let’s download our time series and take a look at the synthesized data.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">ts_interp</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">20_000</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="s2">&quot;EPSG:5070&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "5f45f3252f234d0a95d10eef0d86187e", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "082e49e9dcea45a1ba1dbfd7e8fe1dea", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ds</span><span class="o">.</span><span class="n">pr</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">1.4</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7f26535bdd00&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_temporal_interpolation_15_1.png" src="../_images/examples_temporal_interpolation_15_1.png" />
+</div>
+</div>
+<p>It’s a bit hard to tell, but our predicted 18:00 UTC precipitation is linearly interpolated between our existing data points. That should be a little clearer if we look at the mean precipitation over the United States.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ds</span><span class="o">.</span><span class="n">pr</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;matplotlib.lines.Line2D at 0x7f2638be6940&gt;]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_temporal_interpolation_17_1.png" src="../_images/examples_temporal_interpolation_17_1.png" />
+</div>
+</div>
+</div>
+<div class="section" id="Comparing-Interpolation-Methods">
+<h2>Comparing Interpolation Methods<a class="headerlink" href="#Comparing-Interpolation-Methods" title="Permalink to this headline">¶</a></h2>
+<p>To compare the results of different interpolation methods, we’ll see how their predictions compare by synthesizing missing data and comparing the predictions to real data.</p>
+<p>To start off with, we’ll load 4 months of temperature data around (but not including) July of 2005. We’ll also load the missing July data as a separate image.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ts_missing</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">([</span>
+    <span class="s2">&quot;ECMWF/ERA5_LAND/MONTHLY/200505&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ECMWF/ERA5_LAND/MONTHLY/200506&quot;</span><span class="p">,</span>
+    <span class="c1"># Skip July</span>
+    <span class="s2">&quot;ECMWF/ERA5_LAND/MONTHLY/200508&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ECMWF/ERA5_LAND/MONTHLY/200509&quot;</span><span class="p">,</span>
+<span class="p">])</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;temperature_2m&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">img</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;actual&quot;</span><span class="p">))</span>
+
+
+<span class="n">missing_month</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s2">&quot;ECMWF/ERA5_LAND/MONTHLY/200507&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;temperature_2m&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">&quot;actual&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now we’ll iterate over our interpolation methods, creating a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> from each by filling in July using <code class="docutils literal notranslate"><span class="pre">interpolate_time</span></code> and adding it back to the time series using <code class="docutils literal notranslate"><span class="pre">insert_image</span></code>. We’ll set their band names to help us track which is which and merge each into an empty <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> so that we can download them in one go.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">fill_date</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="s2">&quot;2005-07&quot;</span><span class="p">)</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">([])</span>
+
+<span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span> <span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="s2">&quot;cubic&quot;</span><span class="p">]:</span>
+    <span class="n">interp_july</span> <span class="o">=</span> <span class="n">ts_missing</span><span class="o">.</span><span class="n">interpolate_time</span><span class="p">(</span><span class="n">fill_date</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="n">ts_interp</span> <span class="o">=</span> <span class="n">ts_missing</span><span class="o">.</span><span class="n">insert_image</span><span class="p">(</span><span class="n">interp_july</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">img</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">method</span><span class="p">))</span>
+
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">ts_interp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Finally, we’ll insert the <em>actual</em> July data into the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">ts_missing</span><span class="o">.</span><span class="n">insert_image</span><span class="p">(</span><span class="n">missing_month</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<p>Now we can download the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> containing our interpolated and actual data and visualize our predictions. We’ll do this within a region we define around Iceland.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">region</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Geometry</span><span class="o">.</span><span class="n">Polygon</span><span class="p">(</span>
+        <span class="p">[[[</span><span class="o">-</span><span class="mf">74.89613274249616</span><span class="p">,</span> <span class="mf">84.1363940126967</span><span class="p">],</span>
+          <span class="p">[</span><span class="o">-</span><span class="mf">74.89613274249616</span><span class="p">,</span> <span class="mf">58.87152610826001</span><span class="p">],</span>
+          <span class="p">[</span><span class="o">-</span><span class="mf">7.923476492496146</span><span class="p">,</span> <span class="mf">58.87152610826001</span><span class="p">],</span>
+          <span class="p">[</span><span class="o">-</span><span class="mf">7.923476492496146</span><span class="p">,</span> <span class="mf">84.1363940126967</span><span class="p">]]])</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ab3d428a562d4f838ec3a9a0e5f5e198", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "b365e9e07b724604a13a5e757756a96c", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<p>First off, let’s just look at the July temperature grids we created with each method.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s2">&quot;2005-07&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_array</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="s2">&quot;variable&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;xarray.plot.facetgrid.FacetGrid at 0x7f2638b46d90&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_temporal_interpolation_28_1.png" src="../_images/examples_temporal_interpolation_28_1.png" />
+</div>
+</div>
+<p>It looks like <code class="docutils literal notranslate"><span class="pre">cubic</span></code> was the closest to <code class="docutils literal notranslate"><span class="pre">actual</span></code> July data, but it’s hard to tell from a map. Instead, we’ll compare mean temperatures over the region between methods.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ds</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">to_array</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">hue</span><span class="o">=</span><span class="s2">&quot;variable&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;matplotlib.lines.Line2D at 0x7f26381cf220&gt;,
+ &lt;matplotlib.lines.Line2D at 0x7f2638170f70&gt;,
+ &lt;matplotlib.lines.Line2D at 0x7f263817d100&gt;,
+ &lt;matplotlib.lines.Line2D at 0x7f263817d1f0&gt;]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_temporal_interpolation_30_1.png" src="../_images/examples_temporal_interpolation_30_1.png" />
+</div>
+</div>
+<p>Now it’s clear: <code class="docutils literal notranslate"><span class="pre">cubic</span></code> clearly came the closest to the actual data, but it still underestimated temperatures.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="climatology_mean.html" class="btn btn-neutral float-right" title="Climatological Means" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="temporal_aggregation.html" class="btn btn-neutral float-left" title="Temporal Aggregation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Aaron Zuspan.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

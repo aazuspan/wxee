@@ -1,6 +1,6 @@
 from setuptools import setup  # type: ignore
 
-version = "0.1.0"
+version = "0.1.1"
 
 with open("README.rst") as readme_file:
     readme = readme_file.read()

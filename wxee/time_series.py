@@ -17,11 +17,6 @@ class TimeSeries(ee.imagecollection.ImageCollection):
     def __init__(self, *args: Any) -> None:
         super().__init__(*args)
 
-    def _get_times(self) -> ee.List:
-        """Return the the :code:`system:time_start` of each image in the collection"""
-        imgs = self.toList(self.size())
-        return imgs.map(lambda img: ee.Image(img).get("system:time_start"))
-
     @property
     def start_time(self) -> ee.Date:
         """The :code:`system:time_start` of first chronological image in the collection.
@@ -31,8 +26,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         ee.Date
             The start time of the collection.
         """
-        times = self._get_times()
-        return ee.Date(times.reduce(ee.Reducer.min()))
+        return ee.Date(self.aggregate_min("system:time_start"))
 
     @property
     def end_time(self) -> ee.Date:
@@ -43,25 +37,20 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         ee.Date
             The end time of the collection.
         """
-        times = self._get_times()
-        return ee.Date(times.reduce(ee.Reducer.max()))
+        return ee.Date(self.aggregate_max("system:time_start"))
 
-    def interval(self, unit: str = "day", reducer: Optional[Any] = None) -> ee.Number:
-        """Compute and reduce time intervals between images in the collection. By default, the mean interval will be returned,
-        but you could also calculate the minimum or maximum time between images, for example.
+    def interval(self, unit: str = "day") -> ee.Number:
+        """Compute the mean time interval between images in the time series.
 
         Parameters
         ----------
         unit : str, default "day"
             The unit to return the time interval in. One of "minute", "hour", "day", "week", "month", "year".
 
-        reducer : ee.Reducer, optional
-            The reducer to apply to the list of image intervals. If none is provided, ee.Reducer.mean() will be used.
-
         Returns
         -------
         ee.Number
-            The reduced time interval between images.
+            The mean time interval between images.
 
         Warning
         -------
@@ -75,21 +64,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         >>> imgs.interval("day").getInfo()
         5.03
         """
-
-        def iterate_diffs(time: ee.Date, old_diffs: ee.List) -> ee.List:
-            """Iterate through one step, calculating the time interval between two images and adding it to the working list."""
-            old_diffs = ee.List(old_diffs)
-            last_idx = old_diffs.size().subtract(1)
-            last_time = times.get(last_idx)
-            diff = ee.Date(time).difference(last_time, unit=unit)
-            return old_diffs.add(diff)
-
-        reducer = ee.Reducer.mean() if not reducer else reducer
-
-        times = self._get_times()
-        diffs = ee.List(times.iterate(iterate_diffs, ee.List([]))).slice(1)
-
-        return diffs.reduce(reducer)
+        return self.end_time.difference(self.start_time, unit=unit).divide(self.size())
 
     def describe(self, unit: str = "day") -> None:
         """Generate and print descriptive statistics about the Time Series such as the ID, start and end dates, and time between images.
@@ -104,16 +79,27 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         -------
         None
         """
-
-        start = self.start_time.format("yyyy-MM-dd HH:mm:ss z").getInfo()
-        end = self.end_time.format("yyyy-MM-dd HH:mm:ss z").getInfo()
-        mean_interval = self.interval(unit).getInfo()
         size = self.size().getInfo()
+
+        # Pulling min and max out of the stats is slightly faster than using `aggregate_min` and `aggregate_max` separately
+        stats = self.aggregate_stats("system:time_start")
+        start_millis = ee.Date(stats.get("min"))
+        end_millis = ee.Date(stats.get("max"))
+
+        start = start_millis.format("yyyy-MM-dd HH:mm:ss z").getInfo()
+        end = end_millis.format("yyyy-MM-dd HH:mm:ss z").getInfo()
+
+        # Calculating the interval using the start and end we already pulled is slightly faster than calculating the interval
+        # from scratch.
+        mean_interval = (
+            end_millis.difference(start_millis, unit=unit).divide(size).getInfo()
+        )
+
         id = self.get("system:id").getInfo()
 
         print(
             f"\033[1m{id}\033[0m"
-            f"\n\tImages: {size}"
+            f"\n\tImages: {size:,}"
             f"\n\tStart date: {start}"
             f"\n\tEnd date: {end}"
             f"\n\tMean interval: {mean_interval:.2f} {unit}s"

@@ -1,5 +1,5 @@
 .. image:: https://raw.githubusercontent.com/aazuspan/wxee/main/docs/_static/wxee.png
-   :alt: wxee
+   :alt: wxee .-- -..-
    :width: 200
    :target: https://github.com/aazuspan/wxee
 
@@ -165,3 +165,5 @@ Bugs or feature requests are always appreciated! They can be submitted `here <ht
 
 Code contributions are also welcome! Please open an `issue <https://github.com/aazuspan/wxee/issues>`_ to discuss implementation, 
 then follow the steps below. Developer setup instructions can be found `in the docs <https://wxee.readthedocs.io/en/latest/contributing.html>`_.
+
+

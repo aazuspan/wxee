@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.1
               </div>
             
           
@@ -180,11 +180,6 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_times</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the the :code:`system:time_start` of each image in the collection&quot;&quot;&quot;</span>
-        <span class="n">imgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">toList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">imgs</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">img</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span>
-
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;The :code:`system:time_start` of first chronological image in the collection.</span>
@@ -194,8 +189,7 @@
 <span class="sd">        ee.Date</span>
 <span class="sd">            The start time of the collection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_times</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">min</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregate_min</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">:</span>
@@ -206,25 +200,20 @@
 <span class="sd">        ee.Date</span>
 <span class="sd">            The end time of the collection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_times</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregate_max</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span>
 
-<div class="viewcode-block" id="TimeSeries.interval"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.interval">[docs]</a>    <span class="k">def</span> <span class="nf">interval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Number</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Compute and reduce time intervals between images in the collection. By default, the mean interval will be returned,</span>
-<span class="sd">        but you could also calculate the minimum or maximum time between images, for example.</span>
+<div class="viewcode-block" id="TimeSeries.interval"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.interval">[docs]</a>    <span class="k">def</span> <span class="nf">interval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;day&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Number</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Compute the mean time interval between images in the time series.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        unit : str, default &quot;day&quot;</span>
 <span class="sd">            The unit to return the time interval in. One of &quot;minute&quot;, &quot;hour&quot;, &quot;day&quot;, &quot;week&quot;, &quot;month&quot;, &quot;year&quot;.</span>
 
-<span class="sd">        reducer : ee.Reducer, optional</span>
-<span class="sd">            The reducer to apply to the list of image intervals. If none is provided, ee.Reducer.mean() will be used.</span>
-
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        ee.Number</span>
-<span class="sd">            The reduced time interval between images.</span>
+<span class="sd">            The mean time interval between images.</span>
 
 <span class="sd">        Warning</span>
 <span class="sd">        -------</span>
@@ -238,21 +227,7 @@
 <span class="sd">        &gt;&gt;&gt; imgs.interval(&quot;day&quot;).getInfo()</span>
 <span class="sd">        5.03</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">def</span> <span class="nf">iterate_diffs</span><span class="p">(</span><span class="n">time</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">,</span> <span class="n">old_diffs</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
-            <span class="sd">&quot;&quot;&quot;Iterate through one step, calculating the time interval between two images and adding it to the working list.&quot;&quot;&quot;</span>
-            <span class="n">old_diffs</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="p">(</span><span class="n">old_diffs</span><span class="p">)</span>
-            <span class="n">last_idx</span> <span class="o">=</span> <span class="n">old_diffs</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">last_time</span> <span class="o">=</span> <span class="n">times</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">last_idx</span><span class="p">)</span>
-            <span class="n">diff</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">time</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">last_time</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">old_diffs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
-
-        <span class="n">reducer</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">reducer</span> <span class="k">else</span> <span class="n">reducer</span>
-
-        <span class="n">times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_times</span><span class="p">()</span>
-        <span class="n">diffs</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="n">iterate_diffs</span><span class="p">,</span> <span class="n">ee</span><span class="o">.</span><span class="n">List</span><span class="p">([])))</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">diffs</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">reducer</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TimeSeries.describe"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.describe">[docs]</a>    <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;day&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Generate and print descriptive statistics about the Time Series such as the ID, start and end dates, and time between images.</span>
@@ -267,16 +242,27 @@
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;yyyy-MM-dd HH:mm:ss z&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;yyyy-MM-dd HH:mm:ss z&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
-        <span class="n">mean_interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
         <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+
+        <span class="c1"># Pulling min and max out of the stats is slightly faster than using `aggregate_min` and `aggregate_max` separately</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate_stats</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">)</span>
+        <span class="n">start_millis</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;min&quot;</span><span class="p">))</span>
+        <span class="n">end_millis</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">))</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">start_millis</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;yyyy-MM-dd HH:mm:ss z&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">end_millis</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;yyyy-MM-dd HH:mm:ss z&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+
+        <span class="c1"># Calculating the interval using the start and end we already pulled is slightly faster than calculating the interval</span>
+        <span class="c1"># from scratch.</span>
+        <span class="n">mean_interval</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">end_millis</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">start_millis</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
+        <span class="p">)</span>
+
         <span class="nb">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 
         <span class="nb">print</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[1m</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Images: </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Images: </span><span class="si">{</span><span class="n">size</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Start date: </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">End date: </span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Mean interval: </span><span class="si">{</span><span class="n">mean_interval</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s2">s&quot;</span>

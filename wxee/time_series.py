@@ -555,7 +555,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         merged = ee.ImageCollection(merged.copyProperties(self, self.propertyNames()))
         return merged.wx.to_time_series()
 
-    def rolling_reduce_time(
+    def rolling_time(
         self,
         window: int,
         unit: str,
@@ -599,7 +599,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         Example
         -------
         >>> ts = wxee.TimeSeries("MODIS/006/MOD13A2)
-        >>> ts_smooth = ts.rolling_reduce_time(90, "day", "center", reducer=ee.Reducer.median())
+        >>> ts_smooth = ts.rolling_time(90, "day", "center", reducer=ee.Reducer.median())
         """
         reducer = ee.Reducer.mean() if not reducer else reducer
         offset = 1 if align == "left" else 0.5 if align == "center" else 0

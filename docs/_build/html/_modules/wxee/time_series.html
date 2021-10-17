@@ -716,7 +716,86 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">merged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="n">img</span><span class="p">))</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">)</span>
         <span class="n">merged</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">ImageCollection</span><span class="p">(</span><span class="n">merged</span><span class="o">.</span><span class="n">copyProperties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">propertyNames</span><span class="p">()))</span>
-        <span class="k">return</span> <span class="n">merged</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_time_series</span><span class="p">()</span></div></div>
+        <span class="k">return</span> <span class="n">merged</span><span class="o">.</span><span class="n">wx</span><span class="o">.</span><span class="n">to_time_series</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TimeSeries.rolling_time"><a class="viewcode-back" href="../../wxee.html#wxee.time_series.TimeSeries.rolling_time">[docs]</a>    <span class="k">def</span> <span class="nf">rolling_time</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">window</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">align</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span>
+        <span class="n">min_observations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">keep_bandnames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Apply a rolling reducer over the time dimension. Rolling windows are calculated around each image,</span>
+<span class="sd">        so if images are irregularly spaced in time, the windows will be as well. As long as the minimum</span>
+<span class="sd">        observations are met in each window, the output time series will contain the same number of images as</span>
+<span class="sd">        the input, with each image reduced over its surrounding window.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        window : int</span>
+<span class="sd">            The number of time units to include in each rolling period.</span>
+<span class="sd">        unit : str</span>
+<span class="sd">            The time frequency of the window. One of &quot;hour&quot;, &quot;day&quot;, &quot;week&quot;, &quot;month&quot;, &quot;year&quot;.</span>
+<span class="sd">        align : str, default &quot;left&quot;</span>
+<span class="sd">            The start location of the rolling window, relative to the primary image time. One of &quot;left&quot;, &quot;center&quot;,</span>
+<span class="sd">            &quot;right&quot;. For example, a 3-day left-aligned window will include all images up to (but not including)</span>
+<span class="sd">            3 days prior to the primary image. Date ranges are exclusive in the alignment direction and inclusive</span>
+<span class="sd">            in the opposite direction, so each primary image will be included in its own window.</span>
+<span class="sd">        min_observations : int, default 1</span>
+<span class="sd">            The minimum number of images to include in the rolling window (counting the primary image). If the</span>
+<span class="sd">            minimum observations are not met, the primary image will be dropped. For example, a monthly time series</span>
+<span class="sd">            reduced with a 10 day window and :code:`min_observations==3` would be empty because none of the</span>
+<span class="sd">            windows would include enough observations.</span>
+<span class="sd">        reducer: Optional[ee.Reducer]</span>
+<span class="sd">            The reducer to apply to each rolling window. If none is given, ee.Reducer.mean will be used.</span>
+<span class="sd">        keep_bandnames : bool, default True</span>
+<span class="sd">            If true, the band names of the input images will be kept in the reduced images. If false, the name of the</span>
+<span class="sd">            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        wxee.time_series.TimeSeries</span>
+<span class="sd">            The time series with the rolling reducer applied to each image.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; ts = wxee.TimeSeries(&quot;MODIS/006/MOD13A2)</span>
+<span class="sd">        &gt;&gt;&gt; ts_smooth = ts.rolling_time(90, &quot;day&quot;, &quot;center&quot;, reducer=ee.Reducer.median())</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reducer</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">reducer</span> <span class="k">else</span> <span class="n">reducer</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;left&quot;</span> <span class="k">else</span> <span class="mf">0.5</span> <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;center&quot;</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">nudge</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;left&quot;</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="s2">&quot;center&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">def</span> <span class="nf">roll_image</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;Apply a rolling reducer to a single image using its temporal neighbors&quot;&quot;&quot;</span>
+            <span class="n">center</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;system:time_start&quot;</span><span class="p">))</span>
+            <span class="c1"># The windows need to be nudged slightly to set the correct exclusive/inclusive order.</span>
+            <span class="c1"># For example, a left aligned window should exclude the left and include the right,</span>
+            <span class="c1"># and vice-versa for a right aligned window.</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="n">center</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">window</span> <span class="o">*</span> <span class="n">offset</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">nudge</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">)</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+
+            <span class="n">neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterDate</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+            <span class="n">smooth</span> <span class="o">=</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">reducer</span><span class="p">)</span>
+
+            <span class="n">props</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;wx:window_size&quot;</span><span class="p">:</span> <span class="n">window</span><span class="p">,</span>
+                <span class="s2">&quot;wx:window_unit&quot;</span><span class="p">:</span> <span class="n">unit</span><span class="p">,</span>
+                <span class="s2">&quot;wx:window_align&quot;</span><span class="p">:</span> <span class="n">align</span><span class="p">,</span>
+                <span class="s2">&quot;wx:window_includes&quot;</span><span class="p">:</span> <span class="n">neighbors</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span>
+            <span class="p">}</span>
+            <span class="n">smooth</span> <span class="o">=</span> <span class="n">ee</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span>
+                <span class="n">smooth</span><span class="o">.</span><span class="n">copyProperties</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">propertyNames</span><span class="p">())</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">props</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">keep_bandnames</span><span class="p">:</span>
+                <span class="n">smooth</span> <span class="o">=</span> <span class="n">smooth</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">bandNames</span><span class="p">())</span>
+
+            <span class="k">return</span> <span class="n">ee</span><span class="o">.</span><span class="n">Algorithms</span><span class="o">.</span><span class="n">If</span><span class="p">(</span><span class="n">neighbors</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">lt</span><span class="p">(</span><span class="n">min_observations</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span> <span class="n">smooth</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">roll_image</span><span class="p">,</span> <span class="n">opt_dropNulls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

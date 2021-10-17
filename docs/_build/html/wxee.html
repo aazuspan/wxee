@@ -754,6 +754,45 @@ cubic interpolation requires 2 images before and after the selected time.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="wxee.time_series.TimeSeries.rolling_time">
+<span class="sig-name descname"><span class="pre">rolling_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_observations</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_bandnames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#wxee.time_series.TimeSeries" title="wxee.time_series.TimeSeries"><span class="pre">wxee.time_series.TimeSeries</span></a></span></span><a class="reference internal" href="_modules/wxee/time_series.html#TimeSeries.rolling_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wxee.time_series.TimeSeries.rolling_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply a rolling reducer over the time dimension. Rolling windows are calculated around each image,
+so if images are irregularly spaced in time, the windows will be as well. As long as the minimum
+observations are met in each window, the output time series will contain the same number of images as
+the input, with each image reduced over its surrounding window.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>window</strong> (<em>int</em>) – The number of time units to include in each rolling period.</p></li>
+<li><p><strong>unit</strong> (<em>str</em>) – The time frequency of the window. One of “hour”, “day”, “week”, “month”, “year”.</p></li>
+<li><p><strong>align</strong> (<em>str</em><em>, </em><em>default &quot;left&quot;</em>) – The start location of the rolling window, relative to the primary image time. One of “left”, “center”,
+“right”. For example, a 3-day left-aligned window will include all images up to (but not including)
+3 days prior to the primary image. Date ranges are exclusive in the alignment direction and inclusive
+in the opposite direction, so each primary image will be included in its own window.</p></li>
+<li><p><strong>min_observations</strong> (<em>int</em><em>, </em><em>default 1</em>) – The minimum number of images to include in the rolling window (counting the primary image). If the
+minimum observations are not met, the primary image will be dropped. For example, a monthly time series
+reduced with a 10 day window and <code class="code docutils literal notranslate"><span class="pre">min_observations==3</span></code> would be empty because none of the
+windows would include enough observations.</p></li>
+<li><p><strong>reducer</strong> (<em>Optional</em><em>[</em><em>ee.Reducer</em><em>]</em>) – The reducer to apply to each rolling window. If none is given, ee.Reducer.mean will be used.</p></li>
+<li><p><strong>keep_bandnames</strong> (<em>bool</em><em>, </em><em>default True</em>) – If true, the band names of the input images will be kept in the reduced images. If false, the name of the
+reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The time series with the rolling reducer applied to each image.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#wxee.time_series.TimeSeries" title="wxee.time_series.TimeSeries">wxee.time_series.TimeSeries</a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="n">wxee</span><span class="o">.</span><span class="n">TimeSeries</span><span class="p">(</span><span class="s2">&quot;MODIS/006/MOD13A2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ts_smooth</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">rolling_time</span><span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">reducer</span><span class="o">=</span><span class="n">ee</span><span class="o">.</span><span class="n">Reducer</span><span class="o">.</span><span class="n">median</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </div>

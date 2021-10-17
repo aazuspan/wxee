@@ -554,3 +554,82 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         merged = self.merge(ee.ImageCollection(img)).sort("system:time_start")
         merged = ee.ImageCollection(merged.copyProperties(self, self.propertyNames()))
         return merged.wx.to_time_series()
+
+    def rolling_reduce_time(
+        self,
+        window: int,
+        unit: str,
+        align: str = "left",
+        min_observations: int = 1,
+        reducer: Optional[Any] = None,
+        keep_bandnames: bool = True,
+    ) -> "TimeSeries":
+        """Apply a rolling reducer over the time dimension. Rolling windows are calculated around each image,
+        so if images are irregularly spaced in time, the windows will be as well. As long as the minimum
+        observations are met in each window, the output time series will contain the same number of images as
+        the input, with each image reduced over its surrounding window.
+
+        Parameters
+        ----------
+        window : int
+            The number of time units to include in each rolling period.
+        unit : str
+            The time frequency of the window. One of "hour", "day", "week", "month", "year".
+        align : str, default "left"
+            The start location of the rolling window, relative to the primary image time. One of "left", "center",
+            "right". For example, a 3-day left-aligned window will include all images up to (but not including)
+            3 days prior to the primary image. Date ranges are exclusive in the alignment direction and inclusive
+            in the opposite direction, so each primary image will be included in its own window.
+        min_observations : int, default 1
+            The minimum number of images to include in the rolling window (counting the primary image). If the
+            minimum observations are not met, the primary image will be dropped. For example, a monthly time series
+            reduced with a 10 day window and :code:`min_observations==3` would be empty because none of the
+            windows would include enough observations.
+        reducer: Optional[ee.Reducer]
+            The reducer to apply to each rolling window. If none is given, ee.Reducer.mean will be used.
+        keep_bandnames : bool, default True
+            If true, the band names of the input images will be kept in the reduced images. If false, the name of the
+            reducer will be appended to the band names, e.g. SR_B4 will become SR_B4_mean.
+
+        Returns
+        -------
+        wxee.time_series.TimeSeries
+            The time series with the rolling reducer applied to each image.
+
+        Example
+        -------
+        >>> ts = wxee.TimeSeries("MODIS/006/MOD13A2)
+        >>> ts_smooth = ts.rolling_reduce_time(90, "day", "center", reducer=ee.Reducer.median())
+        """
+        reducer = ee.Reducer.mean() if not reducer else reducer
+        offset = 1 if align == "left" else 0.5 if align == "center" else 0
+        nudge = 1 if align == "left" else 0 if align == "center" else -1
+
+        def roll_image(img: ee.Image) -> ee.Image:
+            """Apply a rolling reducer to a single image using its temporal neighbors"""
+            center = ee.Date(img.get("system:time_start"))
+            # The windows need to be nudged slightly to set the correct exclusive/inclusive order.
+            # For example, a left aligned window should exclude the left and include the right,
+            # and vice-versa for a right aligned window.
+            left = center.advance(window * offset * -1, unit).advance(nudge, "second")
+            right = left.advance(window, unit)
+
+            neighbors = self.filterDate(left, right)
+            smooth = neighbors.reduce(reducer)
+
+            props = {
+                "wx:window_size": window,
+                "wx:window_unit": unit,
+                "wx:window_align": align,
+                "wx:window_includes": neighbors.size(),
+            }
+            smooth = ee.Image(
+                smooth.copyProperties(img, img.propertyNames()).set(props)
+            )
+
+            if keep_bandnames:
+                smooth = smooth.rename(img.bandNames())
+
+            return ee.Algorithms.If(neighbors.size().lt(min_observations), None, smooth)
+
+        return self.map(roll_image, opt_dropNulls=True)

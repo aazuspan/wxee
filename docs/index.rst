@@ -7,8 +7,8 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   wxee
    examples
+   api
    contributing
 
 * :ref:`genindex`

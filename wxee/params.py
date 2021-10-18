@@ -1,10 +1,9 @@
 import difflib
-from abc import ABC
 from enum import Enum
 from typing import Any, Dict, Union
 
 
-class ParamEnum(Enum, ABC):
+class ParamEnum(Enum):
     """An abstract class for automatically handling function parameters"""
 
     @classmethod

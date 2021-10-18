@@ -231,5 +231,16 @@ class ImageCollection:
         return _flatten_list(tifs)
 
     def to_time_series(self) -> TimeSeries:
-        """Convert to a :code:`wxee.TimeSeries` collection with associated methods."""
+        """Convert to a :code:`wxee.TimeSeries` collection with associated methods.
+
+        Returns
+        -------
+        wxee.TimeSeries
+            The collection as a TimeSeries object.
+
+        Examples
+        --------
+        >>> col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET")
+        >>> ts = col.wx.to_time_series()
+        """
         return TimeSeries(self._obj)

@@ -1,4 +1,8 @@
+import functools
+
 import ee  # type: ignore
+
+from wxee.params import ParamEnum
 
 
 def nearest(y1: ee.Image, y2: ee.Image, mu: ee.Number) -> ee.Image:
@@ -24,3 +28,11 @@ def cubic(
     return (
         a0.multiply(mu).multiply(mu2).add(a1).multiply(mu2).add(a2).multiply(mu).add(a3)
     )
+
+
+class InterpolationMethodEnum(ParamEnum):
+    """Parameters defining interpolation methods"""
+
+    nearest = functools.partial(nearest)
+    linear = functools.partial(linear)
+    cubic = functools.partial(cubic)

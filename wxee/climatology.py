@@ -2,6 +2,25 @@ from typing import Any
 
 import ee  # type: ignore
 
+from wxee.params import ParamEnum
+
+
+class _ClimatologyFrequency:
+    """A data structure that ties default attributes to climatological frequency options."""
+
+    def __init__(self, name: str, date_format: str, start: int, end: int):
+        self.name = name
+        self.date_format = date_format
+        self.start = start
+        self.end = end
+
+
+class ClimatologyFrequencyEnum(ParamEnum):
+    """Parameters defining climatology frequencies"""
+
+    month = _ClimatologyFrequency("month", "M", 1, 12)
+    day = _ClimatologyFrequency("day", "D", 1, 366)
+
 
 class Climatology(ee.imagecollection.ImageCollection):
     """An image collection of climatological statistics such as means or standard deviations.
@@ -10,7 +29,7 @@ class Climatology(ee.imagecollection.ImageCollection):
     ----------
     statistic : str
         The statistic of the climatology, e.g. a mean climatology or standard deviation climatology.
-    frequency : wxee.constants._ClimatologyFrequency
+    frequency : wxee.climatology._ClimatologyFrequency
         The time frequency of the climatology.
     reducer : ee.Reducer
         The reducer used to aggregate the climatology.

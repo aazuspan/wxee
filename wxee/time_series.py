@@ -2,13 +2,21 @@ from typing import Any, List, Optional, Union
 
 import ee  # type: ignore
 
-from wxee.climatology import Climatology
-from wxee.constants import (
-    get_climatology_frequency,
-    get_interpolation_method,
-    get_time_frequency,
-)
+from wxee.climatology import Climatology, ClimatologyFrequencyEnum
+from wxee.interpolation import InterpolationMethodEnum
+from wxee.params import ParamEnum
 from wxee.utils import _normalize
+
+
+class TimeFrequencyEnum(ParamEnum):
+    """Parameters defining generic time frequnecies."""
+
+    year = "year"
+    month = "month"
+    week = "week"
+    day = "day"
+    hour = "hour"
+    minute = "minute"
 
 
 class TimeSeries(ee.imagecollection.ImageCollection):
@@ -142,7 +150,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         reducer = ee.Reducer.mean() if not reducer else reducer
         original_id = self.get("system:id")
 
-        get_time_frequency(frequency)
+        TimeFrequencyEnum.get_option(frequency)
 
         def resample_step(start: ee.Date) -> ee.Image:
             """Resample one time step in the given unit from a specified start time."""
@@ -182,7 +190,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
 
         A minimum of 1 step will be returned even if the time series period is smaller than the frequency.
         """
-        get_time_frequency(frequency)
+        TimeFrequencyEnum.get_option(frequency)
 
         n_steps = self.end_time.difference(self.start_time, frequency).floor()
         steps = ee.List.sequence(0, n_steps)
@@ -228,7 +236,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         """
         reducer = ee.Reducer.mean() if not reducer else reducer
 
-        freq = get_climatology_frequency(frequency)
+        freq = ClimatologyFrequencyEnum.get_option(frequency)
         start = freq.start if not start else start
         end = freq.end if not end else end
         prop = f"wx:{frequency}"
@@ -477,31 +485,31 @@ class TimeSeries(ee.imagecollection.ImageCollection):
 
     def interpolate_time(self, time: ee.Date, method: str = "linear") -> ee.Image:
         """Use interpolation to synthesize data at a given time within the time series. Based on the
-        interpolation method chosen, a certain number of images must be present in the time series
-        before and after the target date.
+                interpolation method chosen, a certain number of images must be present in the time series
+                before and after the target date.
 
-        Nearest and linear interpolation require 1 image before and after the selected time while
-        cubic interpolation requires 2 images before and after the selected time.
+                Nearest and linear interpolation require 1 image before and after the selected time while
+                cubic interpolation requires 2 images before and after the selected time.
+        ClimatologyFrequencyEnum
+                Parameters
+                ----------
+                date : ee.Date
+                    The target date to interpolate data at. This must be within the time series period.
+                method : str, default linear
+                    The interpolation method to use, one of "nearest", "linear", or "cubic".
 
-        Parameters
-        ----------
-        date : ee.Date
-            The target date to interpolate data at. This must be within the time series period.
-        method : str, default linear
-            The interpolation method to use, one of "nearest", "linear", or "cubic".
+                Returns
+                -------
+                ee.Image
+                    Data interpolated to the target time from surrounding data in the time series.
 
-        Returns
-        -------
-        ee.Image
-            Data interpolated to the target time from surrounding data in the time series.
-
-        Example
-        -------
-        >>> ts = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET")
-        >>> target_date = ee.Date("2020-09-08T03")
-        >>> filled = ts.interpolate(target_date, "cubic")
+                Example
+                -------
+                >>> ts = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET")
+                >>> target_date = ee.Date("2020-09-08T03")
+                >>> filled = ts.interpolate(target_date, "cubic")
         """
-        method_func = get_interpolation_method(method)
+        method_func = InterpolationMethodEnum.get_option(method)
 
         y1, y0 = self._get_n_images_before(time, 2)
         y2, y3 = self._get_n_images_after(time, 2)

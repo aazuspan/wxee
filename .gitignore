@@ -7,3 +7,5 @@ dist/
 *.egg-info/
 *.egg
 docs/examples/data/
+docs/_build/
+docs/generated/

@@ -72,7 +72,9 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         >>> imgs.interval("day").getInfo()
         5.03
         """
-        return self.end_time.difference(self.start_time, unit=unit).divide(self.size())
+        return self.end_time.difference(self.start_time, unit=unit).divide(
+            self.size().subtract(1)
+        )
 
     def describe(self, unit: str = "day") -> None:
         """Generate and print descriptive statistics about the Time Series such as the ID, start and end dates, and time between images.

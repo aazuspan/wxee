@@ -25,7 +25,7 @@ jobs:
         pip install pytest
         pip install -e .[test]
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: token
+    - name: Store EE token
       run: |
         python ./.github/scripts/make_ee_token.py
       env:

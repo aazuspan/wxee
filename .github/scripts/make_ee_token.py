@@ -1,6 +1,6 @@
 import os
 
-credentials = f'{{"refresh_token": {os.environ["EE_TOKEN"]}}}'
+credentials = f'{{"refresh_token": "{os.environ["EE_TOKEN"]}"}}'
 
 credential_dir = os.path.expanduser("~/.config/earthengine/")
 os.makedirs(credential_dir, exist_ok=True)

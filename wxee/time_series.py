@@ -99,11 +99,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         start = start_millis.format("yyyy-MM-dd HH:mm:ss z").getInfo()
         end = end_millis.format("yyyy-MM-dd HH:mm:ss z").getInfo()
 
-        # Calculating the interval using the start and end we already pulled is slightly faster than calculating the interval
-        # from scratch.
-        mean_interval = (
-            end_millis.difference(start_millis, unit=unit).divide(size).getInfo()
-        )
+        mean_interval = self.interval().getInfo()
 
         id = self.get("system:id").getInfo()
 

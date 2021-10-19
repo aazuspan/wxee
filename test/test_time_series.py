@@ -148,7 +148,7 @@ def test_day_interval_mean():
 
     ts = wxee.TimeSeries(imgs)
 
-    result_interval = ts.interval("day", ee.Reducer.mean()).getInfo()
+    result_interval = ts.interval("day").getInfo()
 
     assert result_interval == test_interval
 
@@ -171,34 +171,9 @@ def test_hour_interval_mean():
 
     ts = wxee.TimeSeries(imgs)
 
-    result_interval = ts.interval("hour", ee.Reducer.mean()).getInfo()
+    result_interval = ts.interval("hour").getInfo()
 
     assert result_interval == test_interval
-
-
-@pytest.mark.ee
-def test_hour_interval_min_max():
-    """Test that min and max intervals in hours are correctly identified when the interval is irregular"""
-    start_date = ee.Date("2020-01-01")
-    test_interval = 13
-
-    imgs = [
-        ee.Image.constant(0).set("system:time_start", start_date),
-        ee.Image.constant(0).set(
-            "system:time_start", start_date.advance(test_interval * 1, "hour")
-        ),
-        ee.Image.constant(0).set(
-            "system:time_start", start_date.advance(test_interval * 10, "hour")
-        ),
-    ]
-
-    ts = wxee.TimeSeries(imgs)
-
-    result_max_interval = ts.interval("hour", ee.Reducer.max()).getInfo()
-    result_min_interval = ts.interval("hour", ee.Reducer.min()).getInfo()
-
-    assert result_max_interval == test_interval * 9
-    assert result_min_interval == test_interval
 
 
 @pytest.mark.ee

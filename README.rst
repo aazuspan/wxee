@@ -14,6 +14,9 @@
 .. image:: https://readthedocs.org/projects/wxee/badge/?version=latest&style=flat
    :alt: Read the Docs
    :target: https://wxee.readthedocs.io/en/latest/?badge=latest
+.. image:: https://github.com/aazuspan/wxee/actions/workflows/tests.yml/badge.svg
+   :alt: Build status
+   :target: https://github.com/aazuspan/wxee
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :alt: Open in Colab
    :target: https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/image_collection_to_xarray.ipynb

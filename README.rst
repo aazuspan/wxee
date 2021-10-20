@@ -11,18 +11,21 @@
 .. image:: https://img.shields.io/conda/vn/conda-forge/wxee.svg
    :alt: conda-forge
    :target: https://anaconda.org/conda-forge/wxee
+.. image:: https://colab.research.google.com/assets/colab-badge.svg
+   :alt: Open in Colab
+   :target: https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/image_collection_to_xarray.ipynb
 .. image:: https://readthedocs.org/projects/wxee/badge/?version=latest&style=flat
    :alt: Read the Docs
    :target: https://wxee.readthedocs.io/en/latest/?badge=latest
 .. image:: https://github.com/aazuspan/wxee/actions/workflows/tests.yml/badge.svg
    :alt: Build status
    :target: https://github.com/aazuspan/wxee
+.. image:: https://codecov.io/gh/aazuspan/wxee/branch/main/graph/badge.svg?token=OeSeq4b7NF
+   :alt: Code coverage
+   :target: https://codecov.io/gh/aazuspan/wxee
 .. image:: https://img.shields.io/lgtm/grade/python/g/aazuspan/wxee.svg?logo=lgtm&logoWidth=18&style=flat
    :alt: Language Grade: Python
    :target: https://lgtm.com/projects/g/aazuspan/wxee/context:python
-.. image:: https://colab.research.google.com/assets/colab-badge.svg
-   :alt: Open in Colab
-   :target: https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/image_collection_to_xarray.ipynb
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :alt: Black code style
    :target: https://github.com/psf/black

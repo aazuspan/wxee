@@ -17,6 +17,9 @@
 .. image:: https://github.com/aazuspan/wxee/actions/workflows/tests.yml/badge.svg
    :alt: Build status
    :target: https://github.com/aazuspan/wxee
+.. image:: https://img.shields.io/lgtm/grade/python/g/aazuspan/wxee.svg?logo=lgtm&logoWidth=18&style=flat
+   :alt: Language Grade: Python
+   :target: https://lgtm.com/projects/g/aazuspan/wxee/context:python
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :alt: Open in Colab
    :target: https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/examples/image_collection_to_xarray.ipynb

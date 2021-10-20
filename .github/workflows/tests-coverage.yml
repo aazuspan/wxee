@@ -1,0 +1,43 @@
+name: tests-coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '.pre-commit-config.yaml'
+      - 'docs/**'
+      - '**.md'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest-cov
+        pip install -e .[test]
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Store EE token
+      run: |
+        python ./.github/scripts/make_ee_token.py
+      env:
+        EE_TOKEN: ${{ secrets.EE_TOKEN }}
+    - name: Test with pytest
+      run: |
+        pytest --cov=./ --cov-report=xml
+    - name: Upload to Codecov
+      run: |
+        bash <(curl -s https://codecov.io/bash)
+    - uses: actions/upload-artifact@v2
+      with:
+        path: coverage.xml

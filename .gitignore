@@ -9,3 +9,5 @@ dist/
 docs/examples/data/
 docs/_build/
 docs/generated/
+.coverage
+htmlcov/

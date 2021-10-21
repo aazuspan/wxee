@@ -55,3 +55,10 @@ tests: ## Run unit tests
 
 tests-local: ## Run unit tests that don't require connecting to Earth Engine servers.
 	pytest . -m "not ee"
+
+coverage: ## Run unit tests and produce a coverage HTML
+	coverage run -m pytest .
+	coverage html
+
+view-coverage: ## Open coverage HTML in a browser
+	python -m webbrowser -t htmlcov/index.html

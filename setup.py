@@ -15,7 +15,7 @@ requirements = [
     "joblib",
 ]
 doc_requirements = ["nbsphinx", "sphinx", "sphinx_rtd_theme"]
-test_requirements = ["pytest", "requests_mock"]
+test_requirements = ["pytest", "requests_mock", "coverage"]
 dev_requirements = (
     [
         "pre-commit",

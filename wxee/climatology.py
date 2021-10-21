@@ -44,7 +44,7 @@ class Climatology(ee.imagecollection.ImageCollection):
     def __init__(self, *args: Any) -> None:
         super().__init__(*args)
 
-    def describe(self) -> None:
+    def describe(self) -> None:  # pragma: no cover
         """Generate and print descriptive statistics about the Climatology such as the ID, number of images, and frequency.
         This requires pulling data from the server, so it may run slowly.
 

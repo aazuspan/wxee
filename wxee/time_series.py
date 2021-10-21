@@ -76,7 +76,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
             self.size().subtract(1)
         )
 
-    def describe(self, unit: str = "day") -> None:
+    def describe(self, unit: str = "day") -> None:  # pragma: no cover
         """Generate and print descriptive statistics about the Time Series such as the ID, start and end dates, and time between images.
         This requires pulling data from the server, so it may run slowly.
 

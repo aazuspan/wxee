@@ -239,3 +239,13 @@ def test_unpack_zip():
         unzipped_names = [os.path.basename(file) for file in unzipped]
 
     assert all([name in zipped_names for name in unzipped_names])
+
+
+def test_normalize():
+    """Test that values are correctly normalized"""
+    test_min = 0
+    test_val = -10
+    test_max = -20
+
+    result = wxee.utils._normalize(test_val, test_min, test_max)
+    assert result.getInfo() == 0.5

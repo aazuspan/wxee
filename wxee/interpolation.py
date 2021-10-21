@@ -26,7 +26,7 @@ def cubic(
     a3 = y1
 
     return (
-        a0.multiply(mu).multiply(mu2).add(a1).multiply(mu2).add(a2).multiply(mu).add(a3)
+        a0.multiply(mu).multiply(mu2).add(a1.multiply(mu2)).add(a2.multiply(mu)).add(a3)
     )
 
 

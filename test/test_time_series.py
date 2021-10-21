@@ -187,8 +187,30 @@ def test_climatology_anomaly():
     std = ref.climatology_std("month", start=2, end=4)
 
     anom = obs.climatology_anomaly(mean, std)
-
     assert anom.size().getInfo() == 3
+
+    anom = obs.climatology_anomaly(mean)
+    assert anom.size().getInfo() == 3
+
+
+@pytest.mark.ee
+def test_climatology_anomaly_with_inconsistent_inputs():
+    """Test that a climatology anomaly throws an error if the frequency or reducer of the mean and std do not match"""
+    ts = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET").select("tmmx")
+    ref = ts.filterDate("1990", "1992")
+    obs = ts.filterDate("2020", "2021")
+
+    mean = ref.climatology_mean("month")
+    std = ref.climatology_std("day")
+
+    with pytest.raises(ValueError):
+        obs.climatology_anomaly(mean, std)
+
+    mean = ref.climatology_mean("month", ee.Reducer.mean())
+    std = ref.climatology_std("month", ee.Reducer.max())
+
+    with pytest.raises(ValueError):
+        obs.climatology_anomaly(mean, std)
 
 
 @pytest.mark.ee
@@ -241,3 +263,64 @@ def test_dataset_conflicting_unmasked_value():
         ds = imgs.wx.to_xarray(region=pt)
 
     assert ds.constant.values.item() == 3
+
+
+@pytest.mark.ee
+def test_insert_image():
+    """Test that an image is correctly inserted into a time series"""
+    start_date = ee.Date("2020-01-01")
+    imgs = [
+        ee.Image.constant(0).set("system:time_start", start_date),
+        ee.Image.constant(0).set("system:time_start", start_date.advance(1, "day")),
+        ee.Image.constant(0).set("system:time_start", start_date.advance(2, "day")),
+    ]
+
+    ts = wxee.TimeSeries(imgs)
+
+    next_img = ee.Image.constant(0).set(
+        "system:time_start", start_date.advance(3, "day")
+    )
+
+    ts = ts.insert_image(next_img)
+
+    assert ts.size().getInfo() == 4
+
+
+@pytest.mark.ee
+def test_interpolate_time():
+    """Test that values are correctly interpolated"""
+    pt = ee.Geometry.Point([-118.2, 43.1]).buffer(20)
+
+    start_date = ee.Date("2020-01-01")
+    imgs = [
+        ee.Image.constant(-2).set("system:time_start", start_date),
+        ee.Image.constant(3).set("system:time_start", start_date.advance(1, "day")),
+        ee.Image.constant(9).set("system:time_start", start_date.advance(2, "day")),
+        ee.Image.constant(15).set("system:time_start", start_date.advance(3, "day")),
+    ]
+
+    ts = wxee.TimeSeries(imgs)
+
+    nearest = ts.interpolate_time(start_date.advance(1.9, "day"), method="nearest")
+    assert (
+        nearest.reduceRegion(
+            ee.Reducer.mean(), pt, scale=100, crs="EPSG:3857"
+        ).getInfo()["constant"]
+        == 9
+    )
+
+    linear = ts.interpolate_time(start_date.advance(1.5, "day"), method="linear")
+    assert (
+        linear.reduceRegion(
+            ee.Reducer.mean(), pt, scale=100, crs="EPSG:3857"
+        ).getInfo()["constant"]
+        == 6
+    )
+
+    cubic = ts.interpolate_time(start_date.advance(1.5, "day"), method="cubic")
+    assert (
+        cubic.reduceRegion(ee.Reducer.mean(), pt, scale=100, crs="EPSG:3857").getInfo()[
+            "constant"
+        ]
+        == 5.875
+    )

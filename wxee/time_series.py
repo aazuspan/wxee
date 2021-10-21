@@ -260,8 +260,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
             # Reducing makes images unbounded, so re-clip bounded images
             reduced = ee.Algorithms.If(geom.isUnbounded(), reduced, reduced.clip(geom))
 
-            if keep_bandnames:
-                reduced = ee.Image(reduced).rename(imgs.first().bandNames())
+            reduced = ee.Image(reduced).rename(imgs.first().bandNames())
 
             return ee.Algorithms.If(imgs.size().gt(0), reduced, None)
 

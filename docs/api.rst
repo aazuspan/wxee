@@ -117,6 +117,7 @@ Processing can be applied in the time dimension to modify a time series or creat
    TimeSeries.aggregate_time
    TimeSeries.interpolate_time
    TimeSeries.rolling_time
+   TimeSeries.fill_gaps
    TimeSeries.insert_image
 
 Calculating Climatologies

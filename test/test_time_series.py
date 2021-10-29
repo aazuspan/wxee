@@ -324,3 +324,104 @@ def test_interpolate_time():
         ]
         == 5.875
     )
+
+
+@pytest.mark.ee
+def test_get_window():
+    """Test getting images in a window around a given date with different alignment options"""
+
+    start_date = ee.Date("2020-01-01")
+
+    imgs = [
+        ee.Image.constant(0).set("system:time_start", start_date.advance(-3, "day")),
+        ee.Image.constant(0).set("system:time_start", start_date.advance(-2, "day")),
+        ee.Image.constant(0).set("system:time_start", start_date.advance(-1, "day")),
+        ee.Image.constant(0).set("system:time_start", start_date),
+        ee.Image.constant(0).set("system:time_start", start_date.advance(1, "day")),
+        ee.Image.constant(0).set("system:time_start", start_date.advance(2, "day")),
+        ee.Image.constant(0).set("system:time_start", start_date.advance(3, "day")),
+    ]
+
+    ts = wxee.TimeSeries(imgs)
+
+    window_center = ts._get_window(start_date, window=3, unit="day", align="center")
+
+    assert window_center.size().getInfo() == 3
+    assert window_center.start_time.getInfo() == start_date.advance(-1, "day").getInfo()
+    assert window_center.end_time.getInfo() == start_date.advance(1, "day").getInfo()
+
+    window_left = ts._get_window(start_date, window=3, unit="day", align="left")
+
+    assert window_left.size().getInfo() == 3
+    assert window_left.start_time.getInfo() == start_date.advance(-2, "day").getInfo()
+    assert window_left.end_time.getInfo() == start_date.getInfo()
+
+    window_right = ts._get_window(start_date, window=3, unit="day", align="right")
+
+    assert window_right.size().getInfo() == 3
+    assert window_right.start_time.getInfo() == start_date.getInfo()
+    assert window_right.end_time.getInfo() == start_date.advance(2, "day").getInfo()
+
+
+@pytest.mark.ee
+def test_fill_gaps_with_images():
+    """Test gap-filling with neighboring images."""
+    pt = ee.Geometry.Point([-118.2, 43.1]).buffer(20)
+    start_date = ee.Date("2020-01-01")
+
+    imgs = [
+        ee.Image.constant(1)
+        .set("system:time_start", start_date.advance(-1, "day"))
+        .int(),
+        ee.Image.constant(0).set("system:time_start", start_date).selfMask().int(),
+        ee.Image.constant(2)
+        .set("system:time_start", start_date.advance(1, "day"))
+        .int(),
+    ]
+
+    ts = wxee.TimeSeries(imgs)
+
+    filled = ts.fill_gaps(
+        window=3, unit="day", align="center", reducer=ee.Reducer.mean()
+    )
+    filled_img = filled.filterDate(start_date).first()
+
+    assert (
+        filled_img.reduceRegion(
+            ee.Reducer.mean(), pt, scale=100, crs="EPSG:3857"
+        ).getInfo()["constant"]
+        == 1.5
+    )
+
+
+@pytest.mark.ee
+def test_fill_gaps_with_value():
+    """Test gap-filling with a value when there are no unmasked neighboring images."""
+    pt = ee.Geometry.Point([-118.2, 43.1]).buffer(20)
+    start_date = ee.Date("2020-01-01")
+
+    imgs = [
+        ee.Image.constant(0)
+        .set("system:time_start", start_date.advance(-1, "day"))
+        .selfMask()
+        .int(),
+        ee.Image.constant(0).set("system:time_start", start_date).selfMask().int(),
+        ee.Image.constant(0)
+        .set("system:time_start", start_date.advance(1, "day"))
+        .selfMask()
+        .int(),
+    ]
+
+    ts = wxee.TimeSeries(imgs)
+
+    filled = ts.fill_gaps(
+        window=3, unit="day", align="center", reducer=ee.Reducer.mean(), fill_value=5
+    )
+    filled_img = filled.filterDate(start_date).first()
+
+    assert (
+        filled_img.reduceRegion(
+            ee.Reducer.mean(), pt, scale=100, crs="EPSG:3857"
+        ).getInfo()["constant"]
+        == 5
+    )

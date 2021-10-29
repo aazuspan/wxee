@@ -241,6 +241,7 @@ def test_unpack_zip():
     assert all([name in zipped_names for name in unzipped_names])
 
 
+@pytest.mark.ee
 def test_normalize():
     """Test that values are correctly normalized"""
     test_min = 0

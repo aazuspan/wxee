@@ -19,6 +19,14 @@ class TimeFrequencyEnum(ParamEnum):
     minute = "minute"
 
 
+class WindowAlignEnum(ParamEnum):
+    """Parameters defining rolling window alignment options."""
+
+    left = "left"
+    center = "center"
+    right = "right"
+
+
 class TimeSeries(ee.imagecollection.ImageCollection):
     """An image collection of chronological images."""
 
@@ -590,7 +598,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
             minimum observations are not met, the primary image will be dropped. For example, a monthly time series
             reduced with a 10 day window and :code:`min_observations==3` would be empty because none of the
             windows would include enough observations.
-        reducer: Optional[ee.Reducer]
+        reducer : Optional[ee.Reducer]
             The reducer to apply to each rolling window. If none is given, ee.Reducer.mean will be used.
         keep_bandnames : bool, default True
             If true, the band names of the input images will be kept in the reduced images. If false, the name of the
@@ -607,19 +615,11 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         >>> ts_smooth = ts.rolling_time(90, "day", "center", reducer=ee.Reducer.median())
         """
         reducer = ee.Reducer.mean() if not reducer else reducer
-        offset = 1 if align == "left" else 0.5 if align == "center" else 0
-        nudge = 1 if align == "left" else 0 if align == "center" else -1
 
         def roll_image(img: ee.Image) -> ee.Image:
             """Apply a rolling reducer to a single image using its temporal neighbors"""
             center = ee.Date(img.get("system:time_start"))
-            # The windows need to be nudged slightly to set the correct exclusive/inclusive order.
-            # For example, a left aligned window should exclude the left and include the right,
-            # and vice-versa for a right aligned window.
-            left = center.advance(window * offset * -1, unit).advance(nudge, "second")
-            right = left.advance(window, unit)
-
-            neighbors = self.filterDate(left, right)
+            neighbors = self._get_window(center, window, unit, align)
             smooth = neighbors.reduce(reducer)
 
             props = {
@@ -638,3 +638,93 @@ class TimeSeries(ee.imagecollection.ImageCollection):
             return ee.Algorithms.If(neighbors.size().lt(min_observations), None, smooth)
 
         return self.map(roll_image, opt_dropNulls=True)
+
+    def fill_gaps(
+        self,
+        window: int,
+        unit: str,
+        align: str = "center",
+        reducer: Optional[Any] = None,
+        fill_value: Optional[float] = None,
+    ) -> "TimeSeries":
+        """Apply gap-filling using a moving window reducer through time. Each image is unmasked using its reduced temporal neighbors.
+        If the window is not wide enough to include an unmasked value (e.g. if clouds occur in the same location in all images),
+        masked values will remain unless a :code:`fill_value` is specified.
+
+        Parameters
+        ----------
+        window : int
+            The number of time units to include in each rolling period.
+        unit : str
+            The time frequency of the window. One of "hour", "day", "week", "month", "year".
+        align : str, default "center"
+            The start location of the rolling window, relative to the primary image time. One of "left", "center",
+            "right". For example, a 3-day left-aligned window will include all images up to (but not including)
+            3 days prior to the primary image. Date ranges are exclusive in the alignment direction and inclusive
+            in the opposite direction, so each primary image will be included in its own window.
+        reducer : Optional[ee.Reducer]
+            The reducer to apply to each rolling window. If none is given, ee.Reducer.mean will be used.
+        fill_value : float
+            The value to fill any masked values with after applying initial gap-filling. If none is given, masked
+            values may remain if the window size is not large enough.
+
+        Returns
+        -------
+        wxee.time_series.TimeSeries
+            The time series with each image unmasked using its reduced neighbors.
+
+        Example
+        -------
+        >>> ts = wxee.TimeSeries("MODIS/006/MOD13A2)
+        >>> ts_filled = ts.fill_gaps(90, "day", "center", reducer=ee.Reducer.median())
+        """
+        reducer = ee.Reducer.mean() if not reducer else reducer
+
+        def fill_image(img: ee.Image) -> ee.Image:
+            """Unmask a single image by applying a rolling reducer to its temporal neighbors."""
+            center = ee.Date(img.get("system:time_start"))
+            neighbors = self._get_window(center, window, unit, align)
+            filler = neighbors.reduce(reducer)
+
+            filled = img.unmask(filler)
+            filled = filled.unmask(fill_value) if fill_value else filled
+
+            return filled
+
+        return self.map(fill_image)
+
+    def _get_window(
+        self, time: ee.Date, window: int, unit: str, align: str = "left"
+    ) -> "TimeSeries":
+        """Get all images within a window around a target date.
+
+        Parameters
+        ----------
+        time : ee.Date
+            The center date of the window.
+        window : int
+            The number of time units to include in the window.
+        unit : str
+            The time frequency of the window. One of "hour", "day", "week", "month", "year".
+        align : str, default "left"
+            The start location of the window, relative to the center time. One of "left", "center", "right". Date
+            ranges are exclusive in the alignment direction and inclusive in the opposite direction, so the center
+            date of the window is always included.
+
+        Returns
+        -------
+        wxee.time_series.TimeSeries
+            A time series containing all images in the window.
+        """
+        WindowAlignEnum.get_option(align)
+
+        offset = 1 if align == "left" else 0.5 if align == "center" else 0
+        nudge = 1 if align == "left" else 0 if align == "center" else -1
+
+        # The windows need to be nudged slightly to set the correct exclusive/inclusive order.
+        # For example, a left aligned window should exclude the left and include the right,
+        # and vice-versa for a right aligned window.
+        left = time.advance(window * offset * -1, unit).advance(nudge, "second")
+        right = left.advance(window, unit)
+
+        return self.filterDate(left, right)

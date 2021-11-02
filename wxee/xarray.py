@@ -118,7 +118,6 @@ class DataArrayAccessor:
         xarray.DataArray
             The dataset with normalized values.
 
-
         Raises
         ------
         ValueError

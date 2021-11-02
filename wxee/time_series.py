@@ -490,29 +490,32 @@ class TimeSeries(ee.imagecollection.ImageCollection):
 
     def interpolate_time(self, time: ee.Date, method: str = "linear") -> ee.Image:
         """Use interpolation to synthesize data at a given time within the time series. Based on the
-                interpolation method chosen, a certain number of images must be present in the time series
-                before and after the target date.
+        interpolation method chosen, a certain number of images must be present in the time series
+        before and after the target date.
 
-                Nearest and linear interpolation require 1 image before and after the selected time while
-                cubic interpolation requires 2 images before and after the selected time.
-        ClimatologyFrequencyEnum
-                Parameters
-                ----------
-                date : ee.Date
-                    The target date to interpolate data at. This must be within the time series period.
-                method : str, default linear
-                    The interpolation method to use, one of "nearest", "linear", or "cubic".
+        Nearest and linear interpolation require 1 image before and after the selected time while
+        cubic interpolation requires 2 images before and after the selected time.
 
-                Returns
-                -------
-                ee.Image
-                    Data interpolated to the target time from surrounding data in the time series.
+        Parameters
+        ----------
+        date : ee.Date
+            The target date to interpolate data at. This must be within the time series period.
+        method : str, default linear
+            The interpolation method to use, one of "nearest", "linear", or "cubic".
 
-                Example
-                -------
-                >>> ts = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET")
-                >>> target_date = ee.Date("2020-09-08T03")
-                >>> filled = ts.interpolate(target_date, "cubic")
+        Returns
+        -------
+        ee.Image
+            Data interpolated to the target time from surrounding data in the time series.
+
+        Examples
+        --------
+        >>> ts = wxee.TimeSeries("IDAHO_EPSCOR/GRIDMET")
+        >>> target_date = ee.Date("2020-09-08T03")
+
+        Interpolate weather data at the target date using cubic interpolation.
+
+        >>> filled = ts.interpolate(target_date, "cubic")
         """
         method_func = InterpolationMethodEnum.get_option(method)
 

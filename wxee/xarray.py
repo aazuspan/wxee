@@ -12,7 +12,7 @@ class DatasetAccessor:
         self,
         bands: Optional[List[str]] = None,
         stretch: float = 1.0,
-        animate: bool = False,
+        interactive: bool = False,
         **kwargs: Any,
     ) -> Any:
         """Generate an RGB color composite plot of the Dataset.
@@ -24,18 +24,18 @@ class DatasetAccessor:
             first three data variables will be used in order.
         stretch : float, default 1.0
             A percentile stretch to apply to pixel values, between 0.0 and 1.0.
-        animate : bool, default False
-            If False, a static plot is returned, faceted over the time dimension. If True, an animated plot is
-            returned over the time dimension. Animated plots require the `hvplot` library to be installed
+        interactive : bool, default False
+            If False, a static plot is returned, faceted over the time dimension. If True, an interactive plot is
+            returned over the time dimension. interactive plots require the `hvplot` library to be installed
             independently.
         **kwargs
             Keyword arguments passed to the plotting function. For static plots, arguments are passed to
-            :code:`xarray.Dataset.plot.imshow`. For animated plots, arguments are passed to :code:`xarray.Dataset.hvplot.rgb`.
+            :code:`xarray.Dataset.plot.imshow`. For interactive plots, arguments are passed to :code:`xarray.Dataset.hvplot.rgb`.
 
         Returns
         -------
         Union[xarray.plot.facetgrid.FacetGrid, HoloViews object]
-            The RGB plot, either static or animated.
+            The RGB plot, either static or interactive.
 
         Raises
         ------
@@ -44,7 +44,7 @@ class DatasetAccessor:
             implicitly identified from the data variables.
 
         ImportError
-            If the `animated` argument is True and the `hvplot` package is not installed.
+            If the `interactive` argument is True and the `hvplot` package is not installed.
 
         Examples
         --------
@@ -60,10 +60,10 @@ class DatasetAccessor:
 
         >>> ds.wx.rgb(bands=["B4", "B3", "B2"], stretch=0.85, col_wrap=4)
 
-        Generate an animated plot using a near-infrared false color composite. The aspect argument will be passed
+        Generate an interactive plot using a near-infrared false color composite. The aspect argument will be passed
         to the plotting function.
 
-        >>> ds.wx.rgb(bands=["B8", "B4", "B3"], stretch=0.85, animate=True, aspect=1.2)
+        >>> ds.wx.rgb(bands=["B8", "B4", "B3"], stretch=0.85, interactive=True, aspect=1.2)
         """
         if bands:
             if len(bands) != 3:
@@ -81,12 +81,12 @@ class DatasetAccessor:
 
         da = da.wx.normalize(stretch)
 
-        if animate:
+        if interactive:
             try:
                 import hvplot.xarray  # type: ignore
             except ImportError:
                 raise ImportError(
-                    "The `hvplot` package is required for animated plots. Run `pip install hvplot`."
+                    "The `hvplot` package is required for interactive plots. Run `pip install hvplot`."
                 )
 
             default_kwargs = {"widget_location": "bottom", "widget_type": "scrubber"}

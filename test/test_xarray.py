@@ -42,19 +42,19 @@ def test_rgb_with_missing_implicit_bands():
         ds[["B4", "B3"]].wx.rgb()
 
 
-def test_rgb_animated():
-    """Test that an animated plot can be generated"""
+def test_rgb_interactive():
+    """Test that an interactive plot can be generated"""
     ds = xr.load_dataset(os.path.join("test", "test_data", "COPERNICUS_S2_SR_test.nc"))
-    ds.wx.rgb(animate=True, widget_location="top")
+    ds.wx.rgb(interactive=True, widget_location="top")
 
 
-def test_rgb_animated_without_hvplot():
-    """Test that an animated plot cannot be generated if hvplot is missing by mocking the missing package"""
+def test_rgb_interactive_without_hvplot():
+    """Test that an interactive plot cannot be generated if hvplot is missing by mocking the missing package"""
     ds = xr.load_dataset(os.path.join("test", "test_data", "COPERNICUS_S2_SR_test.nc"))
 
     with pytest.raises(ImportError, match="pip install hvplot"):
         with mock.patch.dict("sys.modules", {"hvplot.xarray": None}):
-            ds.wx.rgb(animate=True, widget_location="top")
+            ds.wx.rgb(interactive=True, widget_location="top")
 
 
 def test_normalize():

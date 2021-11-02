@@ -6,6 +6,8 @@ API Reference
 
 This page contains auto-generated documentation for :code:`wxee` modules and classes.
 
+
+
 Earth Engine Classes
 ====================
 
@@ -52,6 +54,30 @@ ee.ImageCollection
    ImageCollection.get_image
    ImageCollection.last
 
+
+xarray Classes
+==============
+
+The :code:`wxee` package adds a few helpful methods to :code:`xarray` classes through the same :code:`wx` accessor
+used by `Earth Engine Classes`_. To use them, just import the package and use the :code:`wx` accessor.
+
+xarray.Dataset
+--------------
+
+.. currentmodule:: wxee.xarray
+
+.. autosummary::
+   :toctree: generated/
+
+   DatasetAccessor.rgb
+
+xarray.DataArray
+----------------
+
+.. autosummary::
+   :toctree: generated/
+
+   DataArrayAccessor.normalize
 
 Time Series
 ===========

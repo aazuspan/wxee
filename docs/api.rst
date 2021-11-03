@@ -6,6 +6,17 @@ API Reference
 
 This page contains auto-generated documentation for :code:`wxee` modules and classes.
 
+Initialization
+==============
+
+All automated requests to Earth Engine, such as those made by :code:`wxee` should be made using the 
+`high-volume Earth Engine endpoint <https://developers.google.com/earth-engine/cloud/highvolume>`_. This can be done
+by specifying the high-volume endpoint using :code:`ee.Initialize` or by using the :code:`wxee.Initialize` shortcut.
+
+.. autosummary::
+   :toctree: generated/
+
+   Initialize
 
 
 Earth Engine Classes

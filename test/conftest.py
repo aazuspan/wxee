@@ -1,5 +1,7 @@
 import ee
 
+import wxee
+
 
 def pytest_sessionstart(session):
     """Initialize Earth Engine unless tests marked ee have been excluded.
@@ -7,7 +9,7 @@ def pytest_sessionstart(session):
     """
     if not is_ee_excluded(session):
         try:
-            ee.Initialize()
+            wxee.Initialize()
         except Exception:
             raise ValueError(
                 'Earth Engine could not be initialized. Use `pytest . -m "not ee"` to skip Earth Engine tests.'

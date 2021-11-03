@@ -17,6 +17,17 @@ from tqdm.auto import tqdm  # type: ignore
 from urllib3.util.retry import Retry  # type: ignore
 
 
+def Initialize(**kwargs: Any) -> None:
+    """Initialize Earth Engine using the high-volume endpoint designed for automated requests.
+
+    Parameters
+    ----------
+    kwargs : Any
+        Additional keyword arguments passed to ee.Initialize().
+    """
+    ee.Initialize(opt_url="https://earthengine-highvolume.googleapis.com", **kwargs)
+
+
 def _set_nodata(file: str, nodata: Union[float, int]) -> None:
     """Set the nodata value in the metadata of an image file.
 

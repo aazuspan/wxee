@@ -111,8 +111,6 @@ class ImageCollection:
 
         Examples
         --------
-        >>> import ee, wxee
-        >>> ee.Initialize()
         >>> col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").filterDate("2020-09-08", "2020-09-15")
         >>> col.wx.to_xarray(scale=40000, crs="EPSG:5070", nodata=-9999)
         """
@@ -195,8 +193,6 @@ class ImageCollection:
 
         Example
         -------
-        >>> import ee, wxee
-        >>> ee.Initialize()
         >>> col = ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").filterDate("2020-09-08", "2020-09-15")
         >>> col.wx.to_tif(scale=40000, crs="EPSG:5070", nodata=-9999)
         """

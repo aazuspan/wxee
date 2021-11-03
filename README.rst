@@ -97,7 +97,7 @@ Once you have access to Google Earth Engine, just import and initialize :code:`e
    import ee
    import wxee
 
-   ee.Initialize()
+   wxee.Initialize()
 
 
 Download Images

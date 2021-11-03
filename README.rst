@@ -51,8 +51,9 @@ convenient methods for data processing, aggregation, downloading, and ingestion.
 
 Features
 --------
-* Time series image collections to **xarray**, **NetCDF**, or **GeoTIFF** in one line of code
-* Climatological anomalies, temporal aggregation, and temporal interpolation in Earth Engine
+* Time series image collections to `xarray <https://wxee.readthedocs.io/en/latest/examples/image_collection_to_xarray.html>`_, `NetCDF <https://wxee.readthedocs.io/en/latest/examples/image_collection_to_xarray.html>`_, or `GeoTIFF <https://wxee.readthedocs.io/en/latest/examples/downloading_images_and_collections.html>`_ in one line of code
+* `Climatological anomalies <https://wxee.readthedocs.io/en/latest/examples/climatology_anomaly.html>`_ and temporal `aggregation <https://wxee.readthedocs.io/en/latest/examples/temporal_aggregation.html>`_, `interpolation <https://wxee.readthedocs.io/en/latest/examples/temporal_interpolation.html>`_, `smoothing <https://wxee.readthedocs.io/en/latest/generated/wxee.time_series.TimeSeries.rolling_time.html>`_, and `gap-filling <https://wxee.readthedocs.io/en/latest/generated/wxee.time_series.TimeSeries.fill_gaps.html>`_ in Earth Engine
+* `Color composite plots <https://wxee.readthedocs.io/en/latest/generated/wxee.xarray.DatasetAccessor.rgb.html>`_ from **xarray** datasets
 * Parallel processing for fast downloads
 
 

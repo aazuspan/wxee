@@ -52,6 +52,14 @@ nbsphinx_prolog = """
    :target: https://colab.research.google.com/github/aazuspan/wxee/blob/main/docs/{{ docname }}
 """
 
+nbsphinx_epilog = """
+{% set docname = env.doc2path(env.docname, base=None) %}
+
+.. note::
+   This page was auto-generated from a Jupyter notebook. For full functionality, download the
+   notebook from `Github <https://github.com/aazuspan/wxee/blob/main/docs/{{ docname }}>`_ and run it in a local Python environment.
+"""
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]  # , sphinx_autosummary_accessors.templates_path]
 

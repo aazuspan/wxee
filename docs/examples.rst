@@ -2,13 +2,14 @@ Examples
 ========
 
 
-Exporting and Downloading Data
-------------------------------
+Exporting, Downloading, and Visualizing
+---------------------------------------
 
 .. toctree::
  
     examples/image_collection_to_xarray.ipynb
     examples/downloading_images_and_collections.ipynb
+    examples/color_composites.ipynb
 
 Time Series Processing
 ----------------------

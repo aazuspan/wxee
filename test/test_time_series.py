@@ -425,3 +425,31 @@ def test_fill_gaps_with_value():
         ).getInfo()["constant"]
         == 5
     )
+
+
+@pytest.mark.ee
+def test_dataframe():
+    """Test that a time series dataframe contains the correct start and end times and IDs."""
+    start_dates = ["2020-01-01", "2020-02-01", "2021-03-03"]
+    end_dates = ["2020-01-02", "2020-02-03", "2021-04-03"]
+    ids = ["id1", "id2", "id3"]
+    col_id = "test_time_series"
+
+    imgs = [
+        ee.Image.constant(1).set(
+            "system:time_start",
+            ee.Date(start_dates[i]).millis(),
+            "system:time_end",
+            ee.Date(end_dates[i]).millis(),
+            "system:id",
+            ids[i],
+        )
+        for i in range(3)
+    ]
+    ts = wxee.TimeSeries(imgs).set("system:id", col_id)
+    df = ts.dataframe()
+
+    assert df.index.id == col_id
+    assert df.time_start.dt.strftime("%Y-%m-%d").values.tolist() == start_dates
+    assert df.time_end.dt.strftime("%Y-%m-%d").values.tolist() == end_dates
+    assert df.id.values.tolist() == ids

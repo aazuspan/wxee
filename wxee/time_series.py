@@ -9,7 +9,7 @@ import plotly.graph_objects as go  # type: ignore
 from wxee.climatology import Climatology, ClimatologyFrequencyEnum
 from wxee.interpolation import InterpolationMethodEnum
 from wxee.params import ParamEnum
-from wxee.utils import _normalize
+from wxee.utils import _millis_to_datetime, _normalize
 
 
 class TimeFrequencyEnum(ParamEnum):
@@ -136,8 +136,8 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         ids = self.aggregate_array("system:id").getInfo()
         collection_id = self.get("system:id").getInfo()
 
-        starts = [datetime.datetime.fromtimestamp(ms / 1000) for ms in starts_millis]
-        ends = [datetime.datetime.fromtimestamp(ms / 1000) for ms in ends_millis]
+        starts = [_millis_to_datetime(ms) for ms in starts_millis]
+        ends = [_millis_to_datetime(ms) for ms in ends_millis]
 
         df = pd.DataFrame({"id": ids, "time_start": starts, "time_end": ends})
         df.index.id = collection_id

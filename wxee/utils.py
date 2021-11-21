@@ -198,6 +198,11 @@ def _parse_time(time: str) -> Union[datetime.datetime, str]:
         return time
 
 
+def _millis_to_datetime(millis: str) -> datetime.datetime:
+    """Convert a timestamp in UTC milliseconds (e.g. from Earth Engine) to a datetime object."""
+    return datetime.datetime.utcfromtimestamp(int(millis) / 1000.0)
+
+
 def _replace_if_null(val: Union[ee.String, ee.Number], replacement: Any) -> Any:
     """Take an Earth Engine object and return either the original non-null object or the given replacement if it is null."""
     is_null = ee.Algorithms.IsEqual(val, None)

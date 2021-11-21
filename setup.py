@@ -13,6 +13,7 @@ requirements = [
     "requests",
     "netcdf4",
     "joblib",
+    "plotly",
 ]
 doc_requirements = ["nbsphinx", "sphinx", "sphinx_rtd_theme"]
 test_requirements = [

@@ -1,11 +1,14 @@
 from typing import Any, List, Optional, Union
 
 import ee  # type: ignore
+import pandas as pd  # type: ignore
+import plotly.express as px  # type: ignore
+import plotly.graph_objects as go  # type: ignore
 
 from wxee.climatology import Climatology, ClimatologyFrequencyEnum
 from wxee.interpolation import InterpolationMethodEnum
 from wxee.params import ParamEnum
-from wxee.utils import _normalize
+from wxee.utils import _millis_to_datetime, _normalize
 
 
 class TimeFrequencyEnum(ParamEnum):
@@ -118,6 +121,87 @@ class TimeSeries(ee.imagecollection.ImageCollection):
             f"\n\tEnd date: {end}"
             f"\n\tMean interval: {mean_interval:.2f} {unit}s"
         )
+
+    def dataframe(self) -> pd.DataFrame:
+        """Generate a Pandas dataframe describing the system properties of each image in the time series.
+
+        Returns
+        -------
+        pd.DataFrame
+            A Pandas dataframe where each row represents an image and columns represent system properties.
+        """
+        starts_millis = self.aggregate_array("system:time_start").getInfo()
+        ends_millis = self.aggregate_array("system:time_end").getInfo()
+        ids = self.aggregate_array("system:id").getInfo()
+        collection_id = self.get("system:id").getInfo()
+
+        starts = [_millis_to_datetime(ms) for ms in starts_millis]
+        ends = [_millis_to_datetime(ms) for ms in ends_millis]
+
+        df = pd.DataFrame({"id": ids, "time_start": starts, "time_end": ends})
+        df.index.id = collection_id
+        return df
+
+    def timeline(self) -> go.Figure:  # pragma: no cover
+        """Generate an interactive plot showing the acquisition time of each image in the time series.
+
+        Returns
+        -------
+        go.Figure
+            A Plotly graph object interactive plot showing the acquisition time of each image in the time series.
+        """
+        df = self.dataframe()
+        df["y"] = 0
+
+        fig = px.line(
+            df,
+            x="time_start",
+            y="y",
+            hover_name="id",
+            markers=True,
+            labels={"time_start": ""},
+        )
+
+        fig.update_traces(
+            customdata=df[["id", "time_start"]],
+            hovertemplate="<b>%{customdata[0]}</b>"
+            + "<br>%{customdata[1]|%Y-%m-%d %H:%M:%S}",
+            line=dict(width=2, color="black"),
+            marker=dict(
+                size=12,
+                symbol="line-ns-open",
+                color="grey",
+                line=dict(width=1, color="black"),
+            ),
+        )
+
+        # Add circles for each image
+        fig.add_trace(
+            go.Scatter(
+                x=df.time_start,
+                y=df.y,
+                mode="markers",
+                hoverinfo="skip",
+                marker=dict(
+                    size=6,
+                    symbol="circle",
+                    color="white",
+                    line=dict(width=1, color="black"),
+                ),
+            )
+        )
+
+        fig.update_layout(
+            plot_bgcolor="white",
+            height=200,
+            hoverlabel=dict(bgcolor="white"),
+            showlegend=False,
+        )
+
+        fig.update_yaxes(visible=False)
+        fig.update_xaxes(linecolor="black", ticks="outside")
+
+        return fig
 
     def aggregate_time(
         self, frequency: str, reducer: Optional[Any] = None, keep_bandnames: bool = True

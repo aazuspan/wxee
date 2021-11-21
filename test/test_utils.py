@@ -250,3 +250,13 @@ def test_normalize():
 
     result = wxee.utils._normalize(test_val, test_min, test_max)
     assert result.getInfo() == 0.5
+
+
+def test_millis_to_datetime():
+    """Test that a datetime can be correctly converted from milliseconds"""
+    test_millis = 1594535594000
+    test_datetime = datetime.datetime(2020, 7, 12, 6, 33, 14)
+
+    result = wxee.utils._millis_to_datetime(test_millis)
+
+    assert result == test_datetime

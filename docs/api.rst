@@ -142,6 +142,8 @@ There are a number of properties and methods that describe the characteristics o
    TimeSeries.end_time
    TimeSeries.interval
    TimeSeries.describe
+   TimeSeries.timeline
+   TimeSeries.dataframe
 
 Modifying a Time Series
 -----------------------

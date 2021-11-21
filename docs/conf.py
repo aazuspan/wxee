@@ -82,3 +82,18 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 autodoc_mock_imports = ["ee", "rasterio", "tqdm", "joblib", "plotly"]
+
+
+# Workaround to make Plotly graphs appear in Jupyter notebooks.
+# https://github.com/spatialaudio/nbsphinx/issues/572#issuecomment-853389268
+mathjax_path = (
+    "https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+)
+mathjax2_config = {
+    "tex2jax": {
+        "inlineMath": [["$", "$"], ["\\(", "\\)"]],
+        "processEscapes": True,
+        "ignoreClass": "document",
+        "processClass": "math|output_area",
+    }
+}

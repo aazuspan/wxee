@@ -5,6 +5,9 @@
 
 |
 
+.. image:: https://img.shields.io/badge/Earth%20Engine%20API-Python-green
+   :alt: Earth Engine Python
+   :target: https://developers.google.com/earth-engine/tutorials/community/intro-to-python-api
 .. image:: https://img.shields.io/pypi/v/wxee
    :alt: PyPI
    :target: https://pypi.org/project/wxee/

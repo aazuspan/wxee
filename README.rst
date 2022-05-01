@@ -26,15 +26,6 @@
 .. image:: https://codecov.io/gh/aazuspan/wxee/branch/main/graph/badge.svg?token=OeSeq4b7NF
    :alt: Code coverage
    :target: https://codecov.io/gh/aazuspan/wxee
-.. image:: https://img.shields.io/lgtm/grade/python/g/aazuspan/wxee.svg?logo=lgtm&logoWidth=18&style=flat
-   :alt: Language Grade: Python
-   :target: https://lgtm.com/projects/g/aazuspan/wxee/context:python
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-   :alt: Black code style
-   :target: https://github.com/psf/black
-.. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
-   :alt: GLP3 License
-   :target: https://www.gnu.org/licenses/gpl-3.0
 
 ------------
 

@@ -6,6 +6,7 @@ import plotly.express as px  # type: ignore
 import plotly.graph_objects as go  # type: ignore
 
 from wxee.climatology import Climatology, ClimatologyFrequencyEnum
+from wxee.exceptions import MissingPropertyError
 from wxee.interpolation import InterpolationMethodEnum
 from wxee.params import ParamEnum
 from wxee.utils import _millis_to_datetime, _normalize
@@ -122,21 +123,50 @@ class TimeSeries(ee.imagecollection.ImageCollection):
             f"\n\tMean interval: {mean_interval:.2f} {unit}s"
         )
 
-    def dataframe(self) -> pd.DataFrame:
-        """Generate a Pandas dataframe describing the system properties of each image in the time series.
+    def dataframe(self, props: Union[None, List[str], ee.List] = None) -> pd.DataFrame:
+        """Generate a Pandas dataframe describing properties of each image in the time series.
+
+        Parameters
+        ----------
+        props : Union[List[str], ee.List], optional
+            A list of property names to aggregate from all images into the dataframe. If none is
+            provided, all non-system properties of the first image in the time series will be used.
 
         Returns
         -------
         pd.DataFrame
             A Pandas dataframe where each row represents an image and columns represent system properties.
         """
-        starts_millis = self.aggregate_array("system:time_start").getInfo()
-        ids = self.aggregate_array("system:id").getInfo()
+        if props is None:
+            props = self.first().propertyNames().getInfo()
+            props = [
+                p
+                for p in props
+                if not p.startswith("system:")
+                or p in ["system:time_start", "system:id"]
+            ]
+        elif isinstance(props, ee.List):
+            props = props.getInfo()
+
+        df_dict = {}
+        n = self.size().getInfo()
+        for prop in set(props):
+            vals = self.aggregate_array(prop).getInfo()
+            if len(vals) == 0:
+                raise MissingPropertyError(
+                    f"The property `{prop}` is missing from all images!"
+                )
+            elif len(vals) < n:
+                raise MissingPropertyError(
+                    f"The property `{prop}` is missing from some images!"
+                )
+            if prop.startswith("system:time"):
+                vals = map(_millis_to_datetime, vals)
+
+            df_dict[prop] = vals
+
         collection_id = self.get("system:id").getInfo()
-
-        starts = [_millis_to_datetime(ms) for ms in starts_millis]
-
-        df = pd.DataFrame({"id": ids, "time_start": starts})
+        df = pd.DataFrame.from_dict(df_dict)
         df.index.id = collection_id
         return df
 
@@ -148,20 +178,20 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         go.Figure
             A Plotly graph object interactive plot showing the acquisition time of each image in the time series.
         """
-        df = self.dataframe()
+        df = self.dataframe(props=["system:id", "system:time_start"])
         df["y"] = 0
 
         fig = px.line(
             df,
-            x="time_start",
+            x="system:time_start",
             y="y",
-            hover_name="id",
+            hover_name="system:id",
             markers=True,
-            labels={"time_start": ""},
+            labels={"system:time_start": ""},
         )
 
         fig.update_traces(
-            customdata=df[["id", "time_start"]],
+            customdata=df[["system:id", "system:time_start"]],
             hovertemplate="<b>%{customdata[0]}</b>"
             + "<br>%{customdata[1]|%Y-%m-%d %H:%M:%S}",
             line=dict(width=2, color="black"),
@@ -176,7 +206,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         # Add circles for each image
         fig.add_trace(
             go.Scatter(
-                x=df.time_start,
+                x=df["system:time_start"],
                 y=df.y,
                 mode="markers",
                 hoverinfo="skip",

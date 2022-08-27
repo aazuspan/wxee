@@ -256,8 +256,16 @@ class Image:
         """
         img = self._obj
 
+        original_id = _replace_if_null(img.get("system:id"), "null")
+        # Replace any invalid file path characters with underscores.
+        cleaned_id = ee.String(original_id).replace("([^a-z0-9]+)", "_", "gi")
+
+        date = _format_date(ee.Image(img).get("system:time_start"))
+        dimension = _replace_if_null(img.get("wx:dimension"), "time")
+        coordinate = _replace_if_null(img.get("wx:coordinate"), date)
+
         try:
-            date = _format_date(ee.Image(img).get("system:time_start")).getInfo()
+            coordinate = coordinate.getInfo()
         except ee.EEException as e:
             if "Parameter 'value' is required" in str(e):
                 raise MissingPropertyError(
@@ -270,13 +278,6 @@ class Image:
                 )
             else:
                 raise e
-
-        original_id = _replace_if_null(img.get("system:id"), "null")
-        # Replace any invalid file path characters with underscores.
-        cleaned_id = ee.String(original_id).replace("([^a-z0-9]+)", "_", "gi")
-
-        dimension = _replace_if_null(img.get("wx:dimension"), "time")
-        coordinate = _replace_if_null(img.get("wx:coordinate"), date)
 
         return ee.List([cleaned_id, dimension, coordinate]).join(".")
 

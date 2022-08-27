@@ -131,14 +131,12 @@ class TimeSeries(ee.imagecollection.ImageCollection):
             A Pandas dataframe where each row represents an image and columns represent system properties.
         """
         starts_millis = self.aggregate_array("system:time_start").getInfo()
-        ends_millis = self.aggregate_array("system:time_end").getInfo()
         ids = self.aggregate_array("system:id").getInfo()
         collection_id = self.get("system:id").getInfo()
 
         starts = [_millis_to_datetime(ms) for ms in starts_millis]
-        ends = [_millis_to_datetime(ms) for ms in ends_millis]
 
-        df = pd.DataFrame({"id": ids, "time_start": starts, "time_end": ends})
+        df = pd.DataFrame({"id": ids, "time_start": starts})
         df.index.id = collection_id
         return df
 

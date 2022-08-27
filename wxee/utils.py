@@ -205,8 +205,7 @@ def _millis_to_datetime(millis: str) -> datetime.datetime:
 
 def _replace_if_null(val: Union[ee.String, ee.Number], replacement: Any) -> Any:
     """Take an Earth Engine object and return either the original non-null object or the given replacement if it is null."""
-    is_null = ee.Algorithms.IsEqual(val, None)
-    return ee.Algorithms.If(is_null, replacement, val)
+    return ee.Algorithms.If(val, val, replacement)
 
 
 def _format_date(d: ee.Date) -> ee.String:

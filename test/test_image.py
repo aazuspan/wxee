@@ -6,6 +6,7 @@ import pytest
 import rasterio
 
 import wxee
+from wxee.exceptions import MissingPropertyError
 
 
 @pytest.mark.ee
@@ -155,3 +156,14 @@ def test_to_tif():
         assert src.descriptions == ("band_name",)
 
     os.remove(file[0])
+
+
+@pytest.mark.ee
+def test_missing_start_time():
+    """
+    Check that a helpful error is thrown when attempting to download an image with no
+    system:time_start property
+    """
+    img = ee.Image.constant(0)
+    with pytest.raises(MissingPropertyError):
+        img.wx.to_xarray()

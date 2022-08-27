@@ -9,7 +9,7 @@ from urllib3.exceptions import ProtocolError  # type: ignore
 
 from wxee import constants
 from wxee.accessors import wx_accessor
-from wxee.exceptions import DownloadError
+from wxee.exceptions import DownloadError, MissingPropertyError
 from wxee.utils import (
     _dataset_from_files,
     _download_url,
@@ -255,7 +255,21 @@ class Image:
         the wx:dimension and wx:coordinate have not been set, they will be set to "time" and the formatted system:time_start, respectively.
         """
         img = self._obj
-        date = _format_date(ee.Image(img).get("system:time_start"))
+
+        try:
+            date = _format_date(ee.Image(img).get("system:time_start")).getInfo()
+        except ee.EEException as e:
+            if "Parameter 'value' is required" in str(e):
+                raise MissingPropertyError(
+                    f"Image is missing a `system:time_start` property which is required for "
+                    "downloading.\n\nEarth Engine properties can be lost when modifying images, so make sure to manually "
+                    "set or copy properties using the `.set` and `.copyProperties` methods after using methods like "
+                    "`.multiply` or `.median`. If you don't need time information, you can set an arbitrary time with "
+                    "`img = img.set('system:time_start', 0).`"
+                    "\n\nSee https://github.com/aazuspan/wxee/issues/43 for more details."
+                )
+            else:
+                raise e
 
         original_id = _replace_if_null(img.get("system:id"), "null")
         # Replace any invalid file path characters with underscores.

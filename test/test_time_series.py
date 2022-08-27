@@ -444,8 +444,10 @@ def test_dataframe():
         for i in range(3)
     ]
     ts = wxee.TimeSeries(imgs).set("system:id", col_id)
-    df = ts.dataframe()
+    df = ts.dataframe(["system:time_start", "system:id"])
 
     assert df.index.id == col_id
-    assert df.time_start.dt.strftime("%Y-%m-%d").values.tolist() == start_dates
-    assert df.id.values.tolist() == ids
+    assert (
+        df["system:time_start"].dt.strftime("%Y-%m-%d").values.tolist() == start_dates
+    )
+    assert df["system:id"].values.tolist() == ids

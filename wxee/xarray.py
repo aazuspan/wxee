@@ -87,17 +87,19 @@ class DatasetAccessor:
             except ImportError:
                 raise ImportError(
                     "The `hvplot` package is required for interactive plots. Run `pip install hvplot`."
-                )
+                ) from None
 
-            default_kwargs = {"widget_location": "bottom", "widget_type": "scrubber"}
+            default_kwargs = {
+                "groupby": "time",
+                "widget_location": "bottom",
+                "widget_type": "scrubber",
+            }
+            return da.hvplot.rgb(
+                x="x", y="y", bands="variable", **{**default_kwargs, **kwargs}
+            )
 
-            for k, v in default_kwargs.items():
-                if k not in kwargs:
-                    kwargs[k] = v
-
-            return da.hvplot.rgb(x="x", y="y", bands="variable", **kwargs)
-
-        return da.plot.imshow(col="time", **kwargs)
+        default_kwargs = {"col": "time"}
+        return da.plot.imshow(**{**default_kwargs, **kwargs})
 
 
 @xr.register_dataarray_accessor("wx")

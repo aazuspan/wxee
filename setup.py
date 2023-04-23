@@ -8,6 +8,7 @@ with open("README.rst") as readme_file:
 requirements = [
     "rasterio",
     "xarray",
+    "rioxarray",
     "earthengine-api",
     "tqdm",
     "requests",

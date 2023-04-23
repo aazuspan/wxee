@@ -65,14 +65,14 @@ class DatasetAccessor:
 
         >>> ds.wx.rgb(bands=["B8", "B4", "B3"], stretch=0.85, interactive=True, aspect=1.2)
         """
-        if bands:
+        if bands is not None:
             if len(bands) != 3:
                 raise ValueError(f"Bands must be a list with exactly 3 names.")
         else:
-            bands = list(self._obj.var())[:3]
+            bands = list(self._obj.var())[:3]  # type: ignore
 
             # Raise a different error if the bands were identified implicitly to avoid confusion
-            if len(bands) != 3:
+            if len(bands) != 3:  # type: ignore
                 raise ValueError(
                     f"The Dataset must contain at least 3 data variables for RGB plotting."
                 )

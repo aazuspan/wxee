@@ -5,7 +5,7 @@ from typing import List, Optional
 import ee  # type: ignore
 import rasterio  # type: ignore
 import xarray as xr
-from urllib3.exceptions import ProtocolError  # type: ignore
+from urllib3.exceptions import ProtocolError
 
 from wxee import constants
 from wxee.accessors import wx_accessor

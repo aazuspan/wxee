@@ -11,10 +11,11 @@ import ee  # type: ignore
 import joblib  # type: ignore
 import rasterio  # type: ignore
 import requests
+import rioxarray  # type: ignore
 import xarray as xr
 from requests.adapters import HTTPAdapter
 from tqdm.auto import tqdm  # type: ignore
-from urllib3.util.retry import Retry  # type: ignore
+from urllib3.util.retry import Retry
 
 
 def Initialize(**kwargs: Any) -> None:
@@ -157,7 +158,7 @@ def _dataarray_from_file(file: str, masked: bool, nodata: int) -> xr.DataArray:
 
     The file name must follow the format "{dimension}.{coordinate}.{variable}.{extension}".
     """
-    da = xr.open_rasterio(file)
+    da = rioxarray.open_rasterio(file)
     dim, coord, var = _parse_filename(file)
 
     da = da.expand_dims({dim: [coord]}).rename(var).squeeze("band").drop_vars("band")

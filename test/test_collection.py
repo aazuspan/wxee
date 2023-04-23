@@ -98,7 +98,7 @@ def test_to_xarray():
     collection = ee.ImageCollection(test_list)
     ds = collection.wx.to_xarray(region=region, scale=20, crs=crs, progress=False)
 
-    assert crs in ds.crs
+    assert crs == ds.rio.crs
     assert all(
         ds.time.values
         == [

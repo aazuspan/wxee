@@ -13,9 +13,9 @@
 import os
 import sys
 
-from wxee import __version__
-
 sys.path.insert(0, os.path.abspath(".."))
+
+from wxee import __version__
 
 
 # -- Project information -----------------------------------------------------

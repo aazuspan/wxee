@@ -1,5 +1,6 @@
 __pycache__/
 .mypy_cache/
+.pytest_cache/
 *.pyc
 .ipynb_checkpoints/
 .vscode/

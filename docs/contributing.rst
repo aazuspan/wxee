@@ -12,7 +12,8 @@ Setup
 
         git clone https://github.com/{username}/wxee
         cd wxee
-        make install-dev
+        pip install -e .[dev]
+        pre-commit install
 
 #. Create a new feature branch.
 
@@ -31,8 +32,8 @@ Setup
 
     .. code-block:: bash
 
-        make docs
-        make view-docs
+        hatch run docs:build
+        hatch run docs:view
 
 
 Tests
@@ -58,4 +59,4 @@ For example:
 Running Tests
 ^^^^^^^^^^^^^
 
-To run all tests, use :code:`make tests`. If you cannot connect to Earth Engine or would like to skip slower tests, use :code:`make tests-local`.
+To run all tests, use :code:`hatch run test:all`. If you cannot connect to Earth Engine or would like to skip slower tests, use :code:`hatch run test:local`.

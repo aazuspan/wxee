@@ -13,6 +13,8 @@
 import os
 import sys
 
+from wxee import __version__
+
 sys.path.insert(0, os.path.abspath(".."))
 
 
@@ -21,7 +23,7 @@ sys.path.insert(0, os.path.abspath(".."))
 project = "wxee"
 copyright = "2021, Aaron Zuspan"
 author = "Aaron Zuspan"
-version = "0.3.3"
+version = __version__
 
 # -- General configuration ---------------------------------------------------
 

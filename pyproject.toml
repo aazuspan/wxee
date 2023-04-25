@@ -1,0 +1,115 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wxee"
+dynamic = ["version"]
+description = "Earth Engine to xarray interface"
+readme = "README.rst"
+license = "MIT"
+requires-python = ">=3.8"
+authors = [
+    { name = "Aaron Zuspan", email = "aazuspan@gmail.com" },
+]
+keywords = [
+    "earth-engine",
+    "xarray",
+    "time-series",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Typing :: Typed",
+]
+dependencies = [
+    "earthengine-api",
+    "joblib",
+    "netcdf4",
+    "plotly>=5.2.2",
+    "rasterio",
+    "requests",
+    "rioxarray",
+    "tqdm",
+    "xarray",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "hatch",
+    "hvplot",
+    "isort",
+    "matplotlib",
+    "mock",
+    "mypy",
+    "nbsphinx",
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "requests_mock",
+    "sphinx",
+    "sphinx_rtd_theme",
+]
+doc = [
+    "nbsphinx",
+    "sphinx",
+    "sphinx_rtd_theme",
+]
+test = [
+    "hvplot",
+    "matplotlib",
+    "mock",
+    "pytest",
+    "pytest-cov",
+    "requests_mock",
+]
+
+[project.urls]
+Homepage = "https://github.com/aazuspan/wxee"
+
+[tool.hatch.version]
+path = "wxee/__init__.py"
+
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/wxee",
+]
+
+[tool.hatch.envs.docs]
+dependences = [
+    "nbsphinx",
+    "sphinx",
+    "sphinx_rtd_theme",
+]
+
+[tool.hatch.envs.docs.scripts]
+build = "sphinx-build -b html docs docs/_build/html"
+view = "python -m webbrowser -t docs/_build/html/index.html"
+
+
+[tool.hatch.envs.test]
+dependencies = [
+    "hvplot",
+    "matplotlib",
+    "mock",
+    "pytest",
+    "pytest-cov",
+    "requests_mock",
+]
+
+[tool.hatch.envs.test.scripts]
+all = "pytest ."
+local = "pytest . -m 'not ee'"
+coverage = "pytest . --cov=wxee --cov-report=html"
+view-coverage = "python -m webbrowser -t htmlcov/index.html"
+
+[tool.pytest.ini_options]
+markers = "ee: Marks tests that require an Earth Engine connection. These can be skipped using `pytest -m 'not ee' .`"

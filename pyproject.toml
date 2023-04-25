@@ -31,8 +31,6 @@ classifiers = [
 dependencies = [
     "earthengine-api",
     "joblib",
-    "netcdf4",
-    "plotly>=5.2.2",
     "rasterio",
     "requests",
     "rioxarray",
@@ -56,6 +54,8 @@ dev = [
     "requests_mock",
     "sphinx",
     "sphinx_rtd_theme",
+    "netcdf4",
+    "plotly>=5.2.2",
 ]
 doc = [
     "nbsphinx",
@@ -63,6 +63,8 @@ doc = [
     "sphinx_rtd_theme",
 ]
 test = [
+    "netcdf4",
+    "plotly>=5.2.2",
     "hvplot",
     "matplotlib",
     "mock",
@@ -97,6 +99,8 @@ view = "python -m webbrowser -t docs/_build/html/index.html"
 
 [tool.hatch.envs.test]
 dependencies = [
+    "netcdf4",
+    "plotly>=5.2.2",
     "hvplot",
     "matplotlib",
     "mock",

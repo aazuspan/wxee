@@ -1,15 +1,16 @@
-from typing import Any, List, Optional, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Union
 
 import ee  # type: ignore
 import pandas as pd  # type: ignore
-import plotly.express as px  # type: ignore
-import plotly.graph_objects as go  # type: ignore
 
 from wxee.climatology import Climatology, ClimatologyFrequencyEnum
 from wxee.exceptions import MissingPropertyError
 from wxee.interpolation import InterpolationMethodEnum
 from wxee.params import ParamEnum
 from wxee.utils import _millis_to_datetime, _normalize
+
+if TYPE_CHECKING:
+    import plotly.graph_objects as go  # type: ignore
 
 
 class TimeFrequencyEnum(ParamEnum):
@@ -170,7 +171,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         df.index.id = collection_id
         return df
 
-    def timeline(self) -> go.Figure:  # pragma: no cover
+    def timeline(self) -> "go.Figure":  # pragma: no cover
         """Generate an interactive plot showing the acquisition time of each image in the time series.
 
         Returns
@@ -178,6 +179,14 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         go.Figure
             A Plotly graph object interactive plot showing the acquisition time of each image in the time series.
         """
+        try:
+            import plotly.express as px  # type: ignore
+        except ImportError:
+            raise ImportError(
+                "The `plotly` package is required for this feature. "
+                "Please install it with `pip install plotly` and try again."
+            ) from None
+
         df = self.dataframe(props=["system:id", "system:time_start"])
         df["y"] = 0
 

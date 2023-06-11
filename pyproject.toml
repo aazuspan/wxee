@@ -110,9 +110,9 @@ dependencies = [
 ]
 
 [tool.hatch.envs.test.scripts]
-all = "pytest ."
-local = "pytest . -m 'not ee'"
-coverage = "pytest . --cov=wxee --cov-report=html"
+all = "pytest . {args}"
+local = "pytest . -m 'not ee' {args}"
+coverage = "pytest . --cov=wxee --cov-report=html {args}"
 view-coverage = "python -m webbrowser -t htmlcov/index.html"
 
 [tool.pytest.ini_options]

@@ -41,8 +41,6 @@ class Image:
 
         Parameters
         ----------
-        path : str, optional
-            The path to save the dataset to as a NetCDF. If none is given, the dataset will be stored in memory.
         region : ee.Geometry, optional
             The region to download the image within. If none is provided, the :code:`geometry` of the image will be used.
         scale : int, optional
@@ -92,6 +90,11 @@ class Image:
             ds = _dataset_from_files(files, masked, nodata)
 
         if path:
+            msg = (
+                "The path argument is deprecated and will be removed in a future "
+                "release. Use the `xarray.Dataset.to_netcdf` method instead."
+            )
+            warnings.warn(category=DeprecationWarning, message=msg)
             ds.to_netcdf(path, mode="w")
 
         return ds

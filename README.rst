@@ -40,18 +40,18 @@ and easy by integrating the data catalog and processing power of `Google Earth E
 flexibility of `xarray <https://github.com/pydata/xarray>`_, with no complicated setup required. To accomplish this, wxee implements 
 convenient methods for data processing, aggregation, downloading, and ingestion.
 
-`wxee <https://github.com/aazuspan/wxee>`_ can be found in the `Earth Engine Developer Resources <https://developers.google.com/earth-engine/tutorials/community/developer-resources#python>`_!
+`wxee <https://github.com/aazuspan/wxee>`__ can be found in the `Earth Engine Developer Resources <https://developers.google.com/earth-engine/tutorials/community/developer-resources#python>`_!
 
 
 Features
 --------
-* Time series image collections to `xarray <https://wxee.readthedocs.io/en/latest/examples/image_collection_to_xarray.html>`_, `NetCDF <https://wxee.readthedocs.io/en/latest/examples/image_collection_to_xarray.html>`_, or `GeoTIFF <https://wxee.readthedocs.io/en/latest/examples/downloading_images_and_collections.html>`_ in one line of code
+* Time series image collections to `xarray <https://wxee.readthedocs.io/en/latest/examples/image_collection_to_xarray.html>`__, `NetCDF <https://wxee.readthedocs.io/en/latest/examples/image_collection_to_xarray.html>`_, or `GeoTIFF <https://wxee.readthedocs.io/en/latest/examples/downloading_images_and_collections.html>`_ in one line of code
 * `Climatological anomalies <https://wxee.readthedocs.io/en/latest/examples/climatology_anomaly.html>`_ and temporal `aggregation <https://wxee.readthedocs.io/en/latest/examples/temporal_aggregation.html>`_, `interpolation <https://wxee.readthedocs.io/en/latest/examples/temporal_interpolation.html>`_, `smoothing <https://wxee.readthedocs.io/en/latest/generated/wxee.time_series.TimeSeries.rolling_time.html>`_, and `gap-filling <https://wxee.readthedocs.io/en/latest/generated/wxee.time_series.TimeSeries.fill_gaps.html>`_ in Earth Engine
 * `Color composite plots <https://wxee.readthedocs.io/en/latest/examples/color_composites.html>`_ from **xarray** datasets
 * Parallel processing for fast downloads
 
 
-To see some of the capabilities of wxee and try it yourself, check out the interactive notebooks `here <https://wxee.readthedocs.io/en/latest/examples.html>`_!
+To see some of the capabilities of wxee and try it yourself, check out the interactive notebooks `here <https://wxee.readthedocs.io/en/latest/examples.html>`__!
 
 Install
 ------------
@@ -165,9 +165,9 @@ Long-term climatological means can be calculated using the :code:`climatology_me
 Contribute
 ----------
 
-Bugs or feature requests are always appreciated! They can be submitted `here <https://github.com/aazuspan/wxee/issues>`_. 
+Bugs or feature requests are always appreciated! They can be submitted `here <https://github.com/aazuspan/wxee/issues>`__. 
 
-Code contributions are also welcome! Please open an `issue <https://github.com/aazuspan/wxee/issues>`_ to discuss implementation, 
-then follow the steps below. Developer setup instructions can be found `in the docs <https://wxee.readthedocs.io/en/latest/contributing.html>`_.
+Code contributions are also welcome! Please open an `issue <https://github.com/aazuspan/wxee/issues>`__ to discuss implementation, 
+then follow the steps below. Developer setup instructions can be found `in the docs <https://wxee.readthedocs.io/en/latest/contributing.html>`__.
 
 

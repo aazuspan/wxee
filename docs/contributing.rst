@@ -12,8 +12,8 @@ Setup
 
         git clone https://github.com/{username}/wxee
         cd wxee
-        pip install -e .[dev]
-        pre-commit install
+        pip install hatch
+        hatch run -e test pre-commit install
 
 #. Create a new feature branch.
 

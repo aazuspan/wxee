@@ -25,6 +25,7 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Topic :: Scientific/Engineering :: GIS",
     "Typing :: Typed",
 ]
@@ -38,52 +39,14 @@ dependencies = [
     "xarray",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "black",
-    "hatch",
-    "hvplot",
-    "isort",
-    "matplotlib",
-    "mock",
-    "mypy",
-    "nbsphinx",
-    "pre-commit",
-    "pytest",
-    "pytest-cov",
-    "requests_mock",
-    "sphinx",
-    "sphinx_rtd_theme",
-    "netcdf4",
-    "plotly>=5.2.2",
-]
-doc = [
-    "nbsphinx",
-    "sphinx",
-    "sphinx_rtd_theme",
-]
-test = [
-    "netcdf4",
-    "plotly>=5.2.2",
-    "hvplot",
-    "matplotlib",
-    "mock",
-    "pytest",
-    "pytest-cov",
-    "requests_mock",
-]
-
 [project.urls]
 Homepage = "https://github.com/aazuspan/wxee"
 
 [tool.hatch.version]
 path = "wxee/__init__.py"
 
-
 [tool.hatch.build.targets.sdist]
-include = [
-    "/wxee",
-]
+include = ["/wxee"]
 
 [tool.hatch.envs.docs]
 dependences = [
@@ -96,9 +59,9 @@ dependences = [
 build = "sphinx-build -b html docs docs/_build/html"
 view = "python -m webbrowser -t docs/_build/html/index.html"
 
-
 [tool.hatch.envs.test]
 dependencies = [
+    "pre-commit",
     "netcdf4",
     "plotly>=5.2.2",
     "hvplot",
@@ -112,7 +75,7 @@ dependencies = [
 [tool.hatch.envs.test.scripts]
 all = "pytest . {args}"
 local = "pytest . -m 'not ee' {args}"
-coverage = "pytest . --cov=wxee --cov-report=html {args}"
+coverage = "pytest . --cov=wxee {args}"
 view-coverage = "python -m webbrowser -t htmlcov/index.html"
 
 [tool.pytest.ini_options]

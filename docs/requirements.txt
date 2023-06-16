@@ -1,4 +1,4 @@
-sphinx==4.0.2
+sphinx==7.0.1
 nbsphinx
 ipython
 xarray

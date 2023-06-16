@@ -1,12 +1,4 @@
-# This workflow sets up the Earth Engine token and runs all tests.
-
 name: tests
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build:

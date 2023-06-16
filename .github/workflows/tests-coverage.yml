@@ -1,16 +1,5 @@
 name: tests-coverage
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-    paths-ignore:
-      - '.pre-commit-config.yaml'
-      - 'docs/**'
-      - '**.md'
-      - '**.rst'
-
 jobs:
   build:
 

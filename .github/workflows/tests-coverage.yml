@@ -1,5 +1,7 @@
 name: tests-coverage
 
+on: pull-request
+
 jobs:
   build:
 

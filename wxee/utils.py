@@ -158,7 +158,12 @@ def _dataarray_from_file(file: str, masked: bool, nodata: int) -> xr.DataArray:
 
     The file name must follow the format "{dimension}.{coordinate}.{variable}.{extension}".
     """
-    da = rioxarray.open_rasterio(file)
+    with rioxarray.open_rasterio(file) as da:
+        # Load fully into memory rather than reading lazily from disk. This is needed to allow reading from tempfiles
+        # that will be deleted after the function returns. See https://github.com/corteva/rioxarray/issues/485 and
+        # https://github.com/aazuspan/wxee/issues/70.
+        da.load()
+
     dim, coord, var = _parse_filename(file)
 
     da = da.expand_dims({dim: [coord]}).rename(var).squeeze("band").drop_vars("band")

@@ -4,4 +4,4 @@ from wxee.image import Image
 from wxee.time_series import TimeSeries
 from wxee.utils import Initialize
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"

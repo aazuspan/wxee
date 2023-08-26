@@ -111,35 +111,6 @@ def test_to_xarray():
 
 
 @pytest.mark.ee
-def test_to_netcdf():
-    """Test that to_xarray saves a NetCDF when a path is given"""
-    test_list = [
-        ee.Image.constant(0)
-        .set("system:id", "first_image", "system:time_start", ee.Date("2020-01-01"))
-        .rename("band"),
-        ee.Image.constant(1)
-        .set("system:id", "first_image", "system:time_start", ee.Date("2020-01-02"))
-        .rename("band"),
-        ee.Image.constant(2)
-        .set("system:id", "first_image", "system:time_start", ee.Date("2020-01-03"))
-        .rename("band"),
-    ]
-    region = ee.Geometry.Point(0, 0).buffer(10).bounds()
-    crs = "epsg:3857"
-
-    collection = ee.ImageCollection(test_list)
-    out_path = os.path.join("test", "test_data", "test.nc")
-
-    collection.wx.to_xarray(
-        path=out_path, region=region, scale=20, crs=crs, progress=False
-    )
-
-    assert os.path.isfile(out_path)
-
-    os.remove(out_path)
-
-
-@pytest.mark.ee
 def test_download_with_prefix():
     """Test that prefixes are added to file IDs with to_tif"""
     test_list = [

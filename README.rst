@@ -45,7 +45,7 @@ convenient methods for data processing, aggregation, downloading, and ingestion.
 
 Features
 --------
-* Time series image collections to `xarray <https://wxee.readthedocs.io/en/latest/examples/image_collection_to_xarray.html>`__, `NetCDF <https://wxee.readthedocs.io/en/latest/examples/image_collection_to_xarray.html>`_, or `GeoTIFF <https://wxee.readthedocs.io/en/latest/examples/downloading_images_and_collections.html>`_ in one line of code
+* Time series image collections to `xarray <https://wxee.readthedocs.io/en/latest/examples/image_collection_to_xarray.html>`__ or `GeoTIFF <https://wxee.readthedocs.io/en/latest/examples/downloading_images_and_collections.html>`_ in one line of code
 * `Climatological anomalies <https://wxee.readthedocs.io/en/latest/examples/climatology_anomaly.html>`_ and temporal `aggregation <https://wxee.readthedocs.io/en/latest/examples/temporal_aggregation.html>`_, `interpolation <https://wxee.readthedocs.io/en/latest/examples/temporal_interpolation.html>`_, `smoothing <https://wxee.readthedocs.io/en/latest/generated/wxee.time_series.TimeSeries.rolling_time.html>`_, and `gap-filling <https://wxee.readthedocs.io/en/latest/generated/wxee.time_series.TimeSeries.fill_gaps.html>`_ in Earth Engine
 * `Color composite plots <https://wxee.readthedocs.io/en/latest/examples/color_composites.html>`_ from **xarray** datasets
 * Parallel processing for fast downloads
@@ -107,13 +107,6 @@ xarray
 .. code-block:: python
 
    ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").wx.to_xarray()
-
-NetCDF
-^^^^^^
-
-.. code-block:: python
-
-   ee.ImageCollection("IDAHO_EPSCOR/GRIDMET").wx.to_xarray(path="data/gridmet.nc")
 
 GeoTIFF
 ^^^^^^^

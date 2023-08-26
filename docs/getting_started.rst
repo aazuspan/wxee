@@ -57,7 +57,7 @@ Usage
 Basic Features
 --------------
 
-Basic :code:`wxee` functionality like downloading image collections to :code:`xarray`, :code:`GeoTiff`, and :code:`NetCDF`
+Basic :code:`wxee` functionality like downloading image collections to :code:`xarray` and :code:`GeoTiff`
 are extended through the :code:`wx` accessor, like so:
 
 .. code-block:: python

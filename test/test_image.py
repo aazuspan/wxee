@@ -113,23 +113,6 @@ def test_to_xarray_unmasked():
 
 
 @pytest.mark.ee
-def test_to_netcdf():
-    """Test that to_xarray saves a NetCDF when a path is given"""
-    img = (
-        ee.Image.constant(42)
-        .set("system:time_start", ee.Date("2000"))
-        .rename("band_name")
-    )
-    region = ee.Geometry.Point(0, 0).buffer(10).bounds()
-    out_path = os.path.join("test", "test_data", "test.nc")
-    img.wx.to_xarray(path=out_path, region=region, scale=20, progress=False)
-
-    assert os.path.isfile(out_path)
-
-    os.remove(out_path)
-
-
-@pytest.mark.ee
 def test_to_tif():
     """Check that file and band names are set correctly when downloading to GeoTIFF"""
     img = (

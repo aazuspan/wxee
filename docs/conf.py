@@ -37,6 +37,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "nbsphinx",
+    "sphinx_rtd_theme",
 ]
 
 autosummary_generate = True

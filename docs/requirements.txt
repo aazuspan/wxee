@@ -2,3 +2,4 @@ sphinx==7.0.1
 nbsphinx
 ipython
 xarray
+sphinx-rtd-theme

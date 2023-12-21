@@ -55,7 +55,7 @@ dependencies = ["pre-commit"]
 dependences = [
     "nbsphinx",
     "sphinx",
-    "sphinx_rtd_theme",
+    "sphinx-rtd-theme",
 ]
 
 [tool.hatch.envs.docs.scripts]

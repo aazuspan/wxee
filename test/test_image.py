@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 import rasterio
 
-import wxee
+import wxee  # noqa: F401
 from wxee.exceptions import MissingPropertyError
 
 

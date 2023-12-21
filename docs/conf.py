@@ -15,7 +15,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(".."))
 
-from wxee import __version__
+from wxee import __version__  # noqa: E402
 
 
 # -- Project information -----------------------------------------------------

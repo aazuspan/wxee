@@ -67,14 +67,14 @@ class DatasetAccessor:
         """
         if bands is not None:
             if len(bands) != 3:
-                raise ValueError(f"Bands must be a list with exactly 3 names.")
+                raise ValueError("Bands must be a list with exactly 3 names.")
         else:
             bands = list(self._obj.var())[:3]  # type: ignore
 
             # Raise a different error if the bands were identified implicitly to avoid confusion
             if len(bands) != 3:  # type: ignore
                 raise ValueError(
-                    f"The Dataset must contain at least 3 data variables for RGB plotting."
+                    "The Dataset must contain at least 3 data variables for RGB plotting."
                 )
 
         da = self._obj[bands].to_array(name="rgb")
@@ -83,7 +83,7 @@ class DatasetAccessor:
 
         if interactive:
             try:
-                import hvplot.xarray  # type: ignore
+                import hvplot.xarray  # type: ignore # noqa F401
             except ImportError:
                 raise ImportError(
                     "The `hvplot` package is required for interactive plots. Run `pip install hvplot`."

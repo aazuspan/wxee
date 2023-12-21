@@ -451,3 +451,24 @@ def test_dataframe():
         df["system:time_start"].dt.strftime("%Y-%m-%d").values.tolist() == start_dates
     )
     assert df["system:id"].values.tolist() == ids
+
+@pytest.mark.ee
+def test_timeline():
+    """Test that you can generate a timeline figure from a time series."""
+    start_dates = ["2020-01-01", "2020-02-01", "2021-03-03"]
+    ids = ["id1", "id2", "id3"]
+
+    imgs = [
+        ee.Image.constant(1).set(
+            "system:time_start",
+            ee.Date(start_dates[i]).millis(),
+            "system:id",
+            ids[i],
+        )
+        for i in range(3)
+    ]
+    ts = wxee.TimeSeries(imgs)
+
+    timeline = ts.timeline()
+
+    assert timeline.data

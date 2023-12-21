@@ -171,7 +171,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         df.index.id = collection_id
         return df
 
-    def timeline(self) -> "go.Figure":  # pragma: no cover
+    def timeline(self) -> "go.Figure":
         """Generate an interactive plot showing the acquisition time of each image in the time series.
 
         Returns
@@ -181,6 +181,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         """
         try:
             import plotly.express as px  # type: ignore
+            import plotly.graph_objects as go  # type: ignore
         except ImportError:
             raise ImportError(
                 "The `plotly` package is required for this feature. "
@@ -579,7 +580,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
                 )
             if std.reducer != mean.reducer:
                 # There is no way to determine the type of reducer used after the fact, or else I would list them.
-                raise ValueError(f"Mean reducer does not match std reducer.")
+                raise ValueError("Mean reducer does not match std reducer.")
 
         def image_anomaly(img: ee.Image) -> ee.Image:
             """Identify the climatological mean and std deviation for a given image

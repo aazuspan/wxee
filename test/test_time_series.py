@@ -452,6 +452,7 @@ def test_dataframe():
     )
     assert df["system:id"].values.tolist() == ids
 
+
 @pytest.mark.ee
 def test_timeline():
     """Test that you can generate a timeline figure from a time series."""

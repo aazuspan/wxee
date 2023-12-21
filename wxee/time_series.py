@@ -181,7 +181,7 @@ class TimeSeries(ee.imagecollection.ImageCollection):
         """
         try:
             import plotly.express as px  # type: ignore
-            import plotly.graph_objects as go  # type: ignore
+            import plotly.graph_objects as go
         except ImportError:
             raise ImportError(
                 "The `plotly` package is required for this feature. "

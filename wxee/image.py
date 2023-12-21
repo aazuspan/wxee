@@ -272,7 +272,7 @@ class Image:
         except ee.EEException as e:
             if "Parameter 'value' is required" in str(e):
                 raise MissingPropertyError(
-                    f"Image is missing a `system:time_start` property which is required for "
+                    "Image is missing a `system:time_start` property which is required for "
                     "downloading.\n\nEarth Engine properties can be lost when modifying images, so make sure to manually "
                     "set or copy properties using the `.set` and `.copyProperties` methods after using methods like "
                     "`.multiply` or `.median`. If you don't need time information, you can set an arbitrary time with "

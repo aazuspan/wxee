@@ -1,19 +1,21 @@
 repos:
--   repo: https://github.com/psf/black
-    rev: 23.3.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.9
     hooks:
-    -   id: black
+      - id: ruff
+      - id: ruff-format
 
--   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.2.0
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.7.1
     hooks:
-    -   id: mypy
-        args: [--disallow-untyped-defs, --no-implicit-optional, --warn-unused-ignores, --warn-redundant-casts, --warn-unreachable]
+      - id: mypy
+        args:
+          [
+            --disallow-untyped-defs,
+            --no-implicit-optional,
+            --warn-unused-ignores,
+            --warn-redundant-casts,
+            --warn-unreachable,
+          ]
         exclude: test
         additional_dependencies: [types-requests, xarray]
-
--   repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        args: [--profile, black]

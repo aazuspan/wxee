@@ -48,6 +48,9 @@ path = "wxee/__init__.py"
 [tool.hatch.build.targets.sdist]
 include = ["/wxee"]
 
+[tool.hatch.envs.default]
+dependencies = ["pre-commit"]
+
 [tool.hatch.envs.docs]
 dependences = [
     "nbsphinx",

@@ -70,15 +70,6 @@ Conda
 
     conda install -c conda-forge wxee
 
-From Source
-~~~~~~~~~~~
-
-.. code-block:: bash
-
-   git clone https://github.com/aazuspan/wxee
-   cd wxee
-   make install
-
 
 Quickstart
 ----------

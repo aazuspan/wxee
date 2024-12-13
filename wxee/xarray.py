@@ -130,7 +130,7 @@ class DataArrayAccessor:
         if stretch < 0 or stretch > 1:
             raise ValueError("Stretch value must be in the range [0.0, 1.0].")
 
-        min_val = da.quantile(1 - stretch)
-        max_val = da.quantile(stretch)
+        min_val = da.quantile(1 - stretch, dim=["x", "y", "variable"])
+        max_val = da.quantile(stretch, dim=["x", "y", "variable"])
 
         return ((da - min_val) / (max_val - min_val)).clip(0, 1)

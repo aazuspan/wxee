@@ -1,4 +1,5 @@
 import functools
+import enum
 
 import ee  # type: ignore
 
@@ -33,6 +34,6 @@ def cubic(
 class InterpolationMethodEnum(ParamEnum):
     """Parameters defining interpolation methods"""
 
-    nearest = functools.partial(nearest)
-    linear = functools.partial(linear)
-    cubic = functools.partial(cubic)
+    nearest = enum.member(functools.partial(nearest))
+    linear = enum.member(functools.partial(linear))
+    cubic = enum.member(functools.partial(cubic))

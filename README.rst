@@ -23,9 +23,6 @@
 .. image:: https://github.com/aazuspan/wxee/actions/workflows/tests.yml/badge.svg
    :alt: Build status
    :target: https://github.com/aazuspan/wxee
-.. image:: https://codecov.io/gh/aazuspan/wxee/branch/main/graph/badge.svg?token=OeSeq4b7NF
-   :alt: Code coverage
-   :target: https://codecov.io/gh/aazuspan/wxee
 
 ------------
 

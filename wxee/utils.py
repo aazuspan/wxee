@@ -142,10 +142,10 @@ def _dataset_from_files(files: List[str], masked: bool, nodata: int) -> xr.Datas
 
     try:
         # Allow conflicting values if one is null, take the non-null value
-        merged = xr.merge(das, compat="no_conflicts")
-    except xr.core.merge.MergeError:
+        merged = xr.merge(das, join="outer", compat="no_conflicts")
+    except xr.MergeError:
         # If non-null conflicting values occur, take the first value and warn the user
-        merged = xr.merge(das, compat="override")
+        merged = xr.merge(das, join="outer", compat="override")
         warnings.warn(
             "Different non-null values were encountered for the same variable at the same time coordinate. The first value was taken."
         )

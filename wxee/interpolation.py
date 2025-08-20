@@ -1,5 +1,6 @@
-import functools
+from functools import partial
 import enum
+import sys
 
 import ee  # type: ignore
 
@@ -34,6 +35,10 @@ def cubic(
 class InterpolationMethodEnum(ParamEnum):
     """Parameters defining interpolation methods"""
 
-    nearest = enum.member(functools.partial(nearest))
-    linear = enum.member(functools.partial(linear))
-    cubic = enum.member(functools.partial(cubic))
+    # This is a trick to maintain backward compatibility for Python version <3.11
+    # https://stackoverflow.com/questions/40338652/how-to-define-enum-values-that-are-functions
+    callable_member = partial if sys.version_info < (3, 11) else enum.member
+
+    nearest = callable_member(partial(nearest))
+    linear = callable_member(partial(linear))
+    cubic = callable_member(partial(cubic))

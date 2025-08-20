@@ -142,10 +142,10 @@ def _dataset_from_files(files: List[str], masked: bool, nodata: int) -> xr.Datas
 
     try:
         # Allow conflicting values if one is null, take the non-null value
-        merged = xr.merge(das, compat="no_conflicts")
-    except xr.core.merge.MergeError:
+        merged = xr.merge(das, join="outer", compat="no_conflicts")
+    except xr.MergeError:
         # If non-null conflicting values occur, take the first value and warn the user
-        merged = xr.merge(das, compat="override")
+        merged = xr.merge(das, join="outer", compat="override")
         warnings.warn(
             "Different non-null values were encountered for the same variable at the same time coordinate. The first value was taken."
         )
@@ -206,7 +206,9 @@ def _parse_time(time: str) -> Union[datetime.datetime, str]:
 
 def _millis_to_datetime(millis: str) -> datetime.datetime:
     """Convert a timestamp in UTC milliseconds (e.g. from Earth Engine) to a datetime object."""
-    return datetime.datetime.utcfromtimestamp(int(millis) / 1000.0)
+    return datetime.datetime.fromtimestamp(
+        int(millis) / 1000.0, tz=datetime.timezone.utc
+    )
 
 
 def _replace_if_null(val: Union[ee.String, ee.Number], replacement: Any) -> Any:

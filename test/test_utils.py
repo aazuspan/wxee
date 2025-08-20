@@ -255,7 +255,9 @@ def test_normalize():
 def test_millis_to_datetime():
     """Test that a datetime can be correctly converted from milliseconds"""
     test_millis = 1594535594000
-    test_datetime = datetime.datetime(2020, 7, 12, 6, 33, 14)
+    test_datetime = datetime.datetime(
+        2020, 7, 12, 6, 33, 14, 0, tzinfo=datetime.timezone.utc
+    )
 
     result = wxee.utils._millis_to_datetime(test_millis)
 

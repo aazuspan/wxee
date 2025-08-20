@@ -206,7 +206,9 @@ def _parse_time(time: str) -> Union[datetime.datetime, str]:
 
 def _millis_to_datetime(millis: str) -> datetime.datetime:
     """Convert a timestamp in UTC milliseconds (e.g. from Earth Engine) to a datetime object."""
-    return datetime.datetime.utcfromtimestamp(int(millis) / 1000.0)
+    return datetime.datetime.fromtimestamp(
+        int(millis) / 1000.0, tz=datetime.timezone.utc
+    )
 
 
 def _replace_if_null(val: Union[ee.String, ee.Number], replacement: Any) -> Any:

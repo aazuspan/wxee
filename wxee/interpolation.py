@@ -31,9 +31,11 @@ def cubic(
         a0.multiply(mu).multiply(mu2).add(a1.multiply(mu2)).add(a2.multiply(mu)).add(a3)
     )
 
+
 # This is a trick to maintain backward compatibility for Python version <3.11
 # https://stackoverflow.com/questions/40338652/how-to-define-enum-values-that-are-functions
-callable_member = partial if sys.version_info < (3, 11) else enum.member
+callable_member = partial if sys.version_info < (3, 11) else enum.member  # type: ignore
+
 
 class InterpolationMethodEnum(ParamEnum):
     """Parameters defining interpolation methods"""

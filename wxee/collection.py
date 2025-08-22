@@ -1,5 +1,4 @@
 import tempfile
-import warnings
 from typing import List, Optional
 
 import ee  # type: ignore
@@ -59,7 +58,7 @@ class ImageCollection:
 
     def to_xarray(
         self,
-        path: Optional[str] = None,
+        *,
         region: Optional[ee.Geometry] = None,
         scale: Optional[int] = None,
         crs: str = "EPSG:4326",
@@ -128,14 +127,6 @@ class ImageCollection:
             )
 
             ds = _dataset_from_files(files, masked, nodata)
-
-        if path:
-            msg = (
-                "The path argument is deprecated and will be removed in a future "
-                "release. Use the `xarray.Dataset.to_netcdf` method instead."
-            )
-            warnings.warn(category=DeprecationWarning, message=msg)
-            ds.to_netcdf(path, mode="w")
 
         return ds
 

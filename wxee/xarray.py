@@ -130,7 +130,11 @@ class DataArrayAccessor:
         if stretch < 0 or stretch > 1:
             raise ValueError("Stretch value must be in the range [0.0, 1.0].")
 
-        min_val = da.quantile(1 - stretch)
-        max_val = da.quantile(stretch)
+        # Calculate stats over all dimensions but time so that each image in a time
+        # series is normalized independently. This prevents outlying values in one image
+        # (e.g. cloud cover) from affecting every other image.
+        reduce_dims = set(da.dims) - {"time"}
+        min_val = da.quantile(1 - stretch, dim=reduce_dims)
+        max_val = da.quantile(stretch, dim=reduce_dims)
 
         return ((da - min_val) / (max_val - min_val)).clip(0, 1)

@@ -2,6 +2,7 @@ import os
 
 import mock
 import pytest
+import netCDF4  # noqa (avoids warning https://github.com/pydata/xarray/issues/7259)
 import xarray as xr
 
 

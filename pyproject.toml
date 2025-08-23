@@ -74,6 +74,7 @@ dependencies = [
     "mock",
     "pytest",
     "pytest-cov",
+    "pytest-xdist",
     "requests_mock",
 ]
 

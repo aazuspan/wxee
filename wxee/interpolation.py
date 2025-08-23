@@ -34,7 +34,7 @@ def cubic(
 
 # This is a trick to maintain backward compatibility for Python version <3.11
 # https://stackoverflow.com/questions/40338652/how-to-define-enum-values-that-are-functions
-callable_member = partial if sys.version_info < (3, 11) else enum.member  # type: ignore
+callable_member = partial if sys.version_info < (3, 11) else enum.member  # noqa
 
 
 class InterpolationMethodEnum(ParamEnum):

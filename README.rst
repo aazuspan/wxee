@@ -20,7 +20,7 @@
 .. image:: https://readthedocs.org/projects/wxee/badge/?version=latest&style=flat
    :alt: Read the Docs
    :target: https://wxee.readthedocs.io/en/latest/?badge=latest
-.. image:: https://github.com/aazuspan/wxee/actions/workflows/tests.yml/badge.svg
+.. image:: https://github.com/aazuspan/wxee/actions/workflows/ci.yml/badge.svg
    :alt: Build status
    :target: https://github.com/aazuspan/wxee
 
